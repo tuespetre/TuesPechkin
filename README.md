@@ -3,6 +3,10 @@ Pechkin
 
 .NET Wrapper for [WkHtmlToPdf](http://github.com/antialize/wkhtmltopdf) DLL, a library that uses the Webkit engine to convert HTML pages to PDF. This fork supports .NET 2.0 and up and *now runs in both 64 and 32-bit environments*!
 
+NOTE: 
+Azure does not play nice with wkhtmltox.dll because it uses the GDI libraries. 
+See: http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview
+
 New in 0.9.3
 ------
 The unmanaged DLLs that Pechkin depends upon have been packaged as *embedded resources* so you don't have to worry about messing around with pre- or post-build events to copy the files wherever they go in your solution. When the library is first accessed in the application lifetime, it will copy the embedded resources to a temporary directory (if they do not exist there already) and invoke WinApi to load them up.
