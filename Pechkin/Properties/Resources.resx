@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="wkhtmltox_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\wkhtmltox_32.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="wkhtmltox_32_dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\wkhtmltox_32.dll.gz;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="wkhtmltox_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\wkhtmltox_64.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="wkhtmltox_64_dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\wkhtmltox_64.dll.gz;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

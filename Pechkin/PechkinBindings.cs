@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Pechkin.Properties;
@@ -12,7 +13,7 @@ namespace Pechkin
     {
         static PechkinBindings()
         {
-            var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64 : Resources.wkhtmltox_32;
+            var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64_dll : Resources.wkhtmltox_32_dll;
 
             SetupUnmanagedAssembly("wkhtmltox.dll", raw);
         }
@@ -127,10 +128,11 @@ namespace Pechkin
             var basePath = Path.Combine(
                 Path.GetTempPath(),
                 String.Format(
-                    "{0}{1}_{2}",
+                    "{0}{1}_{2}_{3}",
                     assemblyName.Name.ToString(),
                     assemblyName.Version.ToString(),
-                    IntPtr.Size == 8 ? "x64" : "x86"));
+                    IntPtr.Size == 8 ? "x64" : "x86",
+                    String.Join(String.Empty, AppDomain.CurrentDomain.BaseDirectory.Split(Path.GetInvalidFileNameChars()))));
 
             if (!Directory.Exists(basePath))
             {
@@ -141,7 +143,17 @@ namespace Pechkin
 
             if (!File.Exists(fileName))
             {
-                File.WriteAllBytes(fileName, assemblyRaw);
+                var decompressed = new GZipStream(new MemoryStream(assemblyRaw), CompressionMode.Decompress);
+                var writeBuffer = new byte[8192];
+                var writeLength = 0;
+
+                using (var newFile = File.Open(fileName, FileMode.Create))
+                {
+                    while((writeLength = decompressed.Read(writeBuffer, 0, writeBuffer.Length)) > 0) 
+                    {
+                        newFile.Write(writeBuffer, 0, writeLength);
+                    }
+                }
             }
 
             WinApiHelper.LoadLibrary(fileName);
