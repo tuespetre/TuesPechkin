@@ -16,7 +16,6 @@ namespace Html2PdfTestApp
 
         private void OnLoad(object sender, EventArgs e)
         {
-            Text += " v" + Factory.Version;
         }
 
         private void OnConvertButtonClick(object sender, EventArgs e)
