@@ -13,67 +13,42 @@ namespace Pechkin
     [Serializable]
     internal class SimplePechkin : MarshalByRefObject, IPechkin
     {
-        public bool IsDisposed { get; private set; }
+        private readonly GlobalConfig globalConfig;
+        private readonly StringCallback onErrorDelegate;
+        private readonly IntCallback onFinishedDelegate;
+        private readonly VoidCallback onPhaseChangedDelegate;
+        private readonly IntCallback onProgressChangedDelegate;
+        private readonly StringCallback onWarningDelegate;
+        private IntPtr converter;
+        private IntPtr globalConfigUnmanaged;
 
-        private readonly GlobalConfig _globalConfig;
-        private IntPtr _globalConfigUnmanaged;
-        private IntPtr _converter = IntPtr.Zero;
+        /// <summary>
+        /// Constructs HTML to PDF converter instance from <code>GlobalConfig</code>.
+        /// </summary>
+        /// <param name="config">global configuration object</param>
+        public SimplePechkin(GlobalConfig config)
+        {
+            this.onErrorDelegate = new StringCallback(this.OnError);
+            this.onFinishedDelegate = new IntCallback(this.OnFinished);
+            this.onPhaseChangedDelegate = new VoidCallback(this.OnPhaseChanged);
+            this.onProgressChangedDelegate = new IntCallback(this.OnProgressChanged);
+            this.onWarningDelegate = new StringCallback(this.OnWarning);
 
-        public event DisposedEventHandler Disposed;
+            Tracer.Trace(string.Format("T:{0} Creating SimplePechkin", Thread.CurrentThread.Name));
 
-        #region events
+            this.globalConfig = config;
+            
+            Tracer.Trace(string.Format("T:{0} Created global config", Thread.CurrentThread.Name));
+
+            this.IsDisposed = false;
+        }
 
         /// <summary>
         /// This event happens every time the conversion starts
         /// </summary>
         public event BeginEventHandler Begin;
 
-        protected virtual void OnBegin(IntPtr converter)
-        {
-            int expectedPhaseCount = PechkinStatic.GetPhaseCount(converter);
-
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Conversion started, " + expectedPhaseCount + " phases awaiting");
-
-            BeginEventHandler handler = this.Begin;
-            try
-            {
-                if (handler != null)
-                {
-                    handler(this, expectedPhaseCount);
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Warn(String.Format("T:" + Thread.CurrentThread.Name + " Exception in Begin event handler {0}", e));
-            }
-        }
-
-        /// <summary>
-        /// This event handler is called whenever warning happens during conversion process.
-        /// 
-        /// You can also see javascript errors and warnings if you enable <code>SetJavascriptDebugMode</code> in <code>ObjectConfig</code>
-        /// </summary>
-        public event WarningEventHandler Warning;
-
-        protected virtual void OnWarning(IntPtr converter, string warningText)
-        {
-            Tracer.Warn("T:" + Thread.CurrentThread.Name + " Conversion Warning: " + warningText);
-
-            WarningEventHandler handler = this.Warning;
-            try
-            {
-                if (handler != null)
-                {
-                    handler(this, warningText);
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Warn("T:" + Thread.CurrentThread.Name + " Exception in Warning event handler", e);
-            }
-        }
-
-        private StringCallback _onWarningDelegate;
+        public event DisposedEventHandler Disposed;
 
         /// <summary>
         /// Event handler is called whenever error happens during conversion process.
@@ -82,53 +57,15 @@ namespace Pechkin
         /// </summary>
         public event ErrorEventHandler Error;
 
-        protected virtual void OnError(IntPtr converter, string errorText)
-        {
-            Tracer.Warn("T:" + Thread.CurrentThread.Name + " Conversion Error: " + errorText);
-
-            ErrorEventHandler handler = this.Error;
-            try
-            {
-                if (handler != null)
-                {
-                    handler(this, errorText);
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Warn("T:" + Thread.CurrentThread.Name + " Exception in Error event handler", e);
-            }
-        }
-
-        private StringCallback _onErrorDelegate;
+        /// <summary>
+        /// This event handler is fired when conversion is finished.
+        /// </summary>
+        public event FinishEventHandler Finished;
 
         /// <summary>
         /// This event handler signals phase change of the conversion process.
         /// </summary>
         public event PhaseChangedEventHandler PhaseChanged;
-
-        protected virtual void OnPhaseChanged(IntPtr converter)
-        {
-            int phaseNumber = PechkinStatic.GetPhaseNumber(converter);
-            string phaseDescription = PechkinStatic.GetPhaseDescription(converter, phaseNumber);
-
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Conversion Phase Changed: #" + phaseNumber + " " + phaseDescription);
-
-            PhaseChangedEventHandler handler = this.PhaseChanged;
-            try
-            {
-                if (handler != null)
-                {
-                    handler(this, phaseNumber, phaseDescription);
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Warn("T:" + Thread.CurrentThread.Name + " Exception in PhaseChange event handler", e);
-            }
-        }
-
-        private VoidCallback _onPhaseChangedDelegate;
 
         /// <summary>
         /// This event handler signals progress change of the conversion process.
@@ -137,115 +74,76 @@ namespace Pechkin
         /// </summary>
         public event ProgressChangedEventHandler ProgressChanged;
 
-        protected virtual void OnProgressChanged(IntPtr converter, int progress)
-        {
-            string progressDescription = PechkinStatic.GetProgressDescription(converter);
-
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Conversion Progress Changed: (" + progress + ") " + progressDescription);
-
-            ProgressChangedEventHandler handler = this.ProgressChanged;
-            try
-            {
-                if (handler != null)
-                {
-                    handler(this, progress, progressDescription);
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Warn("T:" + Thread.CurrentThread.Name + " Exception in Progress event handler", e);
-            }
-        }
-
-        private IntCallback _onProgressChangedDelegate;
+        /// <summary>
+        /// This event handler is called whenever warning happens during conversion process.
+        /// 
+        /// You can also see javascript errors and warnings if you enable <code>SetJavascriptDebugMode</code> in <code>ObjectConfig</code>
+        /// </summary>
+        public event WarningEventHandler Warning;
 
         /// <summary>
-        /// This event handler is fired when conversion is finished.
+        /// Current phase number for the converter.
+        /// 
+        /// We recommend to use this property only inside the event handlers.
         /// </summary>
-        public event FinishEventHandler Finished;
-
-        protected virtual void OnFinished(IntPtr converter, int success)
+        public int CurrentPhase
         {
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Conversion Finished: " + (success != 0 ? "Succeede" : "Failed"));
-
-            FinishEventHandler handler = this.Finished;
-            try
+            get
             {
-                if (handler != null)
-                {
-                    handler(this, success != 0);
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Warn("T:" + Thread.CurrentThread.Name + " Exception in Finish event handler", e);
+                return PechkinStatic.GetPhaseNumber(this.converter);
             }
         }
-
-        private IntCallback _onFinishedDelegate;
-
-        #endregion
 
         /// <summary>
-        /// Constructs HTML to PDF converter instance from <code>GlobalConfig</code>.
+        /// Error code returned by server when converter tried to request the page or the resource. Should be available after failed conversion attempt.
         /// </summary>
-        /// <param name="config">global configuration object</param>
-        public SimplePechkin(GlobalConfig config)
+        public int HttpErrorCode
         {
-            this._onErrorDelegate = new StringCallback(this.OnError);
-            this._onFinishedDelegate = new IntCallback(this.OnFinished);
-            this._onPhaseChangedDelegate = new VoidCallback(this.OnPhaseChanged);
-            this._onProgressChangedDelegate = new IntCallback(this.OnProgressChanged);
-            this._onWarningDelegate = new StringCallback(this.OnWarning);
-
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Creating SimplePechkin");
-
-            this._globalConfig = config;
-            
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Created global config");
-
-            this.IsDisposed = false;
-        }
-
-        public void Dispose()
-        {
-            if (!this._converter.Equals(IntPtr.Zero))
+            get
             {
-                Tracer.Trace("T:" + Thread.CurrentThread.Name + " Releasing unmanaged converter");
-
-                PechkinStatic.DestroyConverter(this._converter);
-            }
-
-            this.IsDisposed = true;
-
-            if (this.Disposed != null)
-            {
-                this.Disposed(this);
+                return PechkinStatic.GetHttpErrorCode(this.converter);
             }
         }
 
-        private void CreateConverter()
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Phase count for the current conversion process.
+        /// 
+        /// We recommend to use this property only inside the event handlers.
+        /// </summary>
+        public int PhaseCount
         {
-            if (!this._converter.Equals(IntPtr.Zero))
+            get
             {
-                PechkinStatic.DestroyConverter(this._converter);
-
-                Tracer.Trace("T:" + Thread.CurrentThread.Name + " Destroyed previous converter");
+                return PechkinStatic.GetPhaseCount(this.converter);
             }
+        }
 
-            // the damn lib... we can't reuse anything
-            this._globalConfigUnmanaged = this._globalConfig.CreateGlobalConfig();
-            this._converter = PechkinStatic.CreateConverter(this._globalConfigUnmanaged);
+        /// <summary>
+        /// Current phase string description for the converter.
+        /// 
+        /// We recommend to use this property only inside the event handlers.
+        /// </summary>
+        public string PhaseDescription
+        {
+            get
+            {
+                return PechkinStatic.GetPhaseDescription(this.converter, this.CurrentPhase);
+            }
+        }
 
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Created converter");
-
-            PechkinStatic.SetErrorCallback(this._converter, this._onErrorDelegate);
-            PechkinStatic.SetWarningCallback(this._converter, this._onWarningDelegate);
-            PechkinStatic.SetPhaseChangedCallback(this._converter, this._onPhaseChangedDelegate);
-            PechkinStatic.SetProgressChangedCallback(this._converter, this._onProgressChangedDelegate);
-            PechkinStatic.SetFinishedCallback(this._converter, this._onFinishedDelegate);
-
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Added callbacks to converter");
+        /// <summary>
+        /// Current progress string description. It includes percent count, btw.
+        /// 
+        /// We recommend to use this property only inside the event handlers.
+        /// </summary>
+        public string ProgressString
+        {
+            get
+            {
+                return PechkinStatic.GetProgressDescription(this.converter);
+            }
         }
 
         /// <summary>
@@ -265,26 +163,35 @@ namespace Pechkin
             // create unmanaged object config
             IntPtr objConf = doc.CreateObjectConfig();
 
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Created object config");
+            Tracer.Trace(string.Format("T:{0} Created object config", Thread.CurrentThread.Name));
 
             // add object to converter
-            PechkinStatic.AddObject(this._converter, objConf, html);
+            PechkinStatic.AddObject(this.converter, objConf, html);
 
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Added object to converter");
+            Tracer.Trace(string.Format("T:{0} Added object to converter", Thread.CurrentThread.Name));
 
             // run OnBegin
-            this.OnBegin(_converter);
+            this.OnBegin(this.converter);
 
             // run conversion process
-            if (!PechkinStatic.PerformConversion(this._converter))
+            if (!PechkinStatic.PerformConversion(this.converter))
             {
-                Tracer.Trace("T:" + Thread.CurrentThread.Name + " Conversion failed, null returned");
+                Tracer.Trace(string.Format("T:{0} Conversion failed, null returned", Thread.CurrentThread.Name));
 
                 return null;
             }
 
             // get output
-            return PechkinStatic.GetConverterResult(this._converter);
+            var result = PechkinStatic.GetConverterResult(this.converter);
+
+            if (!this.converter.Equals(IntPtr.Zero))
+            {
+                Tracer.Trace(string.Format("T:{0} Releasing unmanaged converter", Thread.CurrentThread.Name));
+
+                PechkinStatic.DestroyConverter(this.converter);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -343,68 +250,153 @@ namespace Pechkin
         }
 
         // some properties for convenience
-
-        /// <summary>
-        /// Current phase number for the converter.
-        /// 
-        /// We recommend to use this property only inside the event handlers.
-        /// </summary>
-        public int CurrentPhase
+        public void Dispose()
         {
-            get
+            this.IsDisposed = true;
+
+            if (this.Disposed != null)
             {
-                return PechkinStatic.GetPhaseNumber(this._converter);
+                this.Disposed(this);
             }
         }
 
-        /// <summary>
-        /// Phase count for the current conversion process.
-        /// 
-        /// We recommend to use this property only inside the event handlers.
-        /// </summary>
-        public int PhaseCount
+        protected virtual void OnBegin(IntPtr converter)
         {
-            get
+            int expectedPhaseCount = PechkinStatic.GetPhaseCount(converter);
+
+            Tracer.Trace(string.Format("T:{0} Conversion started, {1} phases awaiting", Thread.CurrentThread.Name, expectedPhaseCount));
+
+            BeginEventHandler handler = this.Begin;
+            try
             {
-                return PechkinStatic.GetPhaseCount(this._converter);
+                if (handler != null)
+                {
+                    handler(this, expectedPhaseCount);
+                }
+            }
+            catch (Exception e)
+            {
+                Tracer.Warn(String.Format("T:{1} Exception in Begin event handler {0}", e, Thread.CurrentThread.Name));
             }
         }
 
-        /// <summary>
-        /// Current phase string description for the converter.
-        /// 
-        /// We recommend to use this property only inside the event handlers.
-        /// </summary>
-        public string PhaseDescription
+        protected virtual void OnError(IntPtr converter, string errorText)
         {
-            get
+            Tracer.Warn(string.Format("T:{0} Conversion Error: {1}", Thread.CurrentThread.Name, errorText));
+
+            ErrorEventHandler handler = this.Error;
+            try
             {
-                return PechkinStatic.GetPhaseDescription(this._converter, this.CurrentPhase);
+                if (handler != null)
+                {
+                    handler(this, errorText);
+                }
+            }
+            catch (Exception e)
+            {
+                Tracer.Warn(string.Format("T:{0} Exception in Error event handler", Thread.CurrentThread.Name), e);
             }
         }
 
-        /// <summary>
-        /// Current progress string description. It includes percent count, btw.
-        /// 
-        /// We recommend to use this property only inside the event handlers.
-        /// </summary>
-        public string ProgressString
+        protected virtual void OnFinished(IntPtr converter, int success)
         {
-            get
+            Tracer.Trace(string.Format("T:{0} Conversion Finished: {1}", Thread.CurrentThread.Name, success != 0 ? "Succeede" : "Failed"));
+
+            FinishEventHandler handler = this.Finished;
+            try
             {
-                return PechkinStatic.GetProgressDescription(this._converter);
+                if (handler != null)
+                {
+                    handler(this, success != 0);
+                }
+            }
+            catch (Exception e)
+            {
+                Tracer.Warn(string.Format("T:{0} Exception in Finish event handler", Thread.CurrentThread.Name), e);
             }
         }
 
-        /// <summary>
-        /// Error code returned by server when converter tried to request the page or the resource. Should be available after failed conversion attempt.
-        /// </summary>
-        public int HttpErrorCode
+        protected virtual void OnPhaseChanged(IntPtr converter)
         {
-            get
+            int phaseNumber = PechkinStatic.GetPhaseNumber(converter);
+            string phaseDescription = PechkinStatic.GetPhaseDescription(converter, phaseNumber);
+
+            Tracer.Trace(string.Format("T:{0} Conversion Phase Changed: #{1} {2}", Thread.CurrentThread.Name, phaseNumber, phaseDescription));
+
+            PhaseChangedEventHandler handler = this.PhaseChanged;
+            try
             {
-                return PechkinStatic.GetHttpErrorCode(this._converter);
+                if (handler != null)
+                {
+                    handler(this, phaseNumber, phaseDescription);
+                }
             }
+            catch (Exception e)
+            {
+                Tracer.Warn(string.Format("T:{0} Exception in PhaseChange event handler", Thread.CurrentThread.Name), e);
+            }
+        }
+
+        protected virtual void OnProgressChanged(IntPtr converter, int progress)
+        {
+            string progressDescription = PechkinStatic.GetProgressDescription(converter);
+
+            Tracer.Trace(string.Format("T:{0} Conversion Progress Changed: ({1}) {2}", Thread.CurrentThread.Name, progress, progressDescription));
+
+            ProgressChangedEventHandler handler = this.ProgressChanged;
+            try
+            {
+                if (handler != null)
+                {
+                    handler(this, progress, progressDescription);
+                }
+            }
+            catch (Exception e)
+            {
+                Tracer.Warn(string.Format("T:{0} Exception in Progress event handler", Thread.CurrentThread.Name), e);
+            }
+        }
+
+        protected virtual void OnWarning(IntPtr converter, string warningText)
+        {
+            Tracer.Warn(string.Format("T:{0} Conversion Warning: {1}", Thread.CurrentThread.Name, warningText));
+
+            WarningEventHandler handler = this.Warning;
+            try
+            {
+                if (handler != null)
+                {
+                    handler(this, warningText);
+                }
+            }
+            catch (Exception e)
+            {
+                Tracer.Warn(string.Format("T:{0} Exception in Warning event handler", Thread.CurrentThread.Name), e);
+            }
+        }
+
+        private void CreateConverter()
+        {
+            if (!this.converter.Equals(IntPtr.Zero))
+            {
+                PechkinStatic.DestroyConverter(this.converter);
+
+                Tracer.Trace(string.Format("T:{0} Destroyed previous converter", Thread.CurrentThread.Name));
+            }
+
+            // the damn lib... we can't reuse anything
+            this.globalConfigUnmanaged = this.globalConfig.CreateGlobalConfig();
+            this.converter = PechkinStatic.CreateConverter(this.globalConfigUnmanaged);
+
+            Tracer.Trace(string.Format("T:{0} Created converter", Thread.CurrentThread.Name));
+
+            PechkinStatic.SetErrorCallback(this.converter, this.onErrorDelegate);
+            PechkinStatic.SetWarningCallback(this.converter, this.onWarningDelegate);
+            PechkinStatic.SetPhaseChangedCallback(this.converter, this.onPhaseChangedDelegate);
+            PechkinStatic.SetProgressChangedCallback(this.converter, this.onProgressChangedDelegate);
+            PechkinStatic.SetFinishedCallback(this.converter, this.onFinishedDelegate);
+
+            Tracer.Trace(string.Format("T:{0} Added callbacks to converter", Thread.CurrentThread.Name));
         }
     }
 }
