@@ -28,6 +28,9 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 
 ### Release notes
 
+#### 0.9.3.3
+- Fixed a problem with concurrency related to when the Pechkin object tells wkhtmltopdf to destroy its converter object. Now happens immediately after conversion, before anything else hits the queue.
+
 #### 0.9.3.2
 - Made the library unpack wkhtmltopdf in a folder named specifically for the running application since only one process can use the dll.
 - Compressed the wkhtmltopdf dependencies with gzip to reduce the size of the solution and the NuGet packages
