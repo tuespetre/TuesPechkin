@@ -15,20 +15,9 @@ namespace Pechkin
     {
         private static readonly object setupLock = new object();
 
-        /// <summary>
-        /// This is the function used by Factory to invoke any calls to
-        /// the wkhtmltopdf library, whether synchronized or not.
-        /// </summary>
         private static readonly Func<Func<object>, object> invocationDelegate = (Func<object> del) =>
         {
-            if (Factory.useSync && Factory.synchronizer != null)
-            {
-                return Factory.synchronizer.Invoke(del, null);
-            }
-            else
-            {
-                return del.DynamicInvoke();
-            }
+            return Factory.synchronizer.Invoke(del, null);
         };
 
         /// <summary>
@@ -53,11 +42,6 @@ namespace Pechkin
         private static bool useDynamicLoading = false;
 
         /// <summary>
-        /// See public property
-        /// </summary>
-        private static bool useSync = true;
-
-        /// <summary>
         /// When set to true, Pechkin.Factory will release the wkhtmltopdf library
         /// anytime that it detects that all of its converters are disposed. 
         /// Default value is false.
@@ -79,31 +63,6 @@ namespace Pechkin
                 }
 
                 Factory.useDynamicLoading = value;
-            }
-        }
-
-        /// <summary>
-        /// When set to true, Pechkin.Factory will delegate all wkhtmltopdf functions
-        /// to a dedicated thread to ensure that multiple threads can use Pechkin safely.
-        /// Default value is true.
-        /// </summary>
-        /// <exception cref="System.InvalidOperationException">Thrown when the wkhtmltopdf
-        /// factory has already loaded the wkhtmltopdf library and has not yet released it.</exception>
-        public static Boolean UseSynchronization
-        {
-            get
-            {
-                return Factory.useSync;
-            }
-            set
-            {
-                if (value != Factory.useSync &&
-                    null != Factory.operatingDomain)
-                {
-                    throw new InvalidOperationException("App domain already loaded; cannot change synchronization setting");
-                }
-
-                Factory.useSync = value;
             }
         }
 
@@ -176,10 +135,7 @@ namespace Pechkin
         /// </summary>
         private static void SetupAppDomain()
         {
-            if (Factory.useSync)
-            {
-                Factory.synchronizer = new SynchronizedDispatcherThread();
-            }
+            Factory.synchronizer = new SynchronizedDispatcherThread();
 
             var dirName = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var setup = new AppDomainSetup() { ApplicationBase = dirName };
