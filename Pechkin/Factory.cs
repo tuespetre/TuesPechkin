@@ -63,46 +63,6 @@ namespace Pechkin
         private static bool useX11Graphics = false;
 
         /// <summary>
-        /// Used to find out which kind of wkhtmltopdf dll is loaded.
-        /// </summary>
-        public static Boolean ExtendedQtAvailable
-        {
-            get
-            {
-                bool tearDown = false;
-
-                if (Factory.operatingDomain == null)
-                {
-                    Factory.SetupAppDomain();
-
-                    if (Factory.useDynamicLoading)
-                    {
-                        tearDown = true;
-                    }
-                }
-
-                Func<object> del = () =>
-                {
-                    Factory.operatingDomain.DoCallBack(() =>
-                    {
-                        AppDomain.CurrentDomain.SetData("data", PechkinBindings.wkhtmltopdf_extended_qt());
-                    });
-
-                    return (int)Factory.operatingDomain.GetData("data");
-                };
-
-                var ret = (int)Factory.invocationDelegate.DynamicInvoke(del);
-
-                if (tearDown)
-                {
-                    Factory.TearDownAppDomain(null, EventArgs.Empty);
-                }
-
-                return ret != 0;
-            }
-        }
-
-        /// <summary>
         /// When set to true, Pechkin.Factory will release the wkhtmltopdf library
         /// anytime that it detects that all of its converters are disposed. 
         /// Default value is false.
@@ -173,46 +133,6 @@ namespace Pechkin
                 }
 
                 Factory.useX11Graphics = value;
-            }
-        }
-
-        /// <summary>
-        /// Used to find out which version of wkhtmltopdf dll is loaded.
-        /// </summary>
-        public static String Version
-        {
-            get
-            {
-                bool tearDown = false;
-
-                if (Factory.operatingDomain == null)
-                {
-                    Factory.SetupAppDomain();
-
-                    if (Factory.useDynamicLoading == true)
-                    {
-                        tearDown = true;
-                    }
-                }
-
-                Func<object> del = () =>
-                {
-                    Factory.operatingDomain.DoCallBack(() =>
-                    {
-                        AppDomain.CurrentDomain.SetData("data", PechkinBindings.wkhtmltopdf_version());
-                    });
-
-                    return Factory.operatingDomain.GetData("data").ToString();
-                };
-
-                String ret = Factory.invocationDelegate.DynamicInvoke(del).ToString();
-
-                if (tearDown)
-                {
-                    Factory.TearDownAppDomain(null, EventArgs.Empty);
-                }
-
-                return ret;
             }
         }
 
