@@ -39,16 +39,12 @@ namespace Pechkin
             this.globalConfig = config;
             
             Tracer.Trace(string.Format("T:{0} Created global config", Thread.CurrentThread.Name));
-
-            this.IsDisposed = false;
         }
 
         /// <summary>
         /// This event happens every time the conversion starts
         /// </summary>
         public event BeginEventHandler Begin;
-
-        public event DisposedEventHandler Disposed;
 
         /// <summary>
         /// Event handler is called whenever error happens during conversion process.
@@ -104,8 +100,6 @@ namespace Pechkin
                 return PechkinStatic.GetHttpErrorCode(this.converter);
             }
         }
-
-        public bool IsDisposed { get; private set; }
 
         /// <summary>
         /// Phase count for the current conversion process.
@@ -247,17 +241,6 @@ namespace Pechkin
         public byte[] Convert(Uri url)
         {
             return this.Convert(new ObjectConfig().SetPageUri(url.AbsoluteUri));
-        }
-
-        // some properties for convenience
-        public void Dispose()
-        {
-            this.IsDisposed = true;
-
-            if (this.Disposed != null)
-            {
-                this.Disposed(this);
-            }
         }
 
         protected virtual void OnBegin(IntPtr converter)

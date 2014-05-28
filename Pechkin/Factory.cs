@@ -21,11 +21,6 @@ namespace Pechkin
         };
 
         /// <summary>
-        /// The collection of instantiated, undisposed proxies
-        /// </summary>
-        private static readonly List<IPechkin> proxies = new List<IPechkin>();
-
-        /// <summary>
         /// The AppDomain used to encapsulate calls to the wkhtmltopdf library
         /// </summary>
         private static AppDomain operatingDomain = null;
@@ -35,36 +30,6 @@ namespace Pechkin
         /// so that multi-threaded applications can use Pechkin
         /// </summary>
         private static SynchronizedDispatcherThread synchronizer = null;
-
-        /// <summary>
-        /// See public property
-        /// </summary>
-        private static bool useDynamicLoading = false;
-
-        /// <summary>
-        /// When set to true, Pechkin.Factory will release the wkhtmltopdf library
-        /// anytime that it detects that all of its converters are disposed. 
-        /// Default value is false.
-        /// </summary>
-        /// <exception cref="System.InvalidOperationException">Thrown when the wkhtmltopdf
-        /// factory has already loaded the wkhtmltopdf library and has not yet released it.</exception>
-        public static Boolean UseDynamicLoading
-        {
-            get
-            {
-                return Factory.useDynamicLoading;
-            }
-            set
-            {
-                if (Factory.operatingDomain != null &&
-                    Factory.useDynamicLoading != value)
-                {
-                    throw new InvalidOperationException("App domain already loaded; cannot change dynamic loading setting");
-                }
-
-                Factory.useDynamicLoading = value;
-            }
-        }
 
         /// <summary>
         /// When set to true, Pechkin.Factory will set up wkhtmltopdf to use X11 graphics mode.
@@ -105,27 +70,7 @@ namespace Pechkin
 
             IPechkin instance = handle.Unwrap() as IPechkin;
 
-            Proxy proxy = new Proxy(instance, Factory.invocationDelegate);
-
-            Factory.proxies.Add(proxy);
-
-            proxy.Disposed += Factory.OnInstanceDisposed;
-
-            return proxy;
-        }
-
-        /// <summary>
-        /// Event handler for proxies that get disposed.
-        /// </summary>
-        /// <param name="disposed"></param>
-        private static void OnInstanceDisposed(IPechkin disposed)
-        {
-            Factory.proxies.Remove(disposed);
-
-            if (Factory.proxies.Count == 0 && Factory.useDynamicLoading)
-            {
-                Factory.TearDownAppDomain(null, EventArgs.Empty);
-            }
+            return new Proxy(instance, Factory.invocationDelegate);
         }
 
         /// <summary>

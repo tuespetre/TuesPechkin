@@ -63,13 +63,12 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            using (IPechkin c = ProduceTestObject(new GlobalConfig()))
-            {
-                byte[] ret = c.Convert(html);
+            IPechkin c = ProduceTestObject(new GlobalConfig());
 
-                Assert.NotNull(ret);
-            }
+            byte[] ret = c.Convert(html);
 
+            Assert.NotNull(ret);
+            
             TestEnd();
         }
 
@@ -78,23 +77,22 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            using (IPechkin c = ProduceTestObject(new GlobalConfig()))
+            IPechkin c = ProduceTestObject(new GlobalConfig());
+            
+            byte[] ret = c.Convert(html);
+
+            Assert.NotNull(ret);
+
+            byte[] right = Encoding.UTF8.GetBytes("%PDF");
+
+            Assert.True(right.Length <= ret.Length);
+
+            byte[] test = new byte[right.Length];
+            Array.Copy(ret, 0, test, 0, right.Length);
+
+            for (int i = 0; i < right.Length; i++)
             {
-                byte[] ret = c.Convert(html);
-
-                Assert.NotNull(ret);
-
-                byte[] right = Encoding.UTF8.GetBytes("%PDF");
-
-                Assert.True(right.Length <= ret.Length);
-
-                byte[] test = new byte[right.Length];
-                Array.Copy(ret, 0, test, 0, right.Length);
-
-                for (int i = 0; i < right.Length; i++)
-                {
-                    Assert.Equal(right[i], test[i]);
-                }
+                Assert.Equal(right[i], test[i]);
             }
 
             TestEnd();
@@ -113,12 +111,11 @@ namespace PechkinTests
 
             sw.Close();
 
-            using (IPechkin c = ProduceTestObject(new GlobalConfig()))
-            {
-                byte[] ret = c.Convert(new ObjectConfig().SetPageUri(fn));
+            IPechkin c = ProduceTestObject(new GlobalConfig());
 
-                Assert.NotNull(ret);
-            }
+            byte[] ret = c.Convert(new ObjectConfig().SetPageUri(fn));
+
+            Assert.NotNull(ret);
 
             File.Delete(fn);
 
@@ -130,16 +127,15 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            using (IPechkin c = ProduceTestObject(new GlobalConfig()))
-            {
-                byte[] ret = c.Convert(html);
+            IPechkin c = ProduceTestObject(new GlobalConfig());
 
-                Assert.NotNull(ret);
+            byte[] ret = c.Convert(html);
 
-                ret = c.Convert(html);
+            Assert.NotNull(ret);
 
-                Assert.NotNull(ret);
-            }
+            ret = c.Convert(html);
+
+            Assert.NotNull(ret);
 
             TestEnd();
         }
@@ -155,16 +151,12 @@ namespace PechkinTests
 
             Assert.NotNull(ret);
 
-            c.Dispose();
-
             c = ProduceTestObject(new GlobalConfig());
             ret = c.Convert(html);
 
             Assert.NotNull(ret);
             
             GC.Collect();
-
-            c.Dispose();
 
             TestEnd();
         }

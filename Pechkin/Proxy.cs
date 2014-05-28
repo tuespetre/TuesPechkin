@@ -6,19 +6,14 @@ namespace Pechkin
 {
     internal class Proxy : MarshalByRefObject, IPechkin
     {
-        private delegate void Action();
-
         private readonly Delegate invoker = null;
 
         private readonly IPechkin remoteInstance;
-
-        public bool IsDisposed { get; private set; }
 
         internal Proxy(IPechkin remote, Delegate invoker)
         {
             this.remoteInstance = remote;
             this.invoker = invoker;
-            this.IsDisposed = remote.IsDisposed;
 
             // For all these event handlers, making sure to re-signal
             // using the PROXY as arg A, not the Remote, otherwise
@@ -73,43 +68,9 @@ namespace Pechkin
             };
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing,
-        /// or resetting unmanaged resources.
-        /// </summary>
-        /// <exception cref="System.ObjectDisposedException">Thrown when the object has already been disposed.</exception>
-        public void Dispose()
-        {
-            this.Invoke(() => this.remoteInstance.Dispose());
-
-            this.IsDisposed = true;
-
-            if (this.Disposed != null)
-            {
-                this.Disposed(this);
-            }
-        }
-
-        private void VerifyNotDisposed()
-        {
-            if (this.IsDisposed || this.remoteInstance.IsDisposed)
-            {
-                throw new ObjectDisposedException("Cannot perform operation; converter is disposed");
-            }
-        }
-
         private TReturn Invoke<TReturn>(Func<TReturn> del)
         {
-            this.VerifyNotDisposed();
-
             return (TReturn)this.invoker.DynamicInvoke(del);
-        }
-
-        private void Invoke(Action del)
-        {
-            this.VerifyNotDisposed();
-
-            this.invoker.DynamicInvoke(del);
         }
 
         public byte[] Convert(ObjectConfig doc, string html)
@@ -153,8 +114,6 @@ namespace Pechkin
         public event ProgressChangedEventHandler ProgressChanged;
 
         public event FinishEventHandler Finished;
-
-        public event DisposedEventHandler Disposed;
 
         public int CurrentPhase
         {

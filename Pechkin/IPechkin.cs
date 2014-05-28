@@ -3,7 +3,7 @@ using Pechkin.EventHandlers;
 
 namespace Pechkin
 {
-    public interface IPechkin : IDisposable
+    public interface IPechkin
     {
         /// <summary>
         /// Runs conversion process.
@@ -92,10 +92,6 @@ namespace Pechkin
         /// This event handler is fired when conversion is finished.
         /// </summary>
         event FinishEventHandler Finished;
-
-        event DisposedEventHandler Disposed;
-
-        bool IsDisposed { get; }
 
         /// <summary>
         /// Current phase number for the converter.
