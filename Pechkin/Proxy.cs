@@ -6,14 +6,11 @@ namespace Pechkin
 {
     internal class Proxy : MarshalByRefObject, IPechkin
     {
-        private readonly Delegate invoker = null;
-
         private readonly IPechkin remoteInstance;
 
-        internal Proxy(IPechkin remote, Delegate invoker)
+        internal Proxy(IPechkin remote)
         {
             this.remoteInstance = remote;
-            this.invoker = invoker;
 
             // For all these event handlers, making sure to re-signal
             // using the PROXY as arg A, not the Remote, otherwise
@@ -68,39 +65,34 @@ namespace Pechkin
             };
         }
 
-        private TReturn Invoke<TReturn>(Func<TReturn> del)
-        {
-            return (TReturn)this.invoker.DynamicInvoke(del);
-        }
-
         public byte[] Convert(ObjectConfig doc, string html)
         {
-            return this.Invoke(() => this.remoteInstance.Convert(doc, html));
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc, html));
         }
 
         public byte[] Convert(ObjectConfig doc, byte[] html)
         {
-            return this.Invoke(() => this.remoteInstance.Convert(doc, html));
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc, html));
         }
 
         public byte[] Convert(ObjectConfig doc)
         {
-            return this.Invoke(() => this.remoteInstance.Convert(doc));
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc));
         }
 
         public byte[] Convert(string html)
         {
-            return this.Invoke(() => this.remoteInstance.Convert(html));
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(html));
         }
 
         public byte[] Convert(byte[] html)
         {
-            return this.Invoke(() => this.remoteInstance.Convert(html));
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(html));
         }
 
         public byte[] Convert(Uri url)
         {
-            return this.Invoke(() => this.remoteInstance.Convert(url));
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(url));
         }
 
         public event BeginEventHandler Begin;
@@ -119,7 +111,7 @@ namespace Pechkin
         {
             get
             {
-                return this.Invoke(() => this.remoteInstance.CurrentPhase);
+                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.CurrentPhase);
             }
         }
 
@@ -127,7 +119,7 @@ namespace Pechkin
         {
             get
             {
-                return this.Invoke(() => this.remoteInstance.PhaseCount);
+                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.PhaseCount);
             }
         }
 
@@ -135,7 +127,7 @@ namespace Pechkin
         {
             get
             {
-                return this.Invoke(() => this.remoteInstance.PhaseDescription);
+                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.PhaseDescription);
             }
         }
 
@@ -143,7 +135,7 @@ namespace Pechkin
         {
             get
             {
-                return this.Invoke(() => this.remoteInstance.ProgressString);
+                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.ProgressString);
             }
         }
 
@@ -151,7 +143,7 @@ namespace Pechkin
         {
             get
             {
-                return this.Invoke(() => this.remoteInstance.HttpErrorCode);
+                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.HttpErrorCode);
             }
         }
     }

@@ -15,21 +15,10 @@ namespace Pechkin
     {
         private static readonly object setupLock = new object();
 
-        private static readonly Func<Func<object>, object> invocationDelegate = (Func<object> del) =>
-        {
-            return Factory.synchronizer.Invoke(del, null);
-        };
-
         /// <summary>
         /// The AppDomain used to encapsulate calls to the wkhtmltopdf library
         /// </summary>
         private static AppDomain operatingDomain = null;
-
-        /// <summary>
-        /// A thread used to invoke all calls to the wkhtmltopdf library
-        /// so that multi-threaded applications can use Pechkin
-        /// </summary>
-        private static SynchronizedDispatcherThread synchronizer = null;
 
         /// <summary>
         /// When set to true, Pechkin.Factory will set up wkhtmltopdf to use X11 graphics mode.
@@ -70,7 +59,7 @@ namespace Pechkin
 
             IPechkin instance = handle.Unwrap() as IPechkin;
 
-            return new Proxy(instance, Factory.invocationDelegate);
+            return new Proxy(instance);
         }
 
         /// <summary>
@@ -80,8 +69,6 @@ namespace Pechkin
         /// </summary>
         private static void SetupAppDomain()
         {
-            Factory.synchronizer = new SynchronizedDispatcherThread();
-
             var dirName = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var setup = new AppDomainSetup() { ApplicationBase = dirName };
             Factory.operatingDomain = AppDomain.CreateDomain("pechkin_internal_domain", null, setup);
@@ -98,7 +85,7 @@ namespace Pechkin
                 return null;
             };
 
-            Factory.invocationDelegate.DynamicInvoke(del);
+            SynchronizedDispatcher.Invoke(del);
 
             if (AppDomain.CurrentDomain.IsDefaultAppDomain() == false)
             {
@@ -114,6 +101,8 @@ namespace Pechkin
         /// <param name="e">Typically EventArgs.Empty, not used in the method.</param>
         private static void TearDownAppDomain(object sender, EventArgs e)
         {
+            SynchronizedDispatcher.Terminate();
+
             if (Factory.operatingDomain != null)
             {
                 Func<object> del = () =>
@@ -123,7 +112,7 @@ namespace Pechkin
                     return null;
                 };
 
-                Factory.invocationDelegate.DynamicInvoke(del);
+                SynchronizedDispatcher.Invoke(del);
 
                 AppDomain.Unload(Factory.operatingDomain);
 
@@ -138,12 +127,6 @@ namespace Pechkin
                 }
 
                 Factory.operatingDomain = null;
-            }
-            
-            if (Factory.synchronizer != null)
-            {
-                Factory.synchronizer.Terminate();
-                Factory.synchronizer = null;
             }
         }
     }

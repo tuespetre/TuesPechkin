@@ -92,11 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventHandlers\BeginEventHandler.cs" />
-    <Compile Include="EventHandlers\DisposedEventHandler.cs" />
     <Compile Include="EventHandlers\ErrorEventHandler.cs" />
     <Compile Include="EventHandlers\FinishEventHandler.cs" />
-    <Compile Include="EventHandlers\LibDeInitEventHandler.cs" />
-    <Compile Include="EventHandlers\LibInitEventHandler.cs" />
     <Compile Include="EventHandlers\PhaseChangedEventHandler.cs" />
     <Compile Include="EventHandlers\ProgressChangedEventHandler.cs" />
     <Compile Include="EventHandlers\WarningEventHandler.cs" />
@@ -118,7 +115,7 @@
     <Compile Include="Util\IntCallback.cs" />
     <Compile Include="Util\RetroDelegates.cs" />
     <Compile Include="Util\StringCallback.cs" />
-    <Compile Include="Util\SynchronizedDispatcherThread.cs" />
+    <Compile Include="SynchronizedDispatcher.cs" />
     <Compile Include="Util\UTF8Marshaller.cs" />
     <Compile Include="Util\VoidCallback.cs" />
     <Compile Include="WinApiHelper.cs" />

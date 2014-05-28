@@ -38,14 +38,14 @@ namespace PechkinTests
         public void HandlesConcurrentThreads()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
-            int numberOfTasks = 50;
+            int numberOfTasks = 5;
             int completed = 0;
 
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
                 IPechkin sc = ProduceTestObject(new GlobalConfig());
-                sc.Convert(html);
+                Assert.NotNull(sc.Convert(html));
                 completed++;
                 Debug.WriteLine(String.Format("#{0} completed", i + 1));
             }));
