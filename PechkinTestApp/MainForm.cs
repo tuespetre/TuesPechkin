@@ -2,8 +2,11 @@
 using System.Diagnostics;
 using System.Drawing.Printing;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using Pechkin;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Html2PdfTestApp
 {
@@ -22,12 +25,18 @@ namespace Html2PdfTestApp
         {
             PerformanceCollector pc = new PerformanceCollector("PDF creation");
 
-            pc.FinishAction("Library initialized");
+            var gc = new GlobalConfig().SetMargins(new Margins(300, 100, 150, 100))
+                                       .SetDocumentTitle("Ololo")
+                                       .SetCopyCount(1)
+                                       .SetImageQuality(50)
+                                       .SetLosslessCompression(true)
+                                       .SetMaxImageDpi(20)
+                                       .SetOutlineGeneration(true)
+                                       .SetOutputDpi(1200)
+                                       .SetPaperOrientation(true)
+                                       .SetPaperSize(PaperKind.Letter);
 
-            IPechkin sc = Factory.Create(new GlobalConfig().SetMargins(new Margins(300, 100, 150, 100))
-                .SetDocumentTitle("Ololo").SetCopyCount(1).SetImageQuality(50)
-                .SetLosslessCompression(true).SetMaxImageDpi(20).SetOutlineGeneration(true).SetOutputDpi(1200).SetPaperOrientation(true)
-                .SetPaperSize(PaperKind.Letter));
+            /*pc.FinishAction("Library initialized");
 
             pc.FinishAction("Converter created");
 
@@ -38,54 +47,44 @@ namespace Html2PdfTestApp
             sc.ProgressChanged += OnScProgress;
             sc.Finished += OnScFinished;
 
-            pc.FinishAction("Event handlers installed");
+            pc.FinishAction("Event handlers installed");*/
 
-            byte[] buf = sc.Convert(new ObjectConfig(), htmlText.Text);
-                /*sc.Convert(new ObjectConfig().SetPrintBackground(true).SetProxyString("http://localhost:8888")
-                .SetAllowLocalContent(true).SetCreateExternalLinks(false).SetCreateForms(false).SetCreateInternalLinks(false)
-                .SetErrorHandlingType(ObjectConfig.ContentErrorHandlingType.Ignore).SetFallbackEncoding(Encoding.ASCII)
-                .SetIntelligentShrinking(false).SetJavascriptDebugMode(true).SetLoadImages(true).SetMinFontSize(16)
-                .SetRenderDelay(2000).SetRunJavascript(true).SetIncludeInOutline(true).SetZoomFactor(2.2), htmlText.Text);*/
+            IPechkin sc2 = Factory.Create(gc);
+            sc2.Convert(new ObjectConfig(), htmlText.Text);
+
+            MessageBox.Show("All conversions done");
+
+            /*sc.Convert(new ObjectConfig().SetPrintBackground(true).SetProxyString("http://localhost:8888")
+            .SetAllowLocalContent(true).SetCreateExternalLinks(false).SetCreateForms(false).SetCreateInternalLinks(false)
+            .SetErrorHandlingType(ObjectConfig.ContentErrorHandlingType.Ignore).SetFallbackEncoding(Encoding.ASCII)
+            .SetIntelligentShrinking(false).SetJavascriptDebugMode(true).SetLoadImages(true).SetMinFontSize(16)
+            .SetRenderDelay(2000).SetRunJavascript(true).SetIncludeInOutline(true).SetZoomFactor(2.2), htmlText.Text);*/
 
             pc.FinishAction("conversion finished");
 
-            if (buf == null)
+            /*if (buf == null)
             {
-                MessageBox.Show("Error converting!");
+            MessageBox.Show("Error converting!");
 
-                return;
+            return;
             }
-
-            //for (int i = 0; i < 1000; i++)
-            {
-                buf = sc.Convert(new ObjectConfig(), htmlText.Text);
-
-                if (buf == null)
-                {
-                    MessageBox.Show("Error converting!");
-
-                    return;
-                }
-            }
-
-            pc.FinishAction("1 more conversions finished");
 
             try
             {
-                string fn = Path.GetTempFileName() + ".pdf";
+            string fn = Path.GetTempFileName() + ".pdf";
 
-                FileStream fs = new FileStream(fn, FileMode.Create);
-                fs.Write(buf, 0, buf.Length);
-                fs.Close();
+            FileStream fs = new FileStream(fn, FileMode.Create);
+            fs.Write(buf, 0, buf.Length);
+            fs.Close();
 
-                pc.FinishAction("dumped file to disk");
+            pc.FinishAction("dumped file to disk");
 
-                Process myProcess = new Process();
-                myProcess.StartInfo.FileName = fn;
-                myProcess.Start();
+            Process myProcess = new Process();
+            myProcess.StartInfo.FileName = fn;
+            myProcess.Start();
 
-                pc.FinishAction("opened it");
-            } catch { }
+            pc.FinishAction("opened it");
+            } catch { }*/
 
             pc.ShowInMessageBox(null);
         }
@@ -100,7 +99,7 @@ namespace Html2PdfTestApp
             if (InvokeRequired)
             {
                 // simple Invoke WILL NEVER SUCCEDE, because we're in the button click handler. Invoke will simply deadlock everything
-                BeginInvoke((Action<string>)SetText,"Progress " + progress + ": " + progressdescription);
+                BeginInvoke((Action<string>)SetText, "Progress " + progress + ": " + progressdescription);
             }
             else
             {

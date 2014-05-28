@@ -6,8 +6,6 @@ namespace PechkinTests
     {
         protected override IPechkin ProduceTestObject(GlobalConfig cfg)
         {
-            Factory.UseSynchronization = false;
-
             return Factory.Create(cfg);
         }
 

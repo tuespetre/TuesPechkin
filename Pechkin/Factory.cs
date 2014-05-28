@@ -13,6 +13,8 @@ namespace Pechkin
     /// </summary>
     public static class Factory
     {
+        private static readonly object setupLock = new object();
+
         /// <summary>
         /// This is the function used by Factory to invoke any calls to
         /// the wkhtmltopdf library, whether synchronized or not.
@@ -223,7 +225,13 @@ namespace Pechkin
         {
             if (Factory.operatingDomain == null)
             {
-                Factory.SetupAppDomain();
+                lock (setupLock)
+                {
+                    if (Factory.operatingDomain == null)
+                    {
+                        Factory.SetupAppDomain();
+                    }
+                }
             }
 
             ObjectHandle handle = Activator.CreateInstanceFrom(

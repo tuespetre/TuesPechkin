@@ -11,100 +11,25 @@ namespace Pechkin.Util
     /// </summary>
     public class SynchronizedDispatcherThread
     {
-        /// <summary>
-        /// Task object that's pushed to the queue.
-        /// </summary>
-        private class DispatcherTask
-        {
-            // task code
-            public Delegate Task;
+        private readonly object queueLock = new object();
 
-            // task parameters
-            public object[] Params;
+        private readonly List<DispatcherTask> taskQueue = new List<DispatcherTask>();
 
-            // result, filled out after it's executed
-            public object Result;
-        }
+        private readonly Thread thread;
 
-        private readonly Thread _thread;
-        private readonly object _sync = new Object(); // we wait on this object
-        private bool _shutdown;
-        private readonly Queue<DispatcherTask> _taskQueue = new Queue<DispatcherTask>();
-
-        private static int _threadId;
-
-        /// <summary>
-        /// This method is used as a Thread.Run for the delegate hosting thread.
-        /// </summary>
-        protected void Run()
-        {
-            // name thread for debugging purposes
-            Thread.CurrentThread.Name = "Synchronized Dispatcher Thread #" + (_threadId++);
-
-            lock (_sync)
-            {
-                // wake up constructor thread
-                Monitor.PulseAll(_sync);
-            }
-
-            try
-            {
-                // we process task queue
-                while (true)
-                {
-                    DispatcherTask task;
-
-                    lock (_sync)
-                    {
-                        if (_shutdown)
-                        {// shutdown should be synchronized
-                            break;
-                        }
-
-                        try
-                        {
-                            task = _taskQueue.Dequeue();
-                        }
-                        catch (InvalidOperationException)
-                        {// if there were no tasks, we wait. Since we've got the lock, noone added anything yet
-                            Monitor.Wait(_sync);
-
-                            continue;
-                        }
-                    }
-
-                    // if there's a task, process it asynchronously
-                    lock (task)
-                    {
-                        task.Result = task.Task.DynamicInvoke(task.Params);
-
-                        // notify waiting thread about completeion
-                        Monitor.PulseAll(task);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Tracer.Critical("Exception in SynchronizedDispatcherThread \"" + Thread.CurrentThread.Name + "\"", e);
-            }
-        }
-
+        private bool shutdown;
 
         /// <summary>
         /// Creates new <code>SynchronizedDispatcherThread</code>, the object is initialized and thread is started here.
         /// </summary>
         public SynchronizedDispatcherThread()
         {
-            _thread = new Thread(Run) {IsBackground = true};
-
-            lock (_sync)
+            this.thread = new Thread(this.Run)
             {
-                _thread.Start();
+                IsBackground = true
+            };
 
-                // we wait for the thread to set it's name
-                // no need for that actually, but it can be useful in the future to pass thread-specific parameters from thread to the object
-                Monitor.Wait(_sync);
-            }
+            this.thread.Start();
         }
 
         /// <summary>
@@ -116,34 +41,24 @@ namespace Pechkin.Util
         public object Invoke(Delegate method, object[] args)
         {
             // create the task
-            DispatcherTask task = new DispatcherTask{Task = method, Params = args};
+            var task = new DispatcherTask { Task = method, Params = args };
 
             // we don't want the task to be completed before we start waiting for that, so the outer lock
             lock (task)
             {
-                lock (_sync)
+                lock (this.queueLock)
                 {
-                    _taskQueue.Enqueue(task);
+                    this.taskQueue.Add(task);
 
-                    Monitor.PulseAll(_sync);
+                    Monitor.Pulse(this.queueLock);
                 }
 
                 // until this point, evaluation could not start
                 Monitor.Wait(task);
-                // and when we're done waiting, we know that the result was already set
 
+                // and when we're done waiting, we know that the result was already set
                 return task.Result;
             }
-        }
-
-        /// <summary>
-        /// Tells whether you're on the same thread with the dispatcher or not. If you are, then no <code>Invoke</code> is required. In fact,
-        /// synchronous <code>Invoke</code> will deadlock your thread.
-        /// </summary>
-        public bool InvokeRequired
-        {
-            // um, well, not tested actually
-            get { return _thread != Thread.CurrentThread; }
         }
 
         /// <summary>
@@ -151,14 +66,69 @@ namespace Pechkin.Util
         /// </summary>
         public void Terminate()
         {
-            lock (_sync)
-            {
-                // on the contrary to the Dispatcher from WPF, we don't have any priorities,
-                // so we just shut the thread down after it finishes current work (or immediately, if it hasn't any)
-                _shutdown = true;
+            this.shutdown = true;
+        }
 
-                Monitor.PulseAll(_sync);
+        /// <summary>
+        /// This method is used as a Thread.Run for the delegate hosting thread.
+        /// </summary>
+        protected void Run()
+        {
+            while (!this.shutdown)
+            {
+                try
+                {
+                    DispatcherTask task;
+
+                    lock (this.queueLock)
+                    {
+                        if (this.taskQueue.Count > 0)
+                        {
+                            task = this.taskQueue[0];
+                            this.taskQueue.RemoveAt(0);
+                        }
+                        else
+                        {
+                            Monitor.Wait(this.queueLock);
+                            continue;
+                        }
+                    }
+
+                    // if there's a task, process it asynchronously
+                    lock (task)
+                    {
+                        try
+                        {
+                            task.Result = task.Task.DynamicInvoke(task.Params);
+                        }
+                        catch (Exception e)
+                        {
+                            Tracer.Critical(string.Format("Exception in SynchronizedDispatcherThread \"{0}\"", Thread.CurrentThread.Name), e);
+                        }
+
+                        // notify waiting thread about completeion
+                        Monitor.Pulse(task);
+                    }
+                }
+                catch (ThreadAbortException)
+                {
+                }
             }
+        }
+
+        /// <summary>
+        /// Task object that's pushed to the queue.
+        /// </summary>
+        private class DispatcherTask
+        {
+            // task parameters
+            public object[] Params;
+
+            // result, filled out after it's executed
+            public object Result;
+
+            // task code
+            public Delegate Task;
         }
     }
 }

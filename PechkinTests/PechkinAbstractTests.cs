@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Pechkin;
 using Xunit;
 
@@ -9,6 +13,11 @@ namespace PechkinTests
 {
     public abstract class PechkinAbstractTests<TConvType> where TConvType : IPechkin
     {
+        static PechkinAbstractTests()
+        {
+            Debug.Listeners.Add(new DefaultTraceListener());
+        }
+
         protected abstract TConvType ProduceTestObject(GlobalConfig cfg);
 
         protected abstract void TestEnd();
@@ -23,6 +32,30 @@ namespace PechkinTests
                 return null;
 
             return new StreamReader(s).ReadToEnd();
+        }
+
+        [Fact]
+        public void HandlesConcurrentThreads()
+        {
+            string html = GetResourceString("PechkinTests.Resources.page.html");
+            int numberOfTasks = 50;
+            int completed = 0;
+
+            var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
+            {
+                Debug.WriteLine(String.Format("#{0} started", i + 1));
+                IPechkin sc = ProduceTestObject(new GlobalConfig());
+                sc.Convert(html);
+                completed++;
+                Debug.WriteLine(String.Format("#{0} completed", i + 1));
+            }));
+
+            Parallel.ForEach(tasks, task => task.Start());
+
+            while (completed < numberOfTasks)
+            {
+                Thread.Sleep(1000);
+            }
         }
 
         [Fact]

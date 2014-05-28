@@ -6,6 +6,8 @@ namespace Pechkin
 {
     internal class Proxy : MarshalByRefObject, IPechkin
     {
+        private delegate void Action();
+
         private readonly Delegate invoker = null;
 
         private readonly IPechkin remoteInstance;
@@ -78,13 +80,7 @@ namespace Pechkin
         /// <exception cref="System.ObjectDisposedException">Thrown when the object has already been disposed.</exception>
         public void Dispose()
         {
-            Func<object> del = () =>
-            {
-                this.remoteInstance.Dispose();
-                return null;
-            };
-
-            this.Invoke(del);
+            this.Invoke(() => this.remoteInstance.Dispose());
 
             this.IsDisposed = true;
 
@@ -101,72 +97,49 @@ namespace Pechkin
                 throw new ObjectDisposedException("Cannot perform operation; converter is disposed");
             }
         }
-  
-        private object Invoke(Func<object> del)
+
+        private TReturn Invoke<TReturn>(Func<TReturn> del)
         {
             this.VerifyNotDisposed();
 
-            return this.invoker.DynamicInvoke(del);
+            return (TReturn)this.invoker.DynamicInvoke(del);
+        }
+
+        private void Invoke(Action del)
+        {
+            this.VerifyNotDisposed();
+
+            this.invoker.DynamicInvoke(del);
         }
 
         public byte[] Convert(ObjectConfig doc, string html)
         {
-            Func<object> del = () =>
-            {
-                return this.remoteInstance.Convert(doc, html);
-            };
-
-            return this.Invoke(del) as byte[];
+            return this.Invoke(() => this.remoteInstance.Convert(doc, html));
         }
 
         public byte[] Convert(ObjectConfig doc, byte[] html)
         {
-            Func<object> del = () =>
-            {
-                return this.remoteInstance.Convert(doc, html);
-            };
-
-            return this.Invoke(del) as byte[];
+            return this.Invoke(() => this.remoteInstance.Convert(doc, html));
         }
 
         public byte[] Convert(ObjectConfig doc)
         {
-            Func<object> del = () =>
-            {
-                return this.remoteInstance.Convert(doc);
-            };
-
-            return this.Invoke(del) as byte[];
+            return this.Invoke(() => this.remoteInstance.Convert(doc));
         }
 
         public byte[] Convert(string html)
         {
-            Func<object> del = () =>
-            {
-                return this.remoteInstance.Convert(html);
-            };
-
-            return this.Invoke(del) as byte[];
+            return this.Invoke(() => this.remoteInstance.Convert(html));
         }
 
         public byte[] Convert(byte[] html)
         {
-            Func<object> del = () =>
-            {
-                return this.remoteInstance.Convert(html);
-            };
-
-            return this.Invoke(del) as byte[];
+            return this.Invoke(() => this.remoteInstance.Convert(html));
         }
 
         public byte[] Convert(Uri url)
         {
-            Func<object> del = () =>
-            {
-                return this.remoteInstance.Convert(url);
-            };
-
-            return this.Invoke(del) as byte[];
+            return this.Invoke(() => this.remoteInstance.Convert(url));
         }
 
         public event BeginEventHandler Begin;
@@ -187,12 +160,7 @@ namespace Pechkin
         {
             get
             {
-                Func<object> del = () =>
-                {
-                    return this.remoteInstance.CurrentPhase;
-                };
-
-                return (int)this.Invoke(del);
+                return this.Invoke(() => this.remoteInstance.CurrentPhase);
             }
         }
 
@@ -200,12 +168,7 @@ namespace Pechkin
         {
             get
             {
-                Func<object> del = () =>
-                {
-                    return this.remoteInstance.PhaseCount;
-                };
-
-                return (int)this.Invoke(del);
+                return this.Invoke(() => this.remoteInstance.PhaseCount);
             }
         }
 
@@ -213,12 +176,7 @@ namespace Pechkin
         {
             get
             {
-                Func<object> del = () =>
-                {
-                    return this.remoteInstance.PhaseDescription;
-                };
-
-                return this.Invoke(del).ToString();
+                return this.Invoke(() => this.remoteInstance.PhaseDescription);
             }
         }
 
@@ -226,12 +184,7 @@ namespace Pechkin
         {
             get
             {
-                Func<object> del = () =>
-                {
-                    return this.remoteInstance.ProgressString;
-                };
-
-                return this.Invoke(del).ToString();
+                return this.Invoke(() => this.remoteInstance.ProgressString);
             }
         }
 
@@ -239,12 +192,7 @@ namespace Pechkin
         {
             get
             {
-                Func<object> del = () =>
-                {
-                    return this.remoteInstance.HttpErrorCode;
-                };
-
-                return (int)this.Invoke(del);
+                return this.Invoke(() => this.remoteInstance.HttpErrorCode);
             }
         }
     }
