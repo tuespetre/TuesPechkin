@@ -58,11 +58,6 @@ namespace Pechkin
         private static bool useSync = true;
 
         /// <summary>
-        /// See public property
-        /// </summary>
-        private static bool useX11Graphics = false;
-
-        /// <summary>
         /// When set to true, Pechkin.Factory will release the wkhtmltopdf library
         /// anytime that it detects that all of its converters are disposed. 
         /// Default value is false.
@@ -114,27 +109,10 @@ namespace Pechkin
 
         /// <summary>
         /// When set to true, Pechkin.Factory will set up wkhtmltopdf to use X11 graphics mode.
-        /// Default value is false.
+        /// Default value is false. Changing the value of this property will have no effect on the behavior
+        /// of wkhtmltopdf once the library has been initialized.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">Thrown when the wkhtmltopdf
-        /// factory has already loaded the wkhtmltopdf library and has not yet released it.</exception>
-        public static Boolean UseX11Graphics
-        {
-            get
-            {
-                return Factory.useX11Graphics;
-            }
-            set
-            {
-                if (value != Factory.useX11Graphics &&
-                    null != Factory.operatingDomain)
-                {
-                    throw new InvalidOperationException("App domain already loaded; cannot change graphic setting");
-                }
-
-                Factory.useX11Graphics = value;
-            }
-        }
+        public static Boolean UseX11Graphics { get; set; }
 
         /// <summary>
         /// Returns an instance of a PDF converter that implements the IPechkin interface.
@@ -209,7 +187,7 @@ namespace Pechkin
 
             Func<object> del = () =>
             {
-                Factory.operatingDomain.SetData("useX11Graphics", Factory.useX11Graphics);
+                Factory.operatingDomain.SetData("useX11Graphics", Factory.UseX11Graphics);
 
                 Factory.operatingDomain.DoCallBack(() =>
                 {
