@@ -11,7 +11,7 @@ namespace Pechkin
     /// It uses fluid notation to change its fields.
     /// </summary>
     [Serializable]
-    public class GlobalConfig
+    public class GlobalSettings
     {
         private string _paperSize = "A4";
         private string _paperWidth; // for example "4cm"
@@ -48,7 +48,7 @@ namespace Pechkin
         private string _cookieJar; // path to (text) file used to load and store cookies
 
         [Obsolete("Setting paper size by name doesn't work in the lib. Use the overload that takes PaperKind instead.")]
-        public GlobalConfig SetPaperSize(string sizeName)
+        public GlobalSettings SetPaperSize(string sizeName)
         {
             _paperSize = sizeName;
 
@@ -57,7 +57,7 @@ namespace Pechkin
 
             return this;
         }
-        public GlobalConfig SetPaperSize(PaperKind kind)
+        public GlobalSettings SetPaperSize(PaperKind kind)
         {
             // don't work
             //return SetPaperSize(Enum.GetName(typeof(PaperKind), kind));
@@ -74,7 +74,7 @@ namespace Pechkin
             return this;
         }
 
-        internal GlobalConfig SetPaperSize(string width, string height)
+        internal GlobalSettings SetPaperSize(string width, string height)
         {
             _paperSize = null;
 
@@ -90,7 +90,7 @@ namespace Pechkin
         /// <param name="width">width of the document in hudredths of inches</param>
         /// <param name="height">height of the document in hudredths of inches</param>
         /// <returns>configuration object</returns>
-        public GlobalConfig SetPaperSize(int width, int height)
+        public GlobalSettings SetPaperSize(int width, int height)
         {
             _paperSize = null;
 
@@ -99,12 +99,12 @@ namespace Pechkin
 
             return this;
         }
-        public GlobalConfig SetPaperSize(PaperSize ps)
+        public GlobalSettings SetPaperSize(PaperSize ps)
         {
             return ps.Kind == PaperKind.Custom ? SetPaperSize(ps.Width, ps.Height) : SetPaperSize(ps.Kind);
         }
 
-        public GlobalConfig SetPaperOrientation(bool landscape)
+        public GlobalSettings SetPaperOrientation(bool landscape)
         {
             _paperOrientation = landscape ? "Landscape" : "Portrait";
 
@@ -116,7 +116,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="width">width of the margin in hundredths of inch</param>
         /// <returns>config object</returns>
-        public GlobalConfig SetMarginTop(int width)
+        public GlobalSettings SetMarginTop(int width)
         {
             _marginTop = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
 
@@ -127,7 +127,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="width">width of the margin in hundredths of inch</param>
         /// <returns>config object</returns>
-        public GlobalConfig SetMarginRight(int width)
+        public GlobalSettings SetMarginRight(int width)
         {
             _marginRight = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
 
@@ -138,7 +138,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="width">width of the margin in hundredths of inch</param>
         /// <returns>config object</returns>
-        public GlobalConfig SetMarginBottom(int width)
+        public GlobalSettings SetMarginBottom(int width)
         {
             _marginBottom = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
 
@@ -149,7 +149,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="width">width of the margin in hundredths of inch</param>
         /// <returns>config object</returns>
-        public GlobalConfig SetMarginLeft(int width)
+        public GlobalSettings SetMarginLeft(int width)
         {
             _marginLeft = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
 
@@ -163,26 +163,26 @@ namespace Pechkin
         /// <param name="bottom">width of the bottom margin in hundredths of inch</param>
         /// <param name="left">width of the left margin in hundredths of inch</param>
         /// <returns>config object</returns>
-        public GlobalConfig SetMargins(int top, int right, int bottom, int left)
+        public GlobalSettings SetMargins(int top, int right, int bottom, int left)
         {
             return SetMarginTop(top)
                 .SetMarginRight(right)
                 .SetMarginBottom(bottom)
                 .SetMarginLeft(left);
         }
-        public GlobalConfig SetMargins(Margins margins)
+        public GlobalSettings SetMargins(Margins margins)
         {
             return SetMargins(margins.Top, margins.Right, margins.Bottom, margins.Left);
         }
 
-        public GlobalConfig SetOutputDpi(int dpi)
+        public GlobalSettings SetOutputDpi(int dpi)
         {
             _dpi = dpi.ToString();
 
             return this;
         }
 
-        public GlobalConfig SetPageSettings(PageSettings ps)
+        public GlobalSettings SetPageSettings(PageSettings ps)
         {
             return SetPaperSize(ps.PaperSize)
                 .SetPaperOrientation(ps.Landscape)
@@ -190,7 +190,7 @@ namespace Pechkin
                 .SetOutputDpi(ps.PrinterResolution.X);
         }
 
-        public GlobalConfig SetColorMode(bool grayscale)
+        public GlobalSettings SetColorMode(bool grayscale)
         {
             _colorMode = grayscale ? "Grayscale" : "Color";
 
@@ -198,14 +198,14 @@ namespace Pechkin
         }
 
         [Obsolete("This setting does nothing. Left here for full compatibility.")]
-        public GlobalConfig SetResolution(int resolution)
+        public GlobalSettings SetResolution(int resolution)
         {
             _resolution = resolution.ToString();
 
             return this;
         }
 
-        public GlobalConfig SetCopyCount(int count)
+        public GlobalSettings SetCopyCount(int count)
         {
             _copies = count.ToString();
 
@@ -217,14 +217,14 @@ namespace Pechkin
         /// </summary>
         /// <param name="startPageNumber">first page number</param>
         /// <returns>config object</returns>
-        public GlobalConfig SetPageOffset(int startPageNumber)
+        public GlobalSettings SetPageOffset(int startPageNumber)
         {
             _pageOffset = startPageNumber.ToString();
 
             return this;
         }
 
-        public GlobalConfig SetCopyCollation(bool collate)
+        public GlobalSettings SetCopyCollation(bool collate)
         {
             _collate = collate ? "true" : "false";
 
@@ -236,28 +236,28 @@ namespace Pechkin
         /// </summary>
         /// <param name="generateOutline"></param>
         /// <returns>config object</returns>
-        public GlobalConfig SetOutlineGeneration(bool generateOutline)
+        public GlobalSettings SetOutlineGeneration(bool generateOutline)
         {
             _outline = generateOutline ? "true" : "false";
 
             return this;
         }
 
-        public GlobalConfig SetOutlineDepth(int depth)
+        public GlobalSettings SetOutlineDepth(int depth)
         {
             _outlineDepth = depth.ToString();
 
             return this;
         }
 
-        public GlobalConfig SetOutlineDumpFile(string outlineXmlFilename)
+        public GlobalSettings SetOutlineDumpFile(string outlineXmlFilename)
         {
             _dumpOutline = outlineXmlFilename;
 
             return this;
         }
 
-        public GlobalConfig SetOutputFile(string outputFilename)
+        public GlobalSettings SetOutputFile(string outputFilename)
         {
             _output = outputFilename;
 
@@ -265,21 +265,21 @@ namespace Pechkin
         }
 
         public enum OutputFormat { PostScript, Pdf }
-        public GlobalConfig SetOutputFormat(OutputFormat format)
+        public GlobalSettings SetOutputFormat(OutputFormat format)
         {
             _outputFormat = format == OutputFormat.Pdf ? "pdf" : "ps";
 
             return this;
         }
 
-        public GlobalConfig SetDocumentTitle(string title)
+        public GlobalSettings SetDocumentTitle(string title)
         {
             _documentTitle = title;
 
             return this;
         }
 
-        public GlobalConfig SetLosslessCompression(bool zipOutputFile)
+        public GlobalSettings SetLosslessCompression(bool zipOutputFile)
         {
             _useCompression = zipOutputFile ? "true" : "false";
 
@@ -291,7 +291,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="cookieFileName">Filename of the cookie archive</param>
         /// <returns></returns>
-        public GlobalConfig SetCookieTextFile(string cookieFileName)
+        public GlobalSettings SetCookieTextFile(string cookieFileName)
         {
             _cookieJar = cookieFileName;
 
@@ -303,7 +303,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="dpi">raw DPI value or -1 for the infinity</param>
         /// <returns></returns>
-        public GlobalConfig SetMaxImageDpi(int dpi)
+        public GlobalSettings SetMaxImageDpi(int dpi)
         {
             _imageDpi = dpi != -1 ? dpi.ToString() : null;
 
@@ -315,7 +315,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="quality">quality from 0 to 100, the more the better</param>
         /// <returns></returns>
-        public GlobalConfig SetImageQuality(int quality)
+        public GlobalSettings SetImageQuality(int quality)
         {
             _imageQuality = quality != -1 ? quality.ToString() : null;
 

@@ -30,9 +30,9 @@ namespace Pechkin
         /// <summary>
         /// Returns an instance of a PDF converter that implements the IPechkin interface.
         /// </summary>
-        /// <param name="config">A GlobalConfig object for the converter to apply.</param>
+        /// <param name="config">A GlobalSettings object for the converter to apply.</param>
         /// <returns>IPechkin</returns>
-        public static IPechkin Create(GlobalConfig config)
+        public static IPechkin Create(GlobalSettings config)
         {
             if (Factory.operatingDomain == null)
             {

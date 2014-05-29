@@ -65,17 +65,17 @@ namespace Pechkin
             };
         }
 
-        public byte[] Convert(ObjectConfig doc, string html)
+        public byte[] Convert(ObjectSettings doc, string html)
         {
             return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc, html));
         }
 
-        public byte[] Convert(ObjectConfig doc, byte[] html)
+        public byte[] Convert(ObjectSettings doc, byte[] html)
         {
             return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc, html));
         }
 
-        public byte[] Convert(ObjectConfig doc)
+        public byte[] Convert(ObjectSettings doc)
         {
             return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc));
         }

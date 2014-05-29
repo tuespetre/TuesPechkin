@@ -11,9 +11,9 @@ namespace Pechkin
         /// Allows to convert both external HTML resource and HTML string.
         /// </summary>
         /// <param name="doc">document parameters</param>
-        /// <param name="html">document body, ignored if <code>ObjectConfig.SetPageUri</code> is set</param>
+        /// <param name="html">document body, ignored if <code>ObjectSettings.SetPageUri</code> is set</param>
         /// <returns>PDF document body</returns>
-        byte[] Convert(ObjectConfig doc, string html);
+        byte[] Convert(ObjectSettings doc, string html);
 
         /// <summary>
         /// Runs conversion process.
@@ -23,16 +23,16 @@ namespace Pechkin
         /// Takes html source as a byte array for when you don't know the encoding.
         /// </summary>
         /// <param name="doc">document parameters</param>
-        /// <param name="html">document body, ignored if <code>ObjectConfig.SetPageUri</code> is set</param>
+        /// <param name="html">document body, ignored if <code>ObjectSettings.SetPageUri</code> is set</param>
         /// <returns>PDF document body</returns>
-        byte[] Convert(ObjectConfig doc, byte[] html);
+        byte[] Convert(ObjectSettings doc, byte[] html);
 
         /// <summary>
         /// Converts external HTML resource into PDF.
         /// </summary>
-        /// <param name="doc">document parameters, <code>ObjectConfig.SetPageUri</code> should be set</param>
+        /// <param name="doc">document parameters, <code>ObjectSettings.SetPageUri</code> should be set</param>
         /// <returns>PDF document body</returns>
-        byte[] Convert(ObjectConfig doc);
+        byte[] Convert(ObjectSettings doc);
 
         /// <summary>
         /// Converts HTML string to PDF with default settings.
@@ -65,7 +65,7 @@ namespace Pechkin
         /// <summary>
         /// This event handler is called whenever warning happens during conversion process.
         /// 
-        /// You can also see javascript errors and warnings if you enable <code>SetJavascriptDebugMode</code> in <code>ObjectConfig</code>
+        /// You can also see javascript errors and warnings if you enable <code>SetJavascriptDebugMode</code> in <code>ObjectSettings</code>
         /// </summary>
         event WarningEventHandler Warning;
 

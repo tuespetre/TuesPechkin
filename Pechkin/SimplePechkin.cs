@@ -13,7 +13,7 @@ namespace Pechkin
     [Serializable]
     internal class SimplePechkin : MarshalByRefObject, IPechkin
     {
-        private readonly GlobalConfig globalConfig;
+        private readonly GlobalSettings globalConfig;
         private readonly StringCallback onErrorDelegate;
         private readonly IntCallback onFinishedDelegate;
         private readonly VoidCallback onPhaseChangedDelegate;
@@ -23,10 +23,10 @@ namespace Pechkin
         private IntPtr globalConfigUnmanaged;
 
         /// <summary>
-        /// Constructs HTML to PDF converter instance from <code>GlobalConfig</code>.
+        /// Constructs HTML to PDF converter instance from <code>GlobalSettings</code>.
         /// </summary>
         /// <param name="config">global configuration object</param>
-        public SimplePechkin(GlobalConfig config)
+        public SimplePechkin(GlobalSettings config)
         {
             this.onErrorDelegate = new StringCallback(this.OnError);
             this.onFinishedDelegate = new IntCallback(this.OnFinished);
@@ -73,7 +73,7 @@ namespace Pechkin
         /// <summary>
         /// This event handler is called whenever warning happens during conversion process.
         /// 
-        /// You can also see javascript errors and warnings if you enable <code>SetJavascriptDebugMode</code> in <code>ObjectConfig</code>
+        /// You can also see javascript errors and warnings if you enable <code>SetJavascriptDebugMode</code> in <code>ObjectSettings</code>
         /// </summary>
         public event WarningEventHandler Warning;
 
@@ -148,9 +148,9 @@ namespace Pechkin
         /// Takes html source as a byte array for when you don't know the encoding.
         /// </summary>
         /// <param name="doc">document parameters</param>
-        /// <param name="html">document body, ignored if <code>ObjectConfig.SetPageUri</code> is set</param>
+        /// <param name="html">document body, ignored if <code>ObjectSettings.SetPageUri</code> is set</param>
         /// <returns>PDF document body</returns>
-        public byte[] Convert(ObjectConfig doc, byte[] html)
+        public byte[] Convert(ObjectSettings doc, byte[] html)
         {
             this.CreateConverter();
 
@@ -194,9 +194,9 @@ namespace Pechkin
         /// Allows to convert both external HTML resource and HTML string.
         /// </summary>
         /// <param name="doc">document parameters</param>
-        /// <param name="html">document body, ignored if <code>ObjectConfig.SetPageUri</code> is set</param>
+        /// <param name="html">document body, ignored if <code>ObjectSettings.SetPageUri</code> is set</param>
         /// <returns>PDF document body</returns>
-        public byte[] Convert(ObjectConfig doc, string html)
+        public byte[] Convert(ObjectSettings doc, string html)
         {
             return this.Convert(doc, Encoding.UTF8.GetBytes(html));
         }
@@ -204,9 +204,9 @@ namespace Pechkin
         /// <summary>
         /// Converts external HTML resource into PDF.
         /// </summary>
-        /// <param name="doc">document parameters, <code>ObjectConfig.SetPageUri</code> should be set</param>
+        /// <param name="doc">document parameters, <code>ObjectSettings.SetPageUri</code> should be set</param>
         /// <returns>PDF document body</returns>
-        public byte[] Convert(ObjectConfig doc)
+        public byte[] Convert(ObjectSettings doc)
         {
             return this.Convert(doc, (byte[])null);
         }
@@ -218,7 +218,7 @@ namespace Pechkin
         /// <returns>PDF document body</returns>
         public byte[] Convert(string html)
         {
-            return this.Convert(new ObjectConfig(), html);
+            return this.Convert(new ObjectSettings(), html);
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace Pechkin
         /// <returns>PDF document body</returns>
         public byte[] Convert(byte[] html)
         {
-            return this.Convert(new ObjectConfig(), html);
+            return this.Convert(new ObjectSettings(), html);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Pechkin
         /// <returns>PDF document body</returns>
         public byte[] Convert(Uri url)
         {
-            return this.Convert(new ObjectConfig().SetPageUri(url.AbsoluteUri));
+            return this.Convert(new ObjectSettings().SetPageUri(url.AbsoluteUri));
         }
 
         protected virtual void OnBegin(IntPtr converter)

@@ -25,7 +25,7 @@ namespace Html2PdfTestApp
         {
             PerformanceCollector pc = new PerformanceCollector("PDF creation");
 
-            var gc = new GlobalConfig().SetMargins(new Margins(300, 100, 150, 100))
+            var gc = new GlobalSettings().SetMargins(new Margins(300, 100, 150, 100))
                                        .SetDocumentTitle("Ololo")
                                        .SetCopyCount(1)
                                        .SetImageQuality(50)
@@ -50,13 +50,13 @@ namespace Html2PdfTestApp
             pc.FinishAction("Event handlers installed");*/
 
             IPechkin sc2 = Factory.Create(gc);
-            sc2.Convert(new ObjectConfig(), htmlText.Text);
+            sc2.Convert(new ObjectSettings(), htmlText.Text);
 
             MessageBox.Show("All conversions done");
 
-            /*sc.Convert(new ObjectConfig().SetPrintBackground(true).SetProxyString("http://localhost:8888")
+            /*sc.Convert(new ObjectSettings().SetPrintBackground(true).SetProxyString("http://localhost:8888")
             .SetAllowLocalContent(true).SetCreateExternalLinks(false).SetCreateForms(false).SetCreateInternalLinks(false)
-            .SetErrorHandlingType(ObjectConfig.ContentErrorHandlingType.Ignore).SetFallbackEncoding(Encoding.ASCII)
+            .SetErrorHandlingType(ObjectSettings.ContentErrorHandlingType.Ignore).SetFallbackEncoding(Encoding.ASCII)
             .SetIntelligentShrinking(false).SetJavascriptDebugMode(true).SetLoadImages(true).SetMinFontSize(16)
             .SetRenderDelay(2000).SetRunJavascript(true).SetIncludeInOutline(true).SetZoomFactor(2.2), htmlText.Text);*/
 

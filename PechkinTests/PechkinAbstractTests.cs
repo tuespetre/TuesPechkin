@@ -18,7 +18,7 @@ namespace PechkinTests
             Debug.Listeners.Add(new DefaultTraceListener());
         }
 
-        protected abstract TConvType ProduceTestObject(GlobalConfig cfg);
+        protected abstract TConvType ProduceTestObject(GlobalSettings cfg);
 
         protected abstract void TestEnd();
 
@@ -44,7 +44,7 @@ namespace PechkinTests
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
-                IPechkin sc = ProduceTestObject(new GlobalConfig());
+                IPechkin sc = ProduceTestObject(new GlobalSettings());
                 Assert.NotNull(sc.Convert(html));
                 completed++;
                 Debug.WriteLine(String.Format("#{0} completed", i + 1));
@@ -63,7 +63,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = ProduceTestObject(new GlobalSettings());
 
             byte[] ret = c.Convert(html);
 
@@ -77,7 +77,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = ProduceTestObject(new GlobalSettings());
             
             byte[] ret = c.Convert(html);
 
@@ -111,9 +111,9 @@ namespace PechkinTests
 
             sw.Close();
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = ProduceTestObject(new GlobalSettings());
 
-            byte[] ret = c.Convert(new ObjectConfig().SetPageUri(fn));
+            byte[] ret = c.Convert(new ObjectSettings().SetPageUri(fn));
 
             Assert.NotNull(ret);
 
@@ -127,7 +127,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = ProduceTestObject(new GlobalSettings());
 
             byte[] ret = c.Convert(html);
 
@@ -145,13 +145,13 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = ProduceTestObject(new GlobalSettings());
 
             byte[] ret = c.Convert(html);
 
             Assert.NotNull(ret);
 
-            c = ProduceTestObject(new GlobalConfig());
+            c = ProduceTestObject(new GlobalSettings());
             ret = c.Convert(html);
 
             Assert.NotNull(ret);
