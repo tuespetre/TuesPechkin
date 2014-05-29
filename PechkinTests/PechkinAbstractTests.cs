@@ -18,20 +18,29 @@ namespace PechkinTests
             Debug.Listeners.Add(new DefaultTraceListener());
         }
 
-        protected abstract TConvType ProduceTestObject(GlobalConfig cfg);
-
-        protected abstract void TestEnd();
-
         public static string GetResourceString(string name)
         {
             if (name == null)
+            {
                 return null;
+            }
 
             Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
             if (s == null)
+            {
                 return null;
+            }
 
             return new StreamReader(s).ReadToEnd();
+        }
+
+        [Fact]
+        public void BubblesExceptionsFromSyncedThread()
+        {
+            Assert.Throws<ApplicationException>(() =>
+            {
+                SynchronizedDispatcher.Invoke<object>(() => { throw new ApplicationException(); });
+            });
         }
 
         [Fact]
@@ -44,7 +53,7 @@ namespace PechkinTests
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
-                IPechkin sc = ProduceTestObject(new GlobalConfig());
+                IPechkin sc = this.ProduceTestObject(new GlobalConfig());
                 Assert.NotNull(sc.Convert(html));
                 completed++;
                 Debug.WriteLine(String.Format("#{0} completed", i + 1));
@@ -59,17 +68,42 @@ namespace PechkinTests
         }
 
         [Fact]
-        public void ReturnsResultFromString()
+        public void ObjectIsHappilyGarbageCollected()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = this.ProduceTestObject(new GlobalConfig());
 
             byte[] ret = c.Convert(html);
 
             Assert.NotNull(ret);
+
+            c = this.ProduceTestObject(new GlobalConfig());
+            ret = c.Convert(html);
+
+            Assert.NotNull(ret);
             
-            TestEnd();
+            GC.Collect();
+
+            this.TestEnd();
+        }
+
+        [Fact]
+        public void OneObjectPerformsTwoConversionSequentially()
+        {
+            string html = GetResourceString("PechkinTests.Resources.page.html");
+
+            IPechkin c = this.ProduceTestObject(new GlobalConfig());
+
+            byte[] ret = c.Convert(html);
+
+            Assert.NotNull(ret);
+
+            ret = c.Convert(html);
+
+            Assert.NotNull(ret);
+
+            this.TestEnd();
         }
 
         [Fact]
@@ -77,7 +111,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = this.ProduceTestObject(new GlobalConfig());
             
             byte[] ret = c.Convert(html);
 
@@ -95,7 +129,7 @@ namespace PechkinTests
                 Assert.Equal(right[i], test[i]);
             }
 
-            TestEnd();
+            this.TestEnd();
         }
 
         [Fact]
@@ -103,7 +137,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            string fn = Path.GetTempFileName() + ".html";
+            string fn = string.Format("{0}.html", Path.GetTempFileName());
             FileStream fs = new FileStream(fn, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs);
             
@@ -111,7 +145,7 @@ namespace PechkinTests
 
             sw.Close();
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = this.ProduceTestObject(new GlobalConfig());
 
             byte[] ret = c.Convert(new ObjectConfig().SetPageUri(fn));
 
@@ -119,46 +153,25 @@ namespace PechkinTests
 
             File.Delete(fn);
 
-            TestEnd();
+            this.TestEnd();
         }
 
         [Fact]
-        public void OneObjectPerformsTwoConversionSequentially()
+        public void ReturnsResultFromString()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = ProduceTestObject(new GlobalConfig());
+            IPechkin c = this.ProduceTestObject(new GlobalConfig());
 
             byte[] ret = c.Convert(html);
-
-            Assert.NotNull(ret);
-
-            ret = c.Convert(html);
-
-            Assert.NotNull(ret);
-
-            TestEnd();
-        }
-
-        [Fact]
-        public void ObjectIsHappilyGarbageCollected()
-        {
-            string html = GetResourceString("PechkinTests.Resources.page.html");
-
-            IPechkin c = ProduceTestObject(new GlobalConfig());
-
-            byte[] ret = c.Convert(html);
-
-            Assert.NotNull(ret);
-
-            c = ProduceTestObject(new GlobalConfig());
-            ret = c.Convert(html);
 
             Assert.NotNull(ret);
             
-            GC.Collect();
-
-            TestEnd();
+            this.TestEnd();
         }
+
+        protected abstract TConvType ProduceTestObject(GlobalConfig cfg);
+
+        protected abstract void TestEnd();
     }
 }
