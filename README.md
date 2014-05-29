@@ -28,6 +28,24 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 
 ### Release notes
 
+#### 1.0.0 - HUGE changes
+- Began to use semantic versioning.
+- Removed ```ExtendedQtAvailable``` and ```Version``` properties from ```Factory```.
+- Setting ```UseX11Graphics``` on ```Factory``` will no longer throw an ```InvalidOperationException```.
+- The initialization of the library is now thread-safe.
+- Removed ```UseSynchronization``` property from ```Factory```. Synchronization is now mandatory.
+- IPechkin no longer implements ```IDisposable``` or has property ```IsDisposed``` or event ```Disposed```. 
+- Consequently, ```UseDynamicLoading``` is no longer an option for ```Factory```.
+- ```SynchronizedDispatcherThread``` is no longer a public class available for reuse.
+- Removed ```LibInitEventHandler```, ```LibDeInitEventHandler```, and ```DisposedEventHandler``` delegates.
+- Improved exception handling within synchronized thread. Exceptions now bubble out
+- Set 'PrintBackground' to 'true' by default
+- GlobalConfig/ObjectConfig have been radically redesigned. See API and usage for details.
+- Table of contents is now supported!
+- Multiple objects in one conversion now supported! (Multiple web pages, HTML documents, etc in one PDF)
+- Everything is in the 'TuesPechkin' namespace now (instead of 'Pechkin.')
+- You better just read the 'Usage' section for a glance at how the API has changed.
+
 #### 0.9.3.3
 - Fixed a problem with concurrency related to when the Pechkin object tells wkhtmltopdf to destroy its converter object. Now happens immediately after conversion, before anything else hits the queue.
 
@@ -35,76 +53,52 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 - Made the library unpack wkhtmltopdf in a folder named specifically for the running application since only one process can use the dll.
 - Compressed the wkhtmltopdf dependencies with gzip to reduce the size of the solution and the NuGet packages
 
-
-
-## FAQ
-
-#### Q: Why does the produced PDF lack background images and colors? ###
-
-**A:** By default, all backgrounds will be omitted from the document (note: this is similar to how Google Chrome operates when printing to PDF.)
-
-You can override this setting by calling `SetPrintBackground(true)` on the `ObjectConfig` supplied with the HTML document to the `Convert()` method of the converter.
-
-#### Q: Do I need to install wkhtmltopdf on the machine for the library to work? ###
-
-**A:** No. Version 0.12 of wkhtmltox.dll is embedded into the package and unpacked on library initialization.
-
-#### Q: Why is my website or application locking up when using TuesPechkin?
-
-**A:** If you do not dispose of the IPechkin object properly, the converter will not be properly 'cleaned up' and so the next time you create and run a converter, the wkhtmltox.dll library will hang up. Be sure to dispose of your IPechkin objects every time!
-
-
-
 ##Usage
-Pechkin is both easy to use....
+
+### Quickly create a document from some html:
 
 ```csharp
-String html = "<html><body><h1>Hello world!</h1></body></html>";
-
-using (var converter = Factory.Create(new GlobalConfig()))
-{
-    byte[] pdfBuf = converter.Convert(html);
-}
+IPechkin converter = Factory.Create();
+byte[] result = converter.Convert("<p>Lorem ipsum wampum</p>");
 ```
 
-...and functional:
+### Specify a number of options:
 
 ```csharp
-// create global configuration object
-GlobalConfig gc = new GlobalConfig();
-
-// set it up using fluent notation
-gc.SetMargins(new Margins(300, 100, 150, 100))
-  .SetDocumentTitle("Test document")
-  .SetPaperSize(PaperKind.Letter);
-//... etc
+// create a new document with your desired configuration
+var document = new HtmlToPdfDocument
+{
+	GlobalSettings = {
+        ProduceOutline = true,
+        DocumentTitle = "Pretty Websites",
+		PaperSize = PaperKinds.A4 // Implicit conversion to PechkinPaperSize
+        Margins =
+        {
+            All = 1.375,
+            Unit = Unit.Centimeters
+        }
+	},
+    Objects = {
+        new ObjectSettings { HtmlText = "<h1>Pretty Websites</h1><p>This might take a bit to convert!</p>" },
+        new ObjectSettings { PageUrl = "www.google.com" },
+        new ObjectSettings { PageUrl = "www.microsoft.com" },
+		new ObjectSettings { PageUrl = "www.github.com" }
+    }
+};
 
 // create converter
-IPechkin pechkin = Factory.Create(gc);
+IPechkin converter = Factory.Create();
 
 // subscribe to events
-pechkin.Begin += OnBegin;
-pechkin.Error += OnError;
-pechkin.Warning += OnWarning;
-pechkin.PhaseChanged += OnPhase;
-pechkin.ProgressChanged += OnProgress;
-pechkin.Finished += OnFinished;
-
-// create document configuration object
-ObjectConfig oc = new ObjectConfig();
-
-// and set it up using fluent notation too
-oc.SetCreateExternalLinks(false)
-  .SetFallbackEncoding(Encoding.ASCII)
-  .SetLoadImages(false)
-  .SetPageUri("http://google.com");
-//... etc
+converter.Begin += OnBegin;
+converter.Error += OnError;
+converter.Warning += OnWarning;
+converter.PhaseChanged += OnPhase;
+converter.ProgressChanged += OnProgress;
+converter.Finished += OnFinished;
 
 // convert document
-byte[] pdfBuf = pechkin.Convert(oc);
-
-// Be sure to dispose! Preferably with a using statement.
-pechkin.Dispose();
+byte[] result = pechkin.Convert(document);
 ```
 
 License
