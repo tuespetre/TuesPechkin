@@ -137,22 +137,9 @@ namespace TuesPechkin
         public int? PageOffset { get; set; }
 
         /// <summary>
-        /// The height of the output document, e.g. "12in".
+        /// The size of the output document.
         /// </summary>
-        [WkhtmltopdfSetting("size.height")]
-        public string PaperHeight { get; set; }
-
-        /// <summary>
-        /// The paper size of the output document, e.g. "A4".
-        /// </summary>
-        [WkhtmltopdfSetting("size.paperSize")]
-        public string PaperSize { get; set; }
-
-        /// <summary>
-        /// The with of the output document, e.g. "4cm".
-        /// </summary>
-        [WkhtmltopdfSetting("size.width")]
-        public string PaperWidth { get; set; }
+        public PechkinPaperSize PaperSize { get; set; }
 
         /// <summary>
         /// Whether to generate an outline for the document. (Default: false)
@@ -199,6 +186,30 @@ namespace TuesPechkin
             get
             {
                 return this.GetMarginValue(this.margins.Top);
+            }
+        }
+
+        /// <summary>
+        /// The height of the output document, e.g. "12in".
+        /// </summary>
+        [WkhtmltopdfSetting("size.height")]
+        internal string PaperHeight
+        {
+            get
+            {
+                return this.PaperSize == null ? null : this.PaperSize.Height;
+            }
+        }
+
+        /// <summary>
+        /// The with of the output document, e.g. "4cm".
+        /// </summary>
+        [WkhtmltopdfSetting("size.width")]
+        internal string PaperWidth
+        {
+            get
+            {
+                return this.PaperSize == null ? null : this.PaperSize.Width;
             }
         }
 

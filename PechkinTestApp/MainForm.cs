@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -28,6 +29,7 @@ namespace Html2PdfTestApp
                 GlobalSettings = {
                     ProduceOutline = true,
                     DocumentTitle = "Business Document",
+                    PaperSize = PaperKind.A4,
                     Margins =
                     {
                         Top = 1.5,

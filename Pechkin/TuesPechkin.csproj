@@ -103,6 +103,7 @@
     <Compile Include="HeaderSettings.cs" />
     <Compile Include="LoadSettings.cs" />
     <Compile Include="MarginSettings.cs" />
+    <Compile Include="PechkinPaperSize.cs" />
     <Compile Include="PechkinStatic.cs" />
     <Compile Include="IPechkin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
