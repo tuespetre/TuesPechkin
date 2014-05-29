@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing.Printing;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using System.Windows.Forms;
 using Pechkin;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Html2PdfTestApp
 {
@@ -14,156 +11,150 @@ namespace Html2PdfTestApp
     {
         public MainForm()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
-        private void OnLoad(object sender, EventArgs e)
+        public void SetText(string text)
         {
+            this.Text = text;
         }
 
         private void OnConvertButtonClick(object sender, EventArgs e)
         {
             PerformanceCollector pc = new PerformanceCollector("PDF creation");
 
-            var gc = new GlobalSettings().SetMargins(new Margins(300, 100, 150, 100))
-                                       .SetDocumentTitle("Ololo")
-                                       .SetCopyCount(1)
-                                       .SetImageQuality(50)
-                                       .SetLosslessCompression(true)
-                                       .SetMaxImageDpi(20)
-                                       .SetOutlineGeneration(true)
-                                       .SetOutputDpi(1200)
-                                       .SetPaperOrientation(true)
-                                       .SetPaperSize(PaperKind.Letter);
+            var document = new HtmlToPdfDocument
+            {
+                GlobalSettings = {
+                    ProduceOutline = true,
+                    DocumentTitle = "Business Document",
+                    Margins =
+                    {
+                        Top = 1.5,
+                        Right = 1,
+                        Bottom = 1,
+                        Left = 1.25,
+                        Unit = Unit.Centimeters
+                    }
+                },
+                Objects = {
+                    new ObjectSettings { HtmlText = this.htmlText.Text },
+                    new ObjectSettings { PageUrl = "www.google.com" },
+                    new ObjectSettings { PageUrl = "www.microsoft.com" }
+                }
+            };
 
-            /*pc.FinishAction("Library initialized");
-
-            pc.FinishAction("Converter created");
-
-            sc.Begin += OnScBegin;
-            sc.Error += OnScError;
-            sc.Warning += OnScWarning;
-            sc.PhaseChanged += OnScPhase;
-            sc.ProgressChanged += OnScProgress;
-            sc.Finished += OnScFinished;
-
-            pc.FinishAction("Event handlers installed");*/
-
-            IPechkin sc2 = Factory.Create(gc);
-            sc2.Convert(new ObjectSettings(), htmlText.Text);
+            IPechkin sc2 = Factory.Create();
+            var buf = sc2.Convert(document);
 
             MessageBox.Show("All conversions done");
 
-            /*sc.Convert(new ObjectSettings().SetPrintBackground(true).SetProxyString("http://localhost:8888")
-            .SetAllowLocalContent(true).SetCreateExternalLinks(false).SetCreateForms(false).SetCreateInternalLinks(false)
-            .SetErrorHandlingType(ObjectSettings.ContentErrorHandlingType.Ignore).SetFallbackEncoding(Encoding.ASCII)
-            .SetIntelligentShrinking(false).SetJavascriptDebugMode(true).SetLoadImages(true).SetMinFontSize(16)
-            .SetRenderDelay(2000).SetRunJavascript(true).SetIncludeInOutline(true).SetZoomFactor(2.2), htmlText.Text);*/
-
             pc.FinishAction("conversion finished");
 
-            /*if (buf == null)
+            if (buf == null)
             {
-            MessageBox.Show("Error converting!");
+                MessageBox.Show("Error converting!");
 
-            return;
+                return;
             }
 
             try
             {
-            string fn = Path.GetTempFileName() + ".pdf";
+                string fn = string.Format("{0}.pdf", Path.GetTempFileName());
 
-            FileStream fs = new FileStream(fn, FileMode.Create);
-            fs.Write(buf, 0, buf.Length);
-            fs.Close();
+                FileStream fs = new FileStream(fn, FileMode.Create);
+                fs.Write(buf, 0, buf.Length);
+                fs.Close();
 
-            pc.FinishAction("dumped file to disk");
+                pc.FinishAction("dumped file to disk");
 
-            Process myProcess = new Process();
-            myProcess.StartInfo.FileName = fn;
-            myProcess.Start();
+                Process myProcess = new Process();
+                myProcess.StartInfo.FileName = fn;
+                myProcess.Start();
 
-            pc.FinishAction("opened it");
-            } catch { }*/
+                pc.FinishAction("opened it");
+            }
+            catch
+            {
+            }
 
             pc.ShowInMessageBox(null);
         }
 
-        public void SetText(string text)
+        private void OnLoad(object sender, EventArgs e)
         {
-            Text = text;
-        }
-
-        private void OnScProgress(IPechkin converter, int progress, string progressdescription)
-        {
-            if (InvokeRequired)
-            {
-                // simple Invoke WILL NEVER SUCCEDE, because we're in the button click handler. Invoke will simply deadlock everything
-                BeginInvoke((Action<string>)SetText, "Progress " + progress + ": " + progressdescription);
-            }
-            else
-            {
-                Text = ("Progress " + progress + ": " + progressdescription);
-            }
-        }
-
-        private void OnScPhase(IPechkin converter, int phasenumber, string phasedescription)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke((Action)(() => { Text = ("New Phase " + phasenumber + ": " + phasedescription); }));
-            }
-            else
-            {
-                Text = ("New Phase " + phasenumber + ": " + phasedescription);
-            }
-        }
-
-        private void OnScFinished(IPechkin converter, bool success)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke((Action)(() => { Text = ("Finished, Success: " + success); }));
-            }
-            else
-            {
-                Text = ("Finished, Success: " + success);
-            }
-        }
-
-        private void OnScWarning(IPechkin converter, string warningtext)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke((Action)(() => { MessageBox.Show("Warning: " + warningtext); }));
-            }
-            else
-            {
-                MessageBox.Show("Warning: " + warningtext);
-            }
         }
 
         private void OnScBegin(IPechkin converter, int expectedphasecount)
         {
-            if (InvokeRequired)
+            if (this.InvokeRequired)
             {
-                BeginInvoke((Action)(() => { Text = ("Begin, PhaseCount: " + expectedphasecount); }));
+                this.BeginInvoke((Action)(() => { Text = string.Format("Begin, PhaseCount: {0}", expectedphasecount); }));
             }
             else
             {
-                Text = ("Begin, PhaseCount: " + expectedphasecount);
+                this.Text = string.Format("Begin, PhaseCount: {0}", expectedphasecount);
             }
         }
 
         private void OnScError(IPechkin converter, string errorText)
         {
-            if (InvokeRequired)
+            if (this.InvokeRequired)
             {
-                BeginInvoke((Action)(() => { MessageBox.Show("Error: " + errorText); }));
+                this.BeginInvoke((Action)(() => { MessageBox.Show(string.Format("Error: {0}", errorText)); }));
             }
             else
             {
-                MessageBox.Show("Error: " + errorText);
+                MessageBox.Show(string.Format("Error: {0}", errorText));
+            }
+        }
+
+        private void OnScFinished(IPechkin converter, bool success)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke((Action)(() => { Text = string.Format("Finished, Success: {0}", success); }));
+            }
+            else
+            {
+                this.Text = string.Format("Finished, Success: {0}", success);
+            }
+        }
+
+        private void OnScPhase(IPechkin converter, int phasenumber, string phasedescription)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke((Action)(() => { Text = string.Format("New Phase {0}: {1}", phasenumber, phasedescription); }));
+            }
+            else
+            {
+                this.Text = string.Format("New Phase {0}: {1}", phasenumber, phasedescription);
+            }
+        }
+
+        private void OnScProgress(IPechkin converter, int progress, string progressdescription)
+        {
+            if (this.InvokeRequired)
+            {
+                // simple Invoke WILL NEVER SUCCEDE, because we're in the button click handler. Invoke will simply deadlock everything
+                this.BeginInvoke((Action<string>)SetText, string.Format("Progress {0}: {1}", progress, progressdescription));
+            }
+            else
+            {
+                this.Text = string.Format("Progress {0}: {1}", progress, progressdescription);
+            }
+        }
+
+        private void OnScWarning(IPechkin converter, string warningtext)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke((Action)(() => { MessageBox.Show(string.Format("Warning: {0}", warningtext)); }));
+            }
+            else
+            {
+                MessageBox.Show(string.Format("Warning: {0}", warningtext));
             }
         }
     }

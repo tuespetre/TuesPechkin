@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.TestWebApp", "TuesPechkin.TestWebApp\TuesPechkin.TestWebApp.csproj", "{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,14 @@ Global
 		{D58769FA-E008-4016-A81C-A85C606B3691}.Release|x64.Build.0 = Release|Any CPU
 		{D58769FA-E008-4016-A81C-A85C606B3691}.Release|x86.ActiveCfg = Release|x86
 		{D58769FA-E008-4016-A81C-A85C606B3691}.Release|x86.Build.0 = Release|x86
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Release|x64.ActiveCfg = Release|Any CPU
+		{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using Pechkin.Util;
 
@@ -14,7 +15,7 @@ namespace Pechkin
     {
         private static readonly object queueLock = new object();
 
-        private static readonly List<Action> taskQueue = new List<Action>();
+        private static readonly List<Task> taskQueue = new List<Task>();
 
         static SynchronizedDispatcher()
         {
@@ -41,21 +42,25 @@ namespace Pechkin
         public static TResult Invoke<TResult>(Func<TResult> @delegate)
         {
             // create the task
-            var task = new DispatcherTask<TResult> { Task = @delegate };
-            var execute = new Action(task.Execute);
+            var task = new Task<TResult>(@delegate);
 
             // we don't want the task to be completed before we start waiting for that, so the outer lock
-            lock (execute)
+            lock (task)
             {
                 lock (queueLock)
                 {
-                    taskQueue.Add(execute);
+                    taskQueue.Add(task);
 
                     Monitor.Pulse(queueLock);
                 }
 
                 // until this point, evaluation could not start
-                Monitor.Wait(execute);
+                Monitor.Wait(task);
+
+                if (task.Exception != null)
+                {
+                    throw task.Exception;
+                }
 
                 // and when we're done waiting, we know that the result was already set
                 return task.Result;
@@ -79,7 +84,7 @@ namespace Pechkin
             {
                 while (!SynchronizedDispatcher.Abort)
                 {
-                    Delegate task;
+                    Task task;
 
                     lock (queueLock)
                     {
@@ -100,11 +105,12 @@ namespace Pechkin
                     {
                         try
                         {
-                            task.DynamicInvoke();
+                            task.Action.DynamicInvoke();
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
                             Tracer.Critical(string.Format("Exception in SynchronizedDispatcherThread \"{0}\"", Thread.CurrentThread.Name), e);
+                            task.Exception = e.InnerException;
                         }
 
                         // notify waiting thread about completeion
@@ -117,21 +123,29 @@ namespace Pechkin
             }
         }
 
+        private class Task
+        {
+            public virtual Action Action { get; protected set; }
+
+            public Exception Exception { get; set; }
+        }
+
         /// <summary>
         /// Task object that's pushed to the queue.
         /// </summary>
-        private class DispatcherTask<TResult>
+        private class Task<TResult> : Task
         {
-            // result, filled out after it's executed
-            public TResult Result { get; set; }
+            public Task(Func<TResult> @delegate)
+            {
+                this.Delegate = @delegate;
+                this.Action = () => this.Result = this.Delegate();
+            }
 
             // task code
-            public Func<TResult> Task { get; set; }
+            public Func<TResult> Delegate { get; private set; }
 
-            public void Execute()
-            {
-                this.Result = this.Task();
-            }
+            // result, filled out after it's executed
+            public TResult Result { get; private set; }
         }
     }
 }

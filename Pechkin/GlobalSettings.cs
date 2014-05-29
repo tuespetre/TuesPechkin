@@ -1,436 +1,222 @@
 ﻿using System;
-using System.Drawing.Printing;
-using System.Globalization;
-using System.Threading;
 
 namespace Pechkin
 {
-    /// <summary>
-    /// Global configuration object. Is used to create converter objects.
-    /// 
-    /// It uses fluid notation to change its fields.
-    /// </summary>
     [Serializable]
     public class GlobalSettings
     {
-        private string _paperSize = "A4";
-        private string _paperWidth; // for example "4cm"
-        private string _paperHeight; // or "12in"
-        private string _paperOrientation = "Portrait"; // must be either "Landscape" or "Portrait"
+        private MarginSettings margins = new MarginSettings();
 
-        private string _colorMode = "Color"; // must be either "Color" or "Grayscale"
-        private string _resolution; // deprecated, has no effect
-        private string _dpi; // DPI used when printing, like "80"
-
-        private string _pageOffset; // start page number (used in headers, footers and TOC)
-        private string _copies; // number of copies to include into the document =)
-        private string _collate = "false"; // collate copies or not, must be either "true" or "false"
-
-        private string _outline = "false"; // generate table of contents, must be either "true" or "false"
-        private string _outlineDepth = "4"; // outline depth
-        private string _dumpOutline = ""; // filename to dump outline in XML format
-
-        private string _output = ""; // filename to dump PDF into, if "-", then it's dumped into stdout
-        private string _documentTitle; // title for the PDF document
-
-        private string _useCompression = "true"; // turns on lossless compression of the PDF file
-
-        private string _marginTop; // size of the top margin (ex. "2cm)
-        private string _marginRight;
-        private string _marginBottom;
-        private string _marginLeft;
-
-        private string _outputFormat = "pdf"; // can be "ps" or "pdf"
-
-        private string _imageDpi; // maximum DPI for the images in document
-        private string _imageQuality; // specifies JPEG compression factor for the (reencoded) images in pdf, from "0" to "100"
-
-        private string _cookieJar; // path to (text) file used to load and store cookies
-
-        [Obsolete("Setting paper size by name doesn't work in the lib. Use the overload that takes PaperKind instead.")]
-        public GlobalSettings SetPaperSize(string sizeName)
+        public GlobalSettings()
         {
-            _paperSize = sizeName;
-
-            _paperHeight = "";
-            _paperWidth = "";
-
-            return this;
-        }
-        public GlobalSettings SetPaperSize(PaperKind kind)
-        {
-            // don't work
-            //return SetPaperSize(Enum.GetName(typeof(PaperKind), kind));
-
-            if (PechkinStatic.PaperSizes.ContainsKey(kind))
-            {
-                PechkinStatic.StrPaperSize ps = PechkinStatic.PaperSizes[kind];
-
-                return SetPaperSize(ps.Width, ps.Height);
-            }
-
-            Tracer.Warn("T:" + Thread.CurrentThread.Name + " Unknown PaperKind specified in SetPaperSize (" + ((int)kind) + ")");
-
-            return this;
+            this.ColorMode = DocumentColorMode.Color;
+            this.Orientation = PaperOrientation.Portrait;
+            this.Copies = 1;
+            this.OutputFormat = DocumentOutputFormat.PDF;
+            this.UseCompression = true;
+            this.OutlineDepth = 4;
         }
 
-        internal GlobalSettings SetPaperSize(string width, string height)
+        public enum DocumentColorMode
         {
-            _paperSize = null;
+            Color,
+            Grayscale
+        }
 
-            _paperWidth = width;
-            _paperHeight = height;
+        public enum DocumentOutputFormat
+        {
+            PDF,
+            PS
+        }
 
-            return this;
+        public enum PaperOrientation
+        {
+            Portrait,
+            Landscape
         }
 
         /// <summary>
-        /// Sets exact paper size for the document
+        /// Whether to collate the copies. (Default: false)
         /// </summary>
-        /// <param name="width">width of the document in hudredths of inches</param>
-        /// <param name="height">height of the document in hudredths of inches</param>
-        /// <returns>configuration object</returns>
-        public GlobalSettings SetPaperSize(int width, int height)
+        [WkhtmltopdfSetting("collate")]
+        public bool? Collate { get; set; }
+
+        /// <summary>
+        /// Whether to print in color or grayscale. (Default: color)
+        /// </summary>
+        [WkhtmltopdfSetting("colorMode")]
+        public DocumentColorMode ColorMode { get; set; }
+
+        /// <summary>
+        /// The path of a file used to store cookies.
+        /// </summary>
+        [WkhtmltopdfSetting("load.cookieJar")]
+        public string CookieJar { get; set; }
+
+        /// <summary>
+        /// How many copies to print. (Default: 1)
+        /// </summary>
+        [WkhtmltopdfSetting("copies")]
+        public int Copies { get; set; }
+
+        /// <summary>
+        /// The title of the PDF document.
+        /// </summary>
+        [WkhtmltopdfSetting("documentTitle")]
+        public string DocumentTitle { get; set; }
+
+        /// <summary>
+        /// The DPI to use when printing.
+        /// </summary>
+        [WkhtmltopdfSetting("dpi")]
+        public int? DPI { get; set; }
+
+        /// <summary>
+        /// The path of a file to dump an XML outline of the document to.
+        /// </summary>
+        [WkhtmltopdfSetting("dumpOutline")]
+        public string DumpOutline { get; set; }
+
+        /// <summary>
+        /// The maximum DPI to use for images printed in the document.
+        /// </summary>
+        [WkhtmltopdfSetting("imageDPI")]
+        public int? ImageDPI { get; set; }
+
+        [WkhtmltopdfSetting("imageQuality")]
+        public int? ImageQuality { get; set; }
+
+        /// <summary>
+        /// The margins to use throughout the document.
+        /// </summary>
+        public MarginSettings Margins
         {
-            _paperSize = null;
+            get
+            {
+                return this.margins;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
 
-            _paperWidth = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) +"in";
-            _paperHeight = (height / 100.0).ToString("0.##", CultureInfo.InvariantCulture) +"in";
-
-            return this;
-        }
-        public GlobalSettings SetPaperSize(PaperSize ps)
-        {
-            return ps.Kind == PaperKind.Custom ? SetPaperSize(ps.Width, ps.Height) : SetPaperSize(ps.Kind);
-        }
-
-        public GlobalSettings SetPaperOrientation(bool landscape)
-        {
-            _paperOrientation = landscape ? "Landscape" : "Portrait";
-
-            return this;
+                this.margins = value;
+            }
         }
 
         /// <summary>
-        /// Sets top paper margin.
+        /// The orientation of the output document, either Portrait or Landscape. (Default: Portrait)
         /// </summary>
-        /// <param name="width">width of the margin in hundredths of inch</param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetMarginTop(int width)
-        {
-            _marginTop = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
-
-            return this;
-        }
-        /// <summary>
-        /// Sets right paper margin.
-        /// </summary>
-        /// <param name="width">width of the margin in hundredths of inch</param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetMarginRight(int width)
-        {
-            _marginRight = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
-
-            return this;
-        }
-        /// <summary>
-        /// Sets bottom paper margin.
-        /// </summary>
-        /// <param name="width">width of the margin in hundredths of inch</param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetMarginBottom(int width)
-        {
-            _marginBottom = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
-
-            return this;
-        }
-        /// <summary>
-        /// Sets left paper margin.
-        /// </summary>
-        /// <param name="width">width of the margin in hundredths of inch</param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetMarginLeft(int width)
-        {
-            _marginLeft = (width / 100.0).ToString("0.##", CultureInfo.InvariantCulture) + "in";
-
-            return this;
-        }
-        /// <summary>
-        /// Sets all four paper margins at once.
-        /// </summary>
-        /// <param name="top">width of the top margin in hundredths of inch</param>
-        /// <param name="right">width of the right margin in hundredths of inch</param>
-        /// <param name="bottom">width of the bottom margin in hundredths of inch</param>
-        /// <param name="left">width of the left margin in hundredths of inch</param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetMargins(int top, int right, int bottom, int left)
-        {
-            return SetMarginTop(top)
-                .SetMarginRight(right)
-                .SetMarginBottom(bottom)
-                .SetMarginLeft(left);
-        }
-        public GlobalSettings SetMargins(Margins margins)
-        {
-            return SetMargins(margins.Top, margins.Right, margins.Bottom, margins.Left);
-        }
-
-        public GlobalSettings SetOutputDpi(int dpi)
-        {
-            _dpi = dpi.ToString();
-
-            return this;
-        }
-
-        public GlobalSettings SetPageSettings(PageSettings ps)
-        {
-            return SetPaperSize(ps.PaperSize)
-                .SetPaperOrientation(ps.Landscape)
-                .SetMargins(ps.Margins)
-                .SetOutputDpi(ps.PrinterResolution.X);
-        }
-
-        public GlobalSettings SetColorMode(bool grayscale)
-        {
-            _colorMode = grayscale ? "Grayscale" : "Color";
-
-            return this;
-        }
-
-        [Obsolete("This setting does nothing. Left here for full compatibility.")]
-        public GlobalSettings SetResolution(int resolution)
-        {
-            _resolution = resolution.ToString();
-
-            return this;
-        }
-
-        public GlobalSettings SetCopyCount(int count)
-        {
-            _copies = count.ToString();
-
-            return this;
-        }
+        [WkhtmltopdfSetting("orientation")]
+        public PaperOrientation Orientation { get; set; }
 
         /// <summary>
-        /// Sets first page number to use on TOC and header/footer
+        /// The maximum depth of the outline. (Default: 4)
         /// </summary>
-        /// <param name="startPageNumber">first page number</param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetPageOffset(int startPageNumber)
-        {
-            _pageOffset = startPageNumber.ToString();
-
-            return this;
-        }
-
-        public GlobalSettings SetCopyCollation(bool collate)
-        {
-            _collate = collate ? "true" : "false";
-
-            return this;
-        }
+        [WkhtmltopdfSetting("outlineDepth")]
+        public int? OutlineDepth { get; set; }
 
         /// <summary>
-        /// Allows you to enable outline generation. Oultine appears in Adobe Reader to the left of the document by default.
+        /// A path to output the converted document to.
         /// </summary>
-        /// <param name="generateOutline"></param>
-        /// <returns>config object</returns>
-        public GlobalSettings SetOutlineGeneration(bool generateOutline)
-        {
-            _outline = generateOutline ? "true" : "false";
-
-            return this;
-        }
-
-        public GlobalSettings SetOutlineDepth(int depth)
-        {
-            _outlineDepth = depth.ToString();
-
-            return this;
-        }
-
-        public GlobalSettings SetOutlineDumpFile(string outlineXmlFilename)
-        {
-            _dumpOutline = outlineXmlFilename;
-
-            return this;
-        }
-
-        public GlobalSettings SetOutputFile(string outputFilename)
-        {
-            _output = outputFilename;
-
-            return this;
-        }
-
-        public enum OutputFormat { PostScript, Pdf }
-        public GlobalSettings SetOutputFormat(OutputFormat format)
-        {
-            _outputFormat = format == OutputFormat.Pdf ? "pdf" : "ps";
-
-            return this;
-        }
-
-        public GlobalSettings SetDocumentTitle(string title)
-        {
-            _documentTitle = title;
-
-            return this;
-        }
-
-        public GlobalSettings SetLosslessCompression(bool zipOutputFile)
-        {
-            _useCompression = zipOutputFile ? "true" : "false";
-
-            return this;
-        }
+        [WkhtmltopdfSetting("out")]
+        public string OutputFile { get; set; }
 
         /// <summary>
-        /// Sets filename for the cookies to read and write to. It's used for objects that are webpages.
+        /// Whether to output PDF or PostScript. (Default: PDF)
         /// </summary>
-        /// <param name="cookieFileName">Filename of the cookie archive</param>
-        /// <returns></returns>
-        public GlobalSettings SetCookieTextFile(string cookieFileName)
-        {
-            _cookieJar = cookieFileName;
-
-            return this;
-        }
+        [WkhtmltopdfSetting("outputFormat")]
+        public DocumentOutputFormat OutputFormat { get; set; }
 
         /// <summary>
-        /// Sets the maximum image DPI to use in generated PDF document. Images with higher dpis are scaled.
+        /// A number that is added to all page numbers when printing headers, footers and table of content.
         /// </summary>
-        /// <param name="dpi">raw DPI value or -1 for the infinity</param>
-        /// <returns></returns>
-        public GlobalSettings SetMaxImageDpi(int dpi)
-        {
-            _imageDpi = dpi != -1 ? dpi.ToString() : null;
-
-            return this;
-        }
+        [WkhtmltopdfSetting("pageOffset")]
+        public int? PageOffset { get; set; }
 
         /// <summary>
-        /// All the images in HTML are reencoded into JPEGs, this sets their new quality setting.
+        /// The height of the output document, e.g. "12in".
         /// </summary>
-        /// <param name="quality">quality from 0 to 100, the more the better</param>
-        /// <returns></returns>
-        public GlobalSettings SetImageQuality(int quality)
+        [WkhtmltopdfSetting("size.height")]
+        public string PaperHeight { get; set; }
+
+        /// <summary>
+        /// The paper size of the output document, e.g. "A4".
+        /// </summary>
+        [WkhtmltopdfSetting("size.paperSize")]
+        public string PaperSize { get; set; }
+
+        /// <summary>
+        /// The with of the output document, e.g. "4cm".
+        /// </summary>
+        [WkhtmltopdfSetting("size.width")]
+        public string PaperWidth { get; set; }
+
+        /// <summary>
+        /// Whether to generate an outline for the document. (Default: false)
+        /// </summary>
+        [WkhtmltopdfSetting("outline")]
+        public bool? ProduceOutline { get; set; }
+        
+        /// <summary>
+        /// Whether to use lossless compression when creating the pdf file. (Default: true)
+        /// </summary>
+        [WkhtmltopdfSetting("useCompression")]
+        public bool? UseCompression { get; set; }
+
+        [WkhtmltopdfSetting("margin.bottom")]
+        internal string MarginBottom
         {
-            _imageQuality = quality != -1 ? quality.ToString() : null;
-
-            return this;
-        }
-
-        internal void SetUpGlobalConfig(IntPtr config)
-        {
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Setting up global config (many wkhtmltopdf_set_global_setting)");
-
-            if (_paperSize != null)
+            get
             {
-                PechkinStatic.SetGlobalSetting(config, "size.paperSize", _paperSize);
-            }
-            if (_paperWidth != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "size.width", _paperWidth);
-            }
-            if (_paperHeight != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "size.height", _paperHeight);
-            }
-            if (_paperOrientation != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "orientation", _paperOrientation);
-            }
-            if (_colorMode != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "colorMode", _colorMode);
-            }
-            if (_resolution != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "resolution", _resolution);
-            }
-            if (_dpi != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "dpi", _dpi);
-            }
-            if (_pageOffset != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "pageOffset", _pageOffset);
-            }
-            if (_copies != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "copies", _copies);
-            }
-            if (_collate != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "collate", _collate);
-            }
-            if (_outline != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "outline", _outline);
-            }
-            if (_outlineDepth != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "outlineDepth", _outlineDepth);
-            }
-            if (_dumpOutline != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "dumpOutline", _dumpOutline);
-            }
-            if (_output != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "out", _output);
-            }
-            if (_documentTitle != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "documentTitle", _documentTitle);
-            }
-            if (_useCompression != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "useCompression", _useCompression);
-            }
-            if (_marginTop != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "margin.top", _marginTop);
-            }
-            if (_marginRight != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "margin.right", _marginRight);
-            }
-            if (_marginBottom != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "margin.bottom", _marginBottom);
-            }
-            if (_marginLeft != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "margin.left", _marginLeft);
-            }
-            if (_outputFormat != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "outputFormat", _outputFormat);
-            }
-            if (_imageDpi != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "imageDPI", _imageDpi);
-            }
-            if (_imageQuality != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "imageQuality", _imageQuality);
-            }
-            if (_cookieJar != null)
-            {
-                PechkinStatic.SetGlobalSetting(config, "load.cookieJar", _cookieJar);
+                return this.GetMarginValue(this.margins.Bottom);
             }
         }
 
-        internal IntPtr CreateGlobalConfig()
+        [WkhtmltopdfSetting("margin.left")]
+        internal string MarginLeft
         {
-            IntPtr config = PechkinStatic.CreateGlobalSetting();
+            get
+            {
+                return this.GetMarginValue(this.margins.Left);
+            }
+        }
 
-            SetUpGlobalConfig(config);
+        [WkhtmltopdfSetting("margin.right")]
+        internal string MarginRight
+        {
+            get
+            {
+                return this.GetMarginValue(this.margins.Right);
+            }
+        }
 
-            return config;
+        [WkhtmltopdfSetting("margin.top")]
+        internal string MarginTop
+        {
+            get
+            {
+                return this.GetMarginValue(this.margins.Top);
+            }
+        }
+
+        private string GetMarginValue(double value)
+        {
+            var strUnit = "in";
+
+            switch (this.margins.Unit)
+            {
+                case (Unit.Centimeters):
+                    strUnit = "cm";
+                    break;
+                case (Unit.Millimeters):
+                    strUnit = "mm";
+                    break;
+            }
+
+            return String.Format("{0}{1}", value.ToString("0.##"), strUnit);
         }
     }
 }

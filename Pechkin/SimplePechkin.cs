@@ -13,20 +13,18 @@ namespace Pechkin
     [Serializable]
     internal class SimplePechkin : MarshalByRefObject, IPechkin
     {
-        private readonly GlobalSettings globalConfig;
         private readonly StringCallback onErrorDelegate;
         private readonly IntCallback onFinishedDelegate;
         private readonly VoidCallback onPhaseChangedDelegate;
         private readonly IntCallback onProgressChangedDelegate;
         private readonly StringCallback onWarningDelegate;
         private IntPtr converter;
-        private IntPtr globalConfigUnmanaged;
 
         /// <summary>
         /// Constructs HTML to PDF converter instance from <code>GlobalSettings</code>.
         /// </summary>
         /// <param name="config">global configuration object</param>
-        public SimplePechkin(GlobalSettings config)
+        public SimplePechkin()
         {
             this.onErrorDelegate = new StringCallback(this.OnError);
             this.onFinishedDelegate = new IntCallback(this.OnFinished);
@@ -34,11 +32,7 @@ namespace Pechkin
             this.onProgressChangedDelegate = new IntCallback(this.OnProgressChanged);
             this.onWarningDelegate = new StringCallback(this.OnWarning);
 
-            Tracer.Trace(string.Format("T:{0} Creating SimplePechkin", Thread.CurrentThread.Name));
-
-            this.globalConfig = config;
-            
-            Tracer.Trace(string.Format("T:{0} Created global config", Thread.CurrentThread.Name));
+            Tracer.Trace(string.Format("T:{0} Created SimplePechkin", Thread.CurrentThread.Name));
         }
 
         /// <summary>
@@ -150,25 +144,25 @@ namespace Pechkin
         /// <param name="doc">document parameters</param>
         /// <param name="html">document body, ignored if <code>ObjectSettings.SetPageUri</code> is set</param>
         /// <returns>PDF document body</returns>
-        public byte[] Convert(ObjectSettings doc, byte[] html)
+        public byte[] Convert(HtmlToPdfDocument document)
         {
-            this.CreateConverter();
+            document.ApplyToConverter(out this.converter);
 
-            // create unmanaged object config
-            IntPtr objConf = doc.CreateObjectConfig();
+            Tracer.Trace(string.Format("T:{0} Created converter", Thread.CurrentThread.Name));
 
-            Tracer.Trace(string.Format("T:{0} Created object config", Thread.CurrentThread.Name));
+            PechkinStatic.SetErrorCallback(this.converter, this.onErrorDelegate);
+            PechkinStatic.SetWarningCallback(this.converter, this.onWarningDelegate);
+            PechkinStatic.SetPhaseChangedCallback(this.converter, this.onPhaseChangedDelegate);
+            PechkinStatic.SetProgressChangedCallback(this.converter, this.onProgressChangedDelegate);
+            PechkinStatic.SetFinishedCallback(this.converter, this.onFinishedDelegate);
 
-            // add object to converter
-            PechkinStatic.AddObject(this.converter, objConf, html);
-
-            Tracer.Trace(string.Format("T:{0} Added object to converter", Thread.CurrentThread.Name));
+            Tracer.Trace(string.Format("T:{0} Added callbacks to converter", Thread.CurrentThread.Name));
 
             // run OnBegin
             this.OnBegin(this.converter);
 
             // run conversion process
-            if (!PechkinStatic.PerformConversion(this.converter))
+            if (!PechkinStatic.PerformConversion(converter))
             {
                 Tracer.Trace(string.Format("T:{0} Conversion failed, null returned", Thread.CurrentThread.Name));
 
@@ -178,27 +172,11 @@ namespace Pechkin
             // get output
             var result = PechkinStatic.GetConverterResult(this.converter);
 
-            if (!this.converter.Equals(IntPtr.Zero))
-            {
-                Tracer.Trace(string.Format("T:{0} Releasing unmanaged converter", Thread.CurrentThread.Name));
+            Tracer.Trace(string.Format("T:{0} Releasing unmanaged converter", Thread.CurrentThread.Name));
 
-                PechkinStatic.DestroyConverter(this.converter);
-            }
+            PechkinStatic.DestroyConverter(this.converter);
 
             return result;
-        }
-
-        /// <summary>
-        /// Runs conversion process.
-        /// 
-        /// Allows to convert both external HTML resource and HTML string.
-        /// </summary>
-        /// <param name="doc">document parameters</param>
-        /// <param name="html">document body, ignored if <code>ObjectSettings.SetPageUri</code> is set</param>
-        /// <returns>PDF document body</returns>
-        public byte[] Convert(ObjectSettings doc, string html)
-        {
-            return this.Convert(doc, Encoding.UTF8.GetBytes(html));
         }
 
         /// <summary>
@@ -206,9 +184,11 @@ namespace Pechkin
         /// </summary>
         /// <param name="doc">document parameters, <code>ObjectSettings.SetPageUri</code> should be set</param>
         /// <returns>PDF document body</returns>
-        public byte[] Convert(ObjectSettings doc)
+        public byte[] Convert(ObjectSettings settings)
         {
-            return this.Convert(doc, (byte[])null);
+            var doc = new HtmlToPdfDocument();
+            doc.Objects.Add(settings);
+            return this.Convert(doc);
         }
 
         /// <summary>
@@ -218,7 +198,7 @@ namespace Pechkin
         /// <returns>PDF document body</returns>
         public byte[] Convert(string html)
         {
-            return this.Convert(new ObjectSettings(), html);
+            return this.Convert(new ObjectSettings() { HtmlText = html });
         }
 
         /// <summary>
@@ -230,7 +210,7 @@ namespace Pechkin
         /// <returns>PDF document body</returns>
         public byte[] Convert(byte[] html)
         {
-            return this.Convert(new ObjectSettings(), html);
+            return this.Convert(new ObjectSettings() { RawData = html });
         }
 
         /// <summary>
@@ -240,7 +220,7 @@ namespace Pechkin
         /// <returns>PDF document body</returns>
         public byte[] Convert(Uri url)
         {
-            return this.Convert(new ObjectSettings().SetPageUri(url.AbsoluteUri));
+            return this.Convert(new ObjectSettings() { PageUrl = url.AbsoluteUri });
         }
 
         protected virtual void OnBegin(IntPtr converter)
@@ -283,7 +263,7 @@ namespace Pechkin
 
         protected virtual void OnFinished(IntPtr converter, int success)
         {
-            Tracer.Trace(string.Format("T:{0} Conversion Finished: {1}", Thread.CurrentThread.Name, success != 0 ? "Succeede" : "Failed"));
+            Tracer.Trace(string.Format("T:{0} Conversion Finished: {1}", Thread.CurrentThread.Name, success != 0 ? "Succeeded" : "Failed"));
 
             FinishEventHandler handler = this.Finished;
             try
@@ -356,30 +336,6 @@ namespace Pechkin
             {
                 Tracer.Warn(string.Format("T:{0} Exception in Warning event handler", Thread.CurrentThread.Name), e);
             }
-        }
-
-        private void CreateConverter()
-        {
-            if (!this.converter.Equals(IntPtr.Zero))
-            {
-                PechkinStatic.DestroyConverter(this.converter);
-
-                Tracer.Trace(string.Format("T:{0} Destroyed previous converter", Thread.CurrentThread.Name));
-            }
-
-            // the damn lib... we can't reuse anything
-            this.globalConfigUnmanaged = this.globalConfig.CreateGlobalConfig();
-            this.converter = PechkinStatic.CreateConverter(this.globalConfigUnmanaged);
-
-            Tracer.Trace(string.Format("T:{0} Created converter", Thread.CurrentThread.Name));
-
-            PechkinStatic.SetErrorCallback(this.converter, this.onErrorDelegate);
-            PechkinStatic.SetWarningCallback(this.converter, this.onWarningDelegate);
-            PechkinStatic.SetPhaseChangedCallback(this.converter, this.onPhaseChangedDelegate);
-            PechkinStatic.SetProgressChangedCallback(this.converter, this.onProgressChangedDelegate);
-            PechkinStatic.SetFinishedCallback(this.converter, this.onFinishedDelegate);
-
-            Tracer.Trace(string.Format("T:{0} Added callbacks to converter", Thread.CurrentThread.Name));
         }
     }
 }

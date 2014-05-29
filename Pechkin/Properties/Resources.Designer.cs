@@ -63,6 +63,16 @@ namespace Pechkin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] toc {
+            get {
+                object obj = ResourceManager.GetObject("toc", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] wkhtmltox_32_dll {
             get {
                 object obj = ResourceManager.GetObject("wkhtmltox_32_dll", resourceCulture);

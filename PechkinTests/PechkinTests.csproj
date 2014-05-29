@@ -91,7 +91,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PechkinAbstractTests.cs" />
     <Compile Include="PechkinTests.cs" />
   </ItemGroup>
   <ItemGroup>

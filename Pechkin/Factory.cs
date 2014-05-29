@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Remoting;
@@ -32,7 +31,7 @@ namespace Pechkin
         /// </summary>
         /// <param name="config">A GlobalSettings object for the converter to apply.</param>
         /// <returns>IPechkin</returns>
-        public static IPechkin Create(GlobalSettings config)
+        public static IPechkin Create()
         {
             if (Factory.operatingDomain == null)
             {
@@ -52,7 +51,7 @@ namespace Pechkin
                 false,
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
                 null,
-                new object[] { config },
+                null,
                 null,
                 null,
                 null);

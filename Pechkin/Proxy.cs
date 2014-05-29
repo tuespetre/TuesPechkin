@@ -1,6 +1,5 @@
 ﻿using System;
 using Pechkin.EventHandlers;
-using Pechkin.Util;
 
 namespace Pechkin
 {
@@ -65,53 +64,31 @@ namespace Pechkin
             };
         }
 
-        public byte[] Convert(ObjectSettings doc, string html)
-        {
-            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc, html));
-        }
-
-        public byte[] Convert(ObjectSettings doc, byte[] html)
-        {
-            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc, html));
-        }
-
-        public byte[] Convert(ObjectSettings doc)
-        {
-            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(doc));
-        }
-
-        public byte[] Convert(string html)
-        {
-            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(html));
-        }
-
-        public byte[] Convert(byte[] html)
-        {
-            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(html));
-        }
-
-        public byte[] Convert(Uri url)
-        {
-            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(url));
-        }
-
         public event BeginEventHandler Begin;
 
-        public event WarningEventHandler Warning;
-
         public event ErrorEventHandler Error;
+
+        public event FinishEventHandler Finished;
 
         public event PhaseChangedEventHandler PhaseChanged;
 
         public event ProgressChangedEventHandler ProgressChanged;
 
-        public event FinishEventHandler Finished;
+        public event WarningEventHandler Warning;
 
         public int CurrentPhase
         {
             get
             {
                 return SynchronizedDispatcher.Invoke(() => this.remoteInstance.CurrentPhase);
+            }
+        }
+
+        public int HttpErrorCode
+        {
+            get
+            {
+                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.HttpErrorCode);
             }
         }
 
@@ -139,12 +116,29 @@ namespace Pechkin
             }
         }
 
-        public int HttpErrorCode
+        public byte[] Convert(HtmlToPdfDocument document)
         {
-            get
-            {
-                return SynchronizedDispatcher.Invoke(() => this.remoteInstance.HttpErrorCode);
-            }
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(document));
+        }
+
+        public byte[] Convert(ObjectSettings settings)
+        {
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(settings));
+        }
+
+        public byte[] Convert(string html)
+        {
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(html));
+        }
+
+        public byte[] Convert(byte[] html)
+        {
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(html));
+        }
+
+        public byte[] Convert(Uri url)
+        {
+            return SynchronizedDispatcher.Invoke(() => this.remoteInstance.Convert(url));
         }
     }
 }
