@@ -117,7 +117,7 @@
     <Compile Include="Proxy.cs" />
     <Compile Include="SettingApplicator.cs" />
     <Compile Include="SimplePechkin.cs" />
-    <Compile Include="TableOfContentsSettings.cs" />
+    <None Include="TableOfContentsSettings.cs" />
     <Compile Include="Tracer.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Util\IntCallback.cs" />

@@ -1,6 +1,4 @@
 using System;
-using System.Drawing;
-using System.Globalization;
 
 namespace Pechkin
 {
@@ -22,7 +20,7 @@ namespace Pechkin
         public string CenterText { get; set; }
 
         /// <summary>
-        /// Amound of space between header/footer and content in millimeters
+        /// Amount of space between header/footer and content in millimeters
         /// </summary>
         [WkhtmltopdfSetting("header.space")]
         public double? ContentSpacing { get; set; }

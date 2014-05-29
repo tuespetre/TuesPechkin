@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
-
 namespace Pechkin
 {
     [Serializable]
@@ -17,7 +14,7 @@ namespace Pechkin
 
         public List<ObjectSettings> Objects { get; private set; }
 
-        public TableOfContentsSettings TableOfContents { get; set; }
+        //public TableOfContentsSettings TableOfContents { get; set; }
 
         public GlobalSettings GlobalSettings
         {
@@ -50,10 +47,10 @@ namespace Pechkin
 
             converter = PechkinStatic.CreateConverter(config);
 
-            if (this.TableOfContents != null)
-            {
-                this.TableOfContents.ApplyToConverter(converter);
-            }
+            //if (this.TableOfContents != null)
+            //{
+            //    this.TableOfContents.ApplyToConverter(converter);
+            //}
 
             foreach (var setting in this.Objects)
             {

@@ -20,7 +20,7 @@ namespace Pechkin
         public string CenterText { get; set; }
 
         /// <summary>
-        /// Amound of space between header/footer and content in millimeters
+        /// Amount of space between header/footer and content in millimeters
         /// </summary>
         [WkhtmltopdfSetting("footer.space")]
         public double? ContentSpacing { get; set; }
