@@ -16,7 +16,7 @@ namespace TuesPechkin.TestWebApp.Controllers
 
             for (var i = 0; i < 5; i++)
             {
-                var converter = Factory.Create(new GlobalConfig());
+                var converter = Factory.Create();
                 converter.Convert(html);
             }
 

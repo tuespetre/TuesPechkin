@@ -11,6 +11,8 @@ namespace Pechkin
     [Serializable]
     internal static class PechkinBindings
     {
+        public static string TocXslFilename { get; private set; }
+
         static PechkinBindings()
         {
             var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64_dll : Resources.wkhtmltox_32_dll;
@@ -141,22 +143,31 @@ namespace Pechkin
 
             fileName = Path.Combine(basePath, fileName);
 
+            WriteStreamToFile(fileName, () => new GZipStream(new MemoryStream(assemblyRaw), CompressionMode.Decompress));
+
+            TocXslFilename = Path.Combine(basePath, "toc.xsl");
+
+            WriteStreamToFile(TocXslFilename, () => new MemoryStream(Resources.toc));
+
+            WinApiHelper.LoadLibrary(fileName);
+        }
+
+        private static void WriteStreamToFile(string fileName, Func<Stream> streamFactory)
+        {
             if (!File.Exists(fileName))
             {
-                var decompressed = new GZipStream(new MemoryStream(assemblyRaw), CompressionMode.Decompress);
+                var stream = streamFactory();
                 var writeBuffer = new byte[8192];
                 var writeLength = 0;
 
                 using (var newFile = File.Open(fileName, FileMode.Create))
                 {
-                    while((writeLength = decompressed.Read(writeBuffer, 0, writeBuffer.Length)) > 0) 
+                    while ((writeLength = stream.Read(writeBuffer, 0, writeBuffer.Length)) > 0)
                     {
                         newFile.Write(writeBuffer, 0, writeLength);
                     }
                 }
             }
-
-            WinApiHelper.LoadLibrary(fileName);
         }
     }
 }
