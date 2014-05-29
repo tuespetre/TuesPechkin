@@ -30,8 +30,7 @@ namespace Html2PdfTestApp
                     ProduceOutline = true,
                     DocumentTitle = "Business Document",
                     PaperSize = PaperKind.A4,
-                    Margins =
-                    {
+                    Margins = {
                         Top = 1.5,
                         Right = 1,
                         Bottom = 1,
@@ -40,9 +39,7 @@ namespace Html2PdfTestApp
                     }
                 },
                 Objects = {
-                    new ObjectSettings { HtmlText = this.htmlText.Text },
-                    new ObjectSettings { PageUrl = "www.google.com" },
-                    new ObjectSettings { PageUrl = "www.microsoft.com" }
+                    new ObjectSettings { HtmlText = this.htmlText.Text }
                 }
             };
 

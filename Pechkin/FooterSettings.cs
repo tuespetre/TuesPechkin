@@ -22,7 +22,7 @@ namespace TuesPechkin
         /// <summary>
         /// Amount of space between header/footer and content in millimeters
         /// </summary>
-        [WkhtmltopdfSetting("footer.space")]
+        [WkhtmltopdfSetting("footer.spacing")]
         public double? ContentSpacing { get; set; }
 
         /// <summary>
