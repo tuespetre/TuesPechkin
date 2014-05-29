@@ -26,6 +26,14 @@ namespace TuesPechkin
 
         public double Top { get; set; }
 
+        public double All
+        {
+            set
+            {
+                this.Top = this.Right = this.Bottom = this.Left = value;
+            }
+        }
+
         /// <summary>
         /// Defaults to Inches.
         /// </summary>
