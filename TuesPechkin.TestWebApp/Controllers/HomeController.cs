@@ -1,8 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using TuesPechkin;
 
 namespace TuesPechkin.TestWebApp.Controllers
 {
@@ -17,7 +17,14 @@ namespace TuesPechkin.TestWebApp.Controllers
             for (var i = 0; i < 5; i++)
             {
                 var converter = Factory.Create();
-                converter.Convert(html);
+                var path = this.Server.MapPath(String.Format("/{0}.pdf", i));
+
+                using (var file = System.IO.File.Open(path, FileMode.Create))
+                {
+                    var result = new MemoryStream(converter.Convert(html));
+
+                    result.CopyTo(file);
+                }
             }
 
             return this.View();
