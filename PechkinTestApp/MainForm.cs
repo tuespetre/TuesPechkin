@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Pechkin;
+using TuesPechkin;
 
 namespace Html2PdfTestApp
 {

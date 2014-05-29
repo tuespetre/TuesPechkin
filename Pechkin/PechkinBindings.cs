@@ -3,10 +3,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Pechkin.Properties;
-using Pechkin.Util;
+using TuesPechkin.Properties;
+using TuesPechkin.Util;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     [Serializable]
     internal static class PechkinBindings

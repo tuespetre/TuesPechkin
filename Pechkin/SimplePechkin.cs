@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using Pechkin.EventHandlers;
-using Pechkin.Util;
+using TuesPechkin.EventHandlers;
+using TuesPechkin.Util;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     /// <summary>
     /// Covers the necessary converter functionality, for internal

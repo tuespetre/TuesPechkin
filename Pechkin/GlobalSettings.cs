@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     [Serializable]
     public class GlobalSettings

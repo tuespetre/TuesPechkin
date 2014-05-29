@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     internal static class SettingApplicator
     {

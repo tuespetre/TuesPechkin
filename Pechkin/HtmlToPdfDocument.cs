@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace Pechkin
+namespace TuesPechkin
 {
     [Serializable]
     public class HtmlToPdfDocument

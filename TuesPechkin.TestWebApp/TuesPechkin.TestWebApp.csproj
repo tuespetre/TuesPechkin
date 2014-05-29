@@ -234,9 +234,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pechkin\Pechkin.csproj">
+    <ProjectReference Include="..\Pechkin\TuesPechkin.csproj">
       <Project>{023df833-b252-48b3-b6af-dbbb13e39b13}</Project>
-      <Name>Pechkin</Name>
+      <Name>TuesPechkin</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class WkhtmltopdfSettingAttribute : Attribute

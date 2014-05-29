@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     [Serializable]
     public class MarginSettings
     {
         public MarginSettings()
         {
-            this.Unit = Pechkin.Unit.Inches;
+            this.Unit = TuesPechkin.Unit.Inches;
         }
 
         public MarginSettings(double top, double right, double bottom, double left) : this()

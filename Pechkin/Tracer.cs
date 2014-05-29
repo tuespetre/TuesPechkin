@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     internal static class Tracer
     {

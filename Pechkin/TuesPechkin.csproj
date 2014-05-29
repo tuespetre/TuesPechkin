@@ -8,7 +8,7 @@
     <ProjectGuid>{023DF833-B252-48B3-B6AF-DBBB13E39B13}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Pechkin</RootNamespace>
+    <RootNamespace>TuesPechkin</RootNamespace>
     <AssemblyName>TuesPechkin</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

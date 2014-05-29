@@ -4,9 +4,9 @@ using System.Drawing.Printing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using Pechkin.Util;
+using TuesPechkin.Util;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     /// <summary>
     /// Static class with utility methods for the interface.

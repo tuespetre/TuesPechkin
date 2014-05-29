@@ -1,4 +1,4 @@
-namespace Pechkin
+namespace TuesPechkin
 {
     public enum Unit
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Pechkin.Util;
+using TuesPechkin.Util;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     internal static class WinApiHelper
     {

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
-using Pechkin.Util;
+using TuesPechkin.Util;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     /// <summary>
     /// This class runs the thread and lets users to run delegates synchronously on that thread while obtaining results of the execution.

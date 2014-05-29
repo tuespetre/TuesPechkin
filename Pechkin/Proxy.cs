@@ -1,7 +1,7 @@
 ﻿using System;
-using Pechkin.EventHandlers;
+using TuesPechkin.EventHandlers;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     internal class Proxy : MarshalByRefObject, IPechkin
     {

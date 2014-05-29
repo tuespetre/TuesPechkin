@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Remoting;
-using Pechkin.Util;
+using TuesPechkin.Util;
 
-namespace Pechkin
+namespace TuesPechkin
 {
     /// <summary>
     /// Static class used to obtain instances of a PDF converter implementing the 
