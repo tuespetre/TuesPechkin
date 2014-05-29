@@ -41,7 +41,6 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 - Improved exception handling within synchronized thread. Exceptions now bubble out
 - Set 'PrintBackground' to 'true' by default
 - GlobalConfig/ObjectConfig have been radically redesigned. See API and usage for details.
-- Table of contents is now supported!
 - Multiple objects in one conversion now supported! (Multiple web pages, HTML documents, etc in one PDF)
 - Everything is in the 'TuesPechkin' namespace now (instead of 'Pechkin.')
 - You better just read the 'Usage' section for a glance at how the API has changed.
