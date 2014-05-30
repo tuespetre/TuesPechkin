@@ -43,7 +43,9 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 - GlobalConfig/ObjectConfig have been radically redesigned. See API and usage for details.
 - Multiple objects in one conversion now supported! (Multiple web pages, HTML documents, etc in one PDF)
 - Everything is in the 'TuesPechkin' namespace now (instead of 'Pechkin.')
-- You better just read the 'Usage' section for a glance at how the API has changed.
+- Margins for the document are in 'double + unit' form, rather than 'hundredths of an inch as int' form.
+
+###### You better just read the 'Usage' section for a glance at how the API has changed.
 
 #### 0.9.3.3
 - Fixed a problem with concurrency related to when the Pechkin object tells wkhtmltopdf to destroy its converter object. Now happens immediately after conversion, before anything else hits the queue.
