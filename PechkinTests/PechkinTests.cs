@@ -35,6 +35,29 @@ namespace PechkinTests
         }
 
         [Fact]
+        public void UnloadsWkhtmltoxWhenAppDomainUnloads()
+        {
+            //arrange
+            var domain = AppDomain.CreateDomain("testing_unload", null, new AppDomainSetup
+            {
+                ApplicationBase = Path.GetDirectoryName(typeof(Factory).Assembly.Location)
+            });
+
+            //act
+            domain.DoCallBack(() =>
+            {
+                Factory.Create().Convert("<p>some html</p>");
+            });
+            AppDomain.Unload(domain);
+
+            //assert
+            Assert.False(Process.GetCurrentProcess()
+                                .Modules
+                                .Cast<ProcessModule>()
+                                .Any(m => m.ModuleName == "wkhtmltox.dll"));
+        }
+
+        [Fact]
         public void BubblesExceptionsFromSyncedThread()
         {
             Assert.Throws<ApplicationException>(() =>
@@ -82,7 +105,7 @@ namespace PechkinTests
             ret = c.Convert(html);
 
             Assert.NotNull(ret);
-            
+
             GC.Collect();
         }
 
@@ -106,9 +129,9 @@ namespace PechkinTests
         public void ResultIsPdf()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
-            
+
             IPechkin c = Factory.Create();
-            
+
             byte[] ret = c.Convert(html);
 
             Assert.NotNull(ret);
@@ -134,7 +157,7 @@ namespace PechkinTests
             string fn = string.Format("{0}.html", Path.GetTempFileName());
             FileStream fs = new FileStream(fn, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs);
-            
+
             sw.Write(html);
 
             sw.Close();

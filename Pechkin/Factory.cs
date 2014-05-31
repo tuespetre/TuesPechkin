@@ -100,8 +100,6 @@ namespace TuesPechkin
         /// <param name="e">Typically EventArgs.Empty, not used in the method.</param>
         private static void TearDownAppDomain(object sender, EventArgs e)
         {
-            SynchronizedDispatcher.Terminate();
-
             if (Factory.operatingDomain != null)
             {
                 Func<object> del = () =>
@@ -127,6 +125,8 @@ namespace TuesPechkin
 
                 Factory.operatingDomain = null;
             }
+
+            SynchronizedDispatcher.Terminate();
         }
     }
 }
