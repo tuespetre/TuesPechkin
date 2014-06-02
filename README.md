@@ -72,7 +72,7 @@ var document = new HtmlToPdfDocument
 	GlobalSettings = {
         ProduceOutline = true,
         DocumentTitle = "Pretty Websites",
-		PaperSize = PaperKinds.A4 // Implicit conversion to PechkinPaperSize
+	PaperSize = PaperKind.A4, // Implicit conversion to PechkinPaperSize
         Margins =
         {
             All = 1.375,
@@ -99,7 +99,7 @@ converter.ProgressChanged += OnProgress;
 converter.Finished += OnFinished;
 
 // convert document
-byte[] result = pechkin.Convert(document);
+byte[] result = converter.Convert(document);
 ```
 
 License
