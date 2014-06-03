@@ -42,15 +42,6 @@ namespace TuesPechkin
         [WkhtmltopdfSetting("collate")]
         public bool? Collate { get; set; }
 
-        [WkhtmltopdfSetting("colorMode")]
-        internal string StringColorMode
-        {
-            get
-            {
-                return this.ColorMode == DocumentColorMode.Color ? "grayscale" : "color";
-            }
-        }
-
         /// <summary>
         /// Whether to print in color or grayscale. (Default: color)
         /// </summary>
@@ -219,6 +210,15 @@ namespace TuesPechkin
             get
             {
                 return this.PaperSize == null ? null : this.PaperSize.Width;
+            }
+        }
+
+        [WkhtmltopdfSetting("colorMode")]
+        internal string StringColorMode
+        {
+            get
+            {
+                return this.ColorMode == DocumentColorMode.Color ? "grayscale" : "color";
             }
         }
 
