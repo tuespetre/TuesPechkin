@@ -11,7 +11,7 @@ namespace TuesPechkin.TestWebApp.Controllers
         public ActionResult Index()
         {
             var html = "<p>Just some test HTML</p>";
-
+            
             for (var i = 0; i < 5; i++)
             {
                 var converter = Factory.Create();

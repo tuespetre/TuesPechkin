@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Principal;
 using System.Threading;
 using TuesPechkin.Util;
 
@@ -19,17 +20,13 @@ namespace TuesPechkin
 
         static SynchronizedDispatcher()
         {
-            SynchronizedDispatcher.Thread = new Thread(Run)
+            Thread = new Thread(Run)
             {
                 IsBackground = true
             };
 
-            SynchronizedDispatcher.Thread.Start();
+            Thread.Start();
         }
-
-        private delegate void Action();
-
-        private static bool Abort { get; set; }
 
         private static Thread Thread { get; set; }
 
@@ -37,7 +34,6 @@ namespace TuesPechkin
         /// Invokes specified delegate with parameters on the dispatcher thread synchronously.
         /// </summary>
         /// <param name="task">delegate to run on the thread</param>
-        /// <param name="args">arguments to supply to the delegate</param>
         /// <returns>result of an action</returns>
         public static TResult Invoke<TResult>(Func<TResult> @delegate)
         {
@@ -68,11 +64,33 @@ namespace TuesPechkin
         }
 
         /// <summary>
-        /// Tells the dispatcher to shutdown its worker thread.
+        /// Invokes specified delegate with parameters on the dispatcher thread synchronously.
         /// </summary>
-        public static void Terminate()
+        /// <param name="task">delegate to run on the thread</param>
+        /// <returns>result of an action</returns>
+        public static void Invoke(Action @delegate)
         {
-            SynchronizedDispatcher.Abort = true;
+            // create the task
+            var task = new Task(@delegate);
+
+            // we don't want the task to be completed before we start waiting for that, so the outer lock
+            lock (task)
+            {
+                lock (queueLock)
+                {
+                    taskQueue.Add(task);
+
+                    Monitor.Pulse(queueLock);
+                }
+
+                // until this point, evaluation could not start
+                Monitor.Wait(task);
+
+                if (task.Exception != null)
+                {
+                    throw task.Exception;
+                }
+            }
         }
 
         /// <summary>
@@ -82,7 +100,12 @@ namespace TuesPechkin
         {
             try
             {
-                while (!SynchronizedDispatcher.Abort)
+                using (WindowsIdentity.Impersonate(IntPtr.Zero))
+                {
+                    Thread.CurrentPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+                }
+
+                while (true)
                 {
                     Task task;
 
@@ -125,6 +148,11 @@ namespace TuesPechkin
 
         private class Task
         {
+            public Task(Action action)
+            {
+                this.Action = action;
+            }
+
             public virtual Action Action { get; protected set; }
 
             public Exception Exception { get; set; }
@@ -135,7 +163,7 @@ namespace TuesPechkin
         /// </summary>
         private class Task<TResult> : Task
         {
-            public Task(Func<TResult> @delegate)
+            public Task(Func<TResult> @delegate) : base(null)
             {
                 this.Delegate = @delegate;
                 this.Action = () => this.Result = this.Delegate();

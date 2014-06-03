@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Remoting;
-using TuesPechkin.Util;
+using System.Security;
+using System.Security.Principal;
+using System.Threading;
 
 namespace TuesPechkin
 {
@@ -43,7 +45,7 @@ namespace TuesPechkin
                     }
                 }
             }
-
+            
             ObjectHandle handle = Activator.CreateInstanceFrom(
                 Factory.operatingDomain,
                 Assembly.GetExecutingAssembly().Location,
@@ -66,25 +68,22 @@ namespace TuesPechkin
         /// wkhtmltopdf library. Attaches to the current AppDomain's DomainUnload event in IIS environments 
         /// to ensure that on re-deploy, the library is freed so the new AppDomain will be able to use it.
         /// </summary>
-        private static void SetupAppDomain()
+        internal static void SetupAppDomain()
         {
-            var dirName = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var setup = new AppDomainSetup() { ApplicationBase = dirName };
-            Factory.operatingDomain = AppDomain.CreateDomain("pechkin_internal_domain", null, setup);
-
-            Func<object> del = () =>
+            SynchronizedDispatcher.Invoke(() =>
             {
-                Factory.operatingDomain.SetData("useX11Graphics", Factory.UseX11Graphics);
+                var dirName = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var setup = new AppDomainSetup() { ApplicationBase = dirName };
+                var domain = Factory.operatingDomain = AppDomain.CreateDomain("pechkin_internal_domain", null, setup);
 
-                Factory.operatingDomain.DoCallBack(() =>
+                domain.SetData("useX11Graphics", Factory.UseX11Graphics);
+
+                domain.DoCallBack(() =>
                 {
-                    PechkinBindings.wkhtmltopdf_init((bool)AppDomain.CurrentDomain.GetData("useX11Graphics") ? 1 : 0);
+                    var useX11Graphics = (bool)AppDomain.CurrentDomain.GetData("useX11Graphics");
+                    PechkinBindings.wkhtmltopdf_init(useX11Graphics ? 1 : 0);
                 });
-
-                return null;
-            };
-
-            SynchronizedDispatcher.Invoke(del);
+            });
 
             if (AppDomain.CurrentDomain.IsDefaultAppDomain() == false)
             {
@@ -98,18 +97,14 @@ namespace TuesPechkin
         /// </summary>
         /// <param name="sender">Typically a null value, not used in the method.</param>
         /// <param name="e">Typically EventArgs.Empty, not used in the method.</param>
-        private static void TearDownAppDomain(object sender, EventArgs e)
+        internal static void TearDownAppDomain(object sender, EventArgs e)
         {
             if (Factory.operatingDomain != null)
             {
-                Func<object> del = () =>
+                SynchronizedDispatcher.Invoke(() =>
                 {
                     Factory.operatingDomain.DoCallBack(() => PechkinBindings.wkhtmltopdf_deinit());
-
-                    return null;
-                };
-
-                SynchronizedDispatcher.Invoke(del);
+                });
 
                 AppDomain.Unload(Factory.operatingDomain);
 
@@ -125,8 +120,6 @@ namespace TuesPechkin
 
                 Factory.operatingDomain = null;
             }
-
-            SynchronizedDispatcher.Terminate();
         }
     }
 }

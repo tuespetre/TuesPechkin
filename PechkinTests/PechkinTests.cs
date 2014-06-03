@@ -35,42 +35,54 @@ namespace PechkinTests
         }
 
         [Fact]
-        public void UnloadsWkhtmltoxWhenAppDomainUnloads()
-        {
-            //arrange
-            var domain = AppDomain.CreateDomain("testing_unload", null, new AppDomainSetup
-            {
-                ApplicationBase = Path.GetDirectoryName(typeof(Factory).Assembly.Location)
-            });
-
-            //act
-            domain.DoCallBack(() =>
-            {
-                Factory.Create().Convert("<p>some html</p>");
-            });
-            AppDomain.Unload(domain);
-
-            //assert
-            Assert.False(Process.GetCurrentProcess()
-                                .Modules
-                                .Cast<ProcessModule>()
-                                .Any(m => m.ModuleName == "wkhtmltox.dll"));
-        }
-
-        [Fact]
         public void BubblesExceptionsFromSyncedThread()
         {
             Assert.Throws<ApplicationException>(() =>
             {
-                SynchronizedDispatcher.Invoke<object>(() => { throw new ApplicationException(); });
+                SynchronizedDispatcher.Invoke(() => { throw new ApplicationException(); });
             });
+        }
+
+        [Fact]
+        public void ConvertsAfterAppDomainRecycles()
+        {
+            // arrange
+            Factory.TearDownAppDomain(null, null);
+
+            var pathName = Path.GetDirectoryName(typeof(Factory).Assembly.Location);
+            var appDomainSetup = new AppDomainSetup { ApplicationBase = pathName };
+            var domain1 = AppDomain.CreateDomain("testing_unload_1", null, appDomainSetup);
+            byte[] result1 = null;
+            var domain2 = AppDomain.CreateDomain("testing_unload_2", null, appDomainSetup);
+            byte[] result2 = null;
+
+            // act
+            domain1.DoCallBack(() =>
+            {
+                byte[] convert = Factory.Create().Convert("<p>some html</p>");
+                AppDomain.CurrentDomain.SetData("result1", convert);
+            });
+            result1 = domain1.GetData("result1") as byte[];
+            AppDomain.Unload(domain1);
+
+            domain2.DoCallBack(() =>
+            {
+                byte[] convert = Factory.Create().Convert("<p>some html</p>");
+                AppDomain.CurrentDomain.SetData("result2", convert);
+            });
+            result2 = domain2.GetData("result2") as byte[];
+            AppDomain.Unload(domain2);
+
+            // assert
+            Assert.NotNull(result1);
+            Assert.NotNull(result2);
         }
 
         [Fact]
         public void HandlesConcurrentThreads()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
-            int numberOfTasks = 5;
+            int numberOfTasks = 10;
             int completed = 0;
 
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
@@ -181,6 +193,27 @@ namespace PechkinTests
             byte[] ret = c.Convert(html);
 
             Assert.NotNull(ret);
+        }
+
+        [Fact]
+        public void UnloadsWkhtmltoxWhenAppDomainUnloads()
+        {
+            // arrange
+            Factory.TearDownAppDomain(null, null);
+
+            var pathName = Path.GetDirectoryName(typeof(Factory).Assembly.Location);
+            var appDomainSetup = new AppDomainSetup { ApplicationBase = pathName };
+            var domain = AppDomain.CreateDomain("testing_unload", null, appDomainSetup);
+
+            // act
+            domain.DoCallBack(() => Factory.Create().Convert("<p>some html</p>"));
+            AppDomain.Unload(domain);
+
+            // assert
+            Assert.False(Process.GetCurrentProcess()
+                                .Modules
+                                .Cast<ProcessModule>()
+                                .Any(m => m.ModuleName == "wkhtmltox.dll"));
         }
     }
 }
