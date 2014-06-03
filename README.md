@@ -28,6 +28,11 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 
 ### Release notes
 
+#### 1.0.3
+- Global setting margins now uses culture-invariant formatting of double values
+- Global setting color mode now works properly ('color' or 'grayscale')
+- Several boolean values now work properly ('LoadImages', 'EnableJavascript', etc.)
+
 #### 1.0.2
 - Revert to process identity within the synchronized thread, see issue #14
 
