@@ -47,13 +47,13 @@ namespace TuesPechkin
 
         private static string GetStringValue(PropertyInfo property, object value)
         {
-            var u = Nullable.GetUnderlyingType(property.PropertyType);
+            var type = property.PropertyType;
 
-            if (property.PropertyType == typeof(double?))
+            if (type == typeof(double?) || type == typeof(double))
             {
                 return ((double?)value).Value.ToString("0.##", CultureInfo.InvariantCulture);
             }
-            else if (property.PropertyType == typeof(bool?))
+            else if (type == typeof(bool?) || type == typeof(bool))
             {
                 return ((bool?)value).Value ? "true" : "false";
             }
