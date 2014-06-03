@@ -28,6 +28,12 @@ The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded
 
 ### Release notes
 
+#### 1.0.2
+- Revert to process identity within the synchronized thread, see issue #14
+
+#### 1.0.1
+- Corrected an issue with the AppDomain hanging on unload; introduced unit test to cover this scenario
+
 #### 1.0.0 - HUGE changes
 - Began to use semantic versioning.
 - Removed ```ExtendedQtAvailable``` and ```Version``` properties from ```Factory```.
