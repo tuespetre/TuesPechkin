@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace TuesPechkin
 {
@@ -227,7 +228,7 @@ namespace TuesPechkin
                     break;
             }
 
-            return String.Format("{0}{1}", value.ToString("0.##"), strUnit);
+            return String.Format("{0}{1}", value.ToString("0.##", CultureInfo.InvariantCulture), strUnit);
         }
     }
 }
