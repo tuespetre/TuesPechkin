@@ -10,12 +10,14 @@ TuesPechkin is available as a *NuGet package* (see: https://www.nuget.org/packag
 
 
 ### Reporting issues
-If you experience any problems using TuesPechkin, please be sure to create the issues on the TuesPechkin repository and not the original Pechkin repository. I am so grateful to gmanny for his contribution but at this point I see my fork evolving further away from the original and I would like to continue to support it for us.
+If something looks visually off when you print your document, try converting with [wkhtmltopdf](http://www.wkhtmltopdf.org) directly. If you still have the problem, then you will need to take your issue to [wkhtmltopdf's issues](https://github.com/wkhtmltopdf/wkhtmltopdf). Any issues related to visual problems like this will be closed unless the reporter can show that the problem is unique to this library.
+
+Since this library is maintained on limited resources, please bring the witch here to burn (so to speak), rather than declaring that a witch is out there and that someone needs to find it and burn it. It would be most helpful if you could provide steps to reproduce the issue, sample material (raw html, code, etc.), and environment information.
 
 
 
 ### Windows Azure usage
-Azure does not play nice with wkhtmltox.dll because it uses the GDI libraries. Chances are it will not work for you. Any opened issues in regards to this will be closed.
+At the time of writing this, Azure does not play nice with wkhtmltox.dll because it uses the GDI libraries. Chances are it will not work for you. Any opened issues in regards to this will be closed.
 
 See: http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview
 
