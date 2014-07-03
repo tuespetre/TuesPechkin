@@ -115,6 +115,26 @@ converter.Finished += OnFinished;
 byte[] result = converter.Convert(document);
 ```
 
+## Options
+
+### How to read this section
+
+This section spells out each settings class, a description for each possible setting, and the default values TuesPechkin and wkhtmltopdf uses. There are differences in the defaults which may affect rendering. The defaults may be normalized to match that of wkhtmltopdf in a future version.
+
+#### WebSettings
+
+Setting | Description | TuesPechkin default | wkhtmltopdf default
+--------|-------------|---------------------|--------------------
+DefaultEncoding|(string) Default encoding used to render the HTML|`"utf-8"`|`""`
+EnableIntelligentShrinking|(bool) Whether or not to enable intelligent compression of content to fit in the page|`true`|`true`
+EnableJavascript|Whether or not to enable JavaScript|`true`|`true`
+EnablePlugins|Whether to enable plugins (maybe like Flash? unsure)|`false`|`false`
+LoadImages|Whether or not to load images|`true`|`true`
+MinimumFontSize|The minimum font size to use|`-1`|`-1`
+PrintBackground|Whether or not to print the background on elements|`true`|`true`
+PrintMediaType|Whether to print the content using the print media type instead of the screen media type|`true`|`false`
+UserStyleSheet|Path to a user specified style sheet|`""`|`""`
+
 License
 -------
 
