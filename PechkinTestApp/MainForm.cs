@@ -39,11 +39,16 @@ namespace Html2PdfTestApp
                     }
                 },
                 Objects = {
-                    new ObjectSettings { HtmlText = this.htmlText.Text }
+                    new TableOfContentsSettings {
+                      UseDottedLines = true,
+                      ProduceForwardLinks = true,
+                    },
+                    new ObjectSettings { HtmlText = this.htmlText.Text },
                 }
             };
 
             IPechkin sc2 = Factory.Create();
+
             var buf = sc2.Convert(document);
 
             MessageBox.Show("All conversions done");

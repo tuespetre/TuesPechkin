@@ -1,18 +1,22 @@
 ﻿using System;
 
-namespace Pechkin
+namespace TuesPechkin
 {
-    [Serializable]
-    public class TableOfContentsSettings
+  [Serializable]
+    public class TableOfContentsSettings : ObjectSettings
     {
         public TableOfContentsSettings()
         {
             this.ProduceTableOfContents = true;
         }
 
-        private readonly ObjectSettings objectSettings = new ObjectSettings();
-
         private string xslStyleSheet;
+ 
+        [WkhtmltopdfSetting("isTableOfContent")]
+        internal bool ProduceTableOfContents { get; set; } 
+
+        [WkhtmltopdfSetting("toc.captionText")]
+        public string CaptionText { get; set; } 
 
         [WkhtmltopdfSetting("toc.fontScale")]
         public double? FontScale { get; set; }
@@ -34,29 +38,12 @@ namespace Pechkin
         {
             get
             {
-                return this.xslStyleSheet ?? PechkinBindings.TocXslFilename;
+              return this.xslStyleSheet ?? new DefaultTOCStyleSheetDumper( this ).MakeDefaultTOCStyleSheetFile();
             }
             set
             {
                 this.xslStyleSheet = value;
             }
-        }
-
-        [WkhtmltopdfSetting("isTableOfContent")]
-        internal bool ProduceTableOfContents { get; set; }
-
-        internal void ApplyToConverter(IntPtr converter)
-        {
-            var config = PechkinStatic.CreateObjectSettings();
-
-            SettingApplicator.ApplySettings(config, this);
-            SettingApplicator.ApplySettings(config, this.objectSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.HeaderSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.FooterSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.WebSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.LoadSettings);
-
-            PechkinStatic.AddObject(converter, config, (byte[])null);
-        }
+        } 
     }
 }

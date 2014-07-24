@@ -91,6 +91,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultTOCStyleSheetDumper.cs" />
     <Compile Include="HtmlToPdfDocument.cs" />
     <Compile Include="EventHandlers\BeginEventHandler.cs" />
     <Compile Include="EventHandlers\ErrorEventHandler.cs" />
@@ -118,7 +119,7 @@
     <Compile Include="Proxy.cs" />
     <Compile Include="SettingApplicator.cs" />
     <Compile Include="SimplePechkin.cs" />
-    <None Include="TableOfContentsSettings.cs" />
+    <Compile Include="TableOfContentsSettings.cs" />
     <Compile Include="Tracer.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Util\IntCallback.cs" />
@@ -135,14 +136,21 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="wkhtmltox_32.dll.gz" />
-    <None Include="wkhtmltox_64.dll.gz" />
+    <None Include="wkhtmltox_32.dll.gz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wkhtmltox_64.dll.gz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="toc.xsl" />
+    <Content Include="toc.xsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

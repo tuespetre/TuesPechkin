@@ -10,9 +10,7 @@ namespace TuesPechkin
 {
     [Serializable]
     internal static class PechkinBindings
-    {
-        public static string TocXslFilename { get; private set; }
-
+    { 
         static PechkinBindings()
         {
             var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64_dll : Resources.wkhtmltox_32_dll;
@@ -126,15 +124,7 @@ namespace TuesPechkin
 
         private static void SetupUnmanagedAssembly(string fileName, byte[] assemblyRaw)
         {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName();
-            var basePath = Path.Combine(
-                Path.GetTempPath(),
-                String.Format(
-                    "{0}{1}_{2}_{3}",
-                    assemblyName.Name.ToString(),
-                    assemblyName.Version.ToString(),
-                    IntPtr.Size == 8 ? "x64" : "x86",
-                    String.Join(String.Empty, AppDomain.CurrentDomain.BaseDirectory.Split(Path.GetInvalidFileNameChars()))));
+            string basePath = BasePath();
 
             if (!Directory.Exists(basePath))
             {
@@ -144,30 +134,36 @@ namespace TuesPechkin
             fileName = Path.Combine(basePath, fileName);
 
             WriteStreamToFile(fileName, () => new GZipStream(new MemoryStream(assemblyRaw), CompressionMode.Decompress));
-
-            TocXslFilename = Path.Combine(basePath, "toc.xsl");
-
-            WriteStreamToFile(TocXslFilename, () => new MemoryStream(Resources.toc));
-
+ 
             WinApiHelper.LoadLibrary(fileName);
         }
 
-        private static void WriteStreamToFile(string fileName, Func<Stream> streamFactory)
-        {
-            if (!File.Exists(fileName))
-            {
-                var stream = streamFactory();
-                var writeBuffer = new byte[8192];
-                var writeLength = 0;
+        public static string BasePath() {
+          var assemblyName = Assembly.GetExecutingAssembly().GetName();
+          var basePath = Path.Combine(
+            Path.GetTempPath(),
+            String.Format(
+              "{0}{1}_{2}_{3}",
+              assemblyName.Name,
+              assemblyName.Version,
+              IntPtr.Size == 8 ? "x64" : "x86",
+              String.Join(String.Empty, AppDomain.CurrentDomain.BaseDirectory.Split(Path.GetInvalidFileNameChars()))));
+          return basePath;
+        }
 
-                using (var newFile = File.Open(fileName, FileMode.Create))
-                {
-                    while ((writeLength = stream.Read(writeBuffer, 0, writeBuffer.Length)) > 0)
-                    {
-                        newFile.Write(writeBuffer, 0, writeLength);
-                    }
-                }
-            }
+        private static void WriteStreamToFile(string fileName, Func<Stream> streamFactory) {
+          if (File.Exists(fileName)) return;
+
+          var stream = streamFactory();
+          var writeBuffer = new byte[8192];
+
+          using (var newFile = File.Open(fileName, FileMode.Create)) {
+            var writeLength = 0;
+            while ((writeLength = stream.Read(writeBuffer, 0, writeBuffer.Length)) > 0)
+              {
+                  newFile.Write(writeBuffer, 0, writeLength);
+              }
+          }
         }
     }
 }
