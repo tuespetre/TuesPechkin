@@ -73,7 +73,7 @@ namespace TuesPechkin
             SynchronizedDispatcher.Invoke(() =>
             {
                 var dirName = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var setup = new AppDomainSetup() { ApplicationBase = dirName };
+								var setup = new AppDomainSetup() { ApplicationBase = dirName, LoaderOptimization = LoaderOptimization.SingleDomain };
                 var domain = Factory.operatingDomain = AppDomain.CreateDomain("pechkin_internal_domain", null, setup);
 
                 domain.SetData("useX11Graphics", Factory.UseX11Graphics);
