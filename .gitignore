@@ -5,6 +5,7 @@ _ReSharper.*
 .svn
 *.user
 *.suo
+packages
 
 # mstest test results
 TestResults
