@@ -1,20 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace TuesPechkin
 {
     [Serializable]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class WebSettings
     {
-        public WebSettings()
-        {
-            this.DefaultEncoding = "utf-8";
-            this.EnableIntelligentShrinking = true;
-            this.EnableJavascript = true;
-            this.LoadImages = true;
-            this.PrintBackground = true;
-            this.PrintMediaType = true;
-        }
-
         /// <summary>
         /// What encoding should we guess content is using if they do not specify it properly? E.g. "utf-8"
         /// </summary>
@@ -25,25 +17,25 @@ namespace TuesPechkin
         /// Whether or not to enable intelligent compression of content to fit in the page
         /// </summary>
         [WkhtmltopdfSetting("web.enableIntelligentShrinking")]
-        public bool EnableIntelligentShrinking { get; set; }
+        public bool? EnableIntelligentShrinking { get; set; }
 
         /// <summary>
         /// Whether or not to enable JavaScript
         /// </summary>
         [WkhtmltopdfSetting("web.enableJavascript")]
-        public bool EnableJavascript { get; set; }
+        public bool? EnableJavascript { get; set; }
 
         /// <summary>
         /// Whether to enable plugins (maybe like Flash? unsure)
         /// </summary>
         [WkhtmltopdfSetting("web.enablePlugins")]
-        public bool EnablePlugins { get; set; }
+        public bool? EnablePlugins { get; set; }
 
         /// <summary>
         /// Whether or not to load images
         /// </summary>
         [WkhtmltopdfSetting("web.loadImages")]
-        public bool LoadImages { get; set; }
+        public bool? LoadImages { get; set; }
 
         /// <summary>
         /// The minimum font size to use

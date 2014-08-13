@@ -1,19 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace TuesPechkin
 {
     [Serializable]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ObjectSettings
     {
-        public ObjectSettings()
-        {
-            this.IncludeInOutline = true;
-            this.CountPages = true;
-            this.ProduceExternalLinks = true;
-            this.ProduceForms = true;
-            this.ProduceLocalLinks = true;
-        }
-
         [WkhtmltopdfSetting("includeInOutline")]
         public bool? IncludeInOutline { get; set; }
 
@@ -32,7 +25,7 @@ namespace TuesPechkin
         [WkhtmltopdfSetting("useLocalLinks")]
         public bool? ProduceLocalLinks { get; set; }
 
-        private byte[] data;
+        private byte[] data = new byte[0];
 
         private FooterSettings footer = new FooterSettings();
 
@@ -76,6 +69,7 @@ namespace TuesPechkin
             }
             set
             {
+                this.AssertNotNull(value);
                 this.data = System.Text.Encoding.UTF8.GetBytes(value);
             }
         }
@@ -93,6 +87,7 @@ namespace TuesPechkin
             }
         }
 
+        [Browsable(false)]
         public byte[] RawData
         {
             get
@@ -101,6 +96,7 @@ namespace TuesPechkin
             }
             set
             {
+                this.AssertNotNull(value);
                 this.data = value;
             }
         }

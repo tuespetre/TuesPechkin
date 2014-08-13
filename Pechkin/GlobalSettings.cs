@@ -1,22 +1,14 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace TuesPechkin
 {
     [Serializable]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class GlobalSettings
     {
         private MarginSettings margins = new MarginSettings();
-
-        public GlobalSettings()
-        {
-            this.ColorMode = DocumentColorMode.Color;
-            this.Orientation = PaperOrientation.Portrait;
-            this.Copies = 1;
-            this.OutputFormat = DocumentOutputFormat.PDF;
-            this.UseCompression = true;
-            this.OutlineDepth = 4;
-        }
 
         public enum DocumentColorMode
         {
@@ -45,7 +37,7 @@ namespace TuesPechkin
         /// <summary>
         /// Whether to print in color or grayscale. (Default: color)
         /// </summary>
-        public DocumentColorMode ColorMode { get; set; }
+        public DocumentColorMode? ColorMode { get; set; }
 
         /// <summary>
         /// The path of a file used to store cookies.
@@ -57,7 +49,7 @@ namespace TuesPechkin
         /// How many copies to print. (Default: 1)
         /// </summary>
         [WkhtmltopdfSetting("copies")]
-        public int Copies { get; set; }
+        public int? Copies { get; set; }
 
         /// <summary>
         /// The title of the PDF document.
@@ -110,7 +102,7 @@ namespace TuesPechkin
         /// The orientation of the output document, either Portrait or Landscape. (Default: Portrait)
         /// </summary>
         [WkhtmltopdfSetting("orientation")]
-        public PaperOrientation Orientation { get; set; }
+        public PaperOrientation? Orientation { get; set; }
 
         /// <summary>
         /// The maximum depth of the outline. (Default: 4)
@@ -128,7 +120,7 @@ namespace TuesPechkin
         /// Whether to output PDF or PostScript. (Default: PDF)
         /// </summary>
         [WkhtmltopdfSetting("outputFormat")]
-        public DocumentOutputFormat OutputFormat { get; set; }
+        public DocumentOutputFormat? OutputFormat { get; set; }
 
         /// <summary>
         /// A number that is added to all page numbers when printing headers, footers and table of content.

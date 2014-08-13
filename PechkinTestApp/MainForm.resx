@@ -117,42 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="htmlText.Text" xml:space="preserve">
-    <value>&lt;html&gt;
-    &lt;head&gt;
-        &lt;title&gt;Test HTML-PDF file&lt;/title&gt;
-        
-        &lt;style type="text/css"&gt;
-            body {
-                font-face: "Calibry", "Tahoma", sans-serif;
-            }
-            p { text-indent: 3em; }
-            .last-cell {
-                text-align: center;
-                font-style: italic;
-            }
-            code {
-                color: #484848;
-                border: 1px solid #dadada;
-                background-color: rgb(250, 250, 250);
-                padding: 5px;
-                margin: 15px; display: block;
-            }
-        &lt;/style&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;h1&gt;Hello world!&lt;/h1&gt;
-        &lt;p&gt;
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec pulvinar pellentesque tincidunt. Duis eu massa augue. Pellentesque bibendum lacinia ipsum eget semper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec in diam mi, vitae tincidunt leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque feugiat nibh vel dui ultrices a sagittis eros auctor. Curabitur at scelerisque tortor. Maecenas vel egestas lorem. Vivamus auctor hendrerit pharetra. Proin laoreet ornare ultricies. Nunc lectus ante, accumsan sed dictum id, vulputate at dui. Pellentesque nisl odio, tincidunt et consectetur ac, tristique ornare purus. Sed bibendum dolor vel eros auctor eleifend. Ut tortor metus, cursus sit amet tempor non, consectetur in nisl.
-        &lt;/p&gt;
-        &lt;table&gt;
-            &lt;tr&gt;&lt;th&gt;Property&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;
-            &lt;tr&gt;&lt;td&gt;Text&lt;/td&gt;&lt;td&gt;Html to pdf test app&lt;/td&gt;&lt;/tr&gt;
-            &lt;tr&gt;&lt;td&gt;Object type&lt;/td&gt;&lt;td&gt;Form&lt;/td&gt;&lt;/tr&gt;
-            &lt;tr&gt;&lt;td&gt;Purpose&lt;/td&gt;&lt;td&gt;&lt;code&gt;libraray test&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
-            &lt;tr&gt;&lt;td colspan="2" class="last-cell"&gt;Nothing more.&lt;/td&gt;&lt;/tr&gt;
-        &lt;/table&gt;
-    &lt;/body&gt;
-&lt;/html&gt;</value>
-  </data>
 </root>

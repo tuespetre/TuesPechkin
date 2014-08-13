@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace TuesPechkin
 {
     [Serializable]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class MarginSettings
     {
         public MarginSettings()
@@ -26,6 +28,7 @@ namespace TuesPechkin
 
         public double Top { get; set; }
 
+        [Browsable(false)]
         public double All
         {
             set

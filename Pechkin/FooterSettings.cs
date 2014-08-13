@@ -1,8 +1,10 @@
 using System;
+using System.ComponentModel;
 
 namespace TuesPechkin
 {
     [Serializable]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FooterSettings
     {
         /// <summary>

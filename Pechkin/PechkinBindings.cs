@@ -134,7 +134,7 @@ namespace TuesPechkin
                     assemblyName.Name.ToString(),
                     assemblyName.Version.ToString(),
                     IntPtr.Size == 8 ? "x64" : "x86",
-                    String.Join(String.Empty, AppDomain.CurrentDomain.BaseDirectory.Split(Path.GetInvalidFileNameChars()))));
+                    AppDomain.CurrentDomain.BaseDirectory.GetHashCode()));
 
             if (!Directory.Exists(basePath))
             {
@@ -143,7 +143,9 @@ namespace TuesPechkin
 
             fileName = Path.Combine(basePath, fileName);
 
-            WriteStreamToFile(fileName, () => new GZipStream(new MemoryStream(assemblyRaw), CompressionMode.Decompress));
+            WriteStreamToFile(fileName, () => new GZipStream(
+                new MemoryStream(assemblyRaw), 
+                CompressionMode.Decompress));
 
             TocXslFilename = Path.Combine(basePath, "toc.xsl");
 

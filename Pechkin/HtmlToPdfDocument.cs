@@ -39,6 +39,11 @@ namespace TuesPechkin
 
         internal void ApplyToConverter(out IntPtr converter)
         {
+            if (this.Objects.Count == 0)
+            {
+                throw new InvalidOperationException("No objects defined for document; cannot convert");
+            }
+
             converter = IntPtr.Zero;
 
             var config = PechkinStatic.CreateGlobalSetting();
