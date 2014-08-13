@@ -22,6 +22,13 @@ namespace TuesPechkin
         private static AppDomain operatingDomain = null;
 
         /// <summary>
+        /// When initializing the library, TuesPechkin will look for a value set
+        /// here to load the wkhtmltopdf library. Use this to specify the location
+        /// of a desired version of wkhtmltox.dll; it must be the full filename including the path.
+        /// </summary>
+        public static string AssemblyPath { get; set; }
+
+        /// <summary>
         /// When set to true, Pechkin.Factory will set up wkhtmltopdf to use X11 graphics mode.
         /// Default value is false. Changing the value of this property will have no effect on the behavior
         /// of wkhtmltopdf once the library has been initialized.

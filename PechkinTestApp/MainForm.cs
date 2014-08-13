@@ -10,7 +10,13 @@ namespace Html2PdfTestApp
 {
     public partial class MainForm : Form
     {
-        private HtmlToPdfDocument Document = new HtmlToPdfDocument();
+        private HtmlToPdfDocument Document = new HtmlToPdfDocument
+        {
+            Objects =
+            {
+                new ObjectSettings { PageUrl = "www.google.com" }
+            }
+        };
 
         public MainForm()
         {

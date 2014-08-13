@@ -17,7 +17,14 @@ namespace TuesPechkin
         {
             var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64_dll : Resources.wkhtmltox_32_dll;
 
-            SetupUnmanagedAssembly("wkhtmltox.dll", raw);
+            if (Factory.AssemblyPath == null)
+            {
+                SetupUnmanagedAssembly("wkhtmltox.dll", raw);
+            }
+            else
+            {
+                WinApiHelper.LoadLibrary(Factory.AssemblyPath);
+            }
         }
 
         [DllImport("wkhtmltox.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
