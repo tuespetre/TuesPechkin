@@ -11,6 +11,7 @@ using Xunit;
 
 namespace PechkinTests
 {
+    [Serializable]
     public class PechkinTests
     {
         static PechkinTests()
@@ -49,11 +50,9 @@ namespace PechkinTests
             // arrange
             Factory.TearDownAppDomain(null, null);
 
-            var pathName = Path.GetDirectoryName(typeof(Factory).Assembly.Location);
-            var appDomainSetup = new AppDomainSetup { ApplicationBase = pathName };
-            var domain1 = AppDomain.CreateDomain("testing_unload_1", null, appDomainSetup);
+            var domain1 = this.GetAppDomain("testing_unload_1");
             byte[] result1 = null;
-            var domain2 = AppDomain.CreateDomain("testing_unload_2", null, appDomainSetup);
+            var domain2 = this.GetAppDomain("testing_unload_2");
             byte[] result2 = null;
 
             // act
@@ -201,9 +200,7 @@ namespace PechkinTests
             // arrange
             Factory.TearDownAppDomain(null, null);
 
-            var pathName = Path.GetDirectoryName(typeof(Factory).Assembly.Location);
-            var appDomainSetup = new AppDomainSetup { ApplicationBase = pathName };
-            var domain = AppDomain.CreateDomain("testing_unload", null, appDomainSetup);
+            var domain = this.GetAppDomain("testing_unload");
 
             // act
             domain.DoCallBack(() => Factory.Create().Convert("<p>some html</p>"));
@@ -214,6 +211,15 @@ namespace PechkinTests
                                 .Modules
                                 .Cast<ProcessModule>()
                                 .Any(m => m.ModuleName == "wkhtmltox.dll"));
+        }
+
+        private AppDomain GetAppDomain(string name)
+        {
+            var pathName = Path.GetDirectoryName(typeof(Factory).Assembly.Location);
+            var appDomainSetup = new AppDomainSetup { ApplicationBase = pathName };
+            var domain = AppDomain.CreateDomain(name, null, appDomainSetup);
+
+            return domain;
         }
     }
 }
