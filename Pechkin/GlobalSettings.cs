@@ -210,7 +210,7 @@ namespace TuesPechkin
         {
             get
             {
-                return this.ColorMode == DocumentColorMode.Color ? "grayscale" : "color";
+							return this.ColorMode == DocumentColorMode.Color ? "color" : "grayscale";
             }
         }
 
