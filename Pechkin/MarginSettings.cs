@@ -9,7 +9,7 @@ namespace TuesPechkin
     {
         public MarginSettings()
         {
-            this.Unit = TuesPechkin.Unit.Inches;
+            this.Unit = TuesPechkin.Unit.Millimeters;
         }
 
         public MarginSettings(double top, double right, double bottom, double left) : this()
@@ -20,13 +20,13 @@ namespace TuesPechkin
             this.Left = left;
         }
 
-        public double Bottom { get; set; }
+        public double? Bottom { get; set; }
 
-        public double Left { get; set; }
+        public double? Left { get; set; }
 
-        public double Right { get; set; }
+        public double? Right { get; set; }
 
-        public double Top { get; set; }
+        public double? Top { get; set; }
 
         [Browsable(false)]
         public double All

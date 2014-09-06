@@ -210,12 +210,17 @@ namespace TuesPechkin
         {
             get
             {
-							return this.ColorMode == DocumentColorMode.Color ? "color" : "grayscale";
+				return this.ColorMode == DocumentColorMode.Color ? "color" : "grayscale";
             }
         }
 
-        private string GetMarginValue(double value)
+        private string GetMarginValue(double? value)
         {
+            if (!value.HasValue)
+            {
+                return null;
+            }
+
             var strUnit = "in";
 
             switch (this.margins.Unit)
@@ -228,7 +233,7 @@ namespace TuesPechkin
                     break;
             }
 
-            return String.Format("{0}{1}", value.ToString("0.##", CultureInfo.InvariantCulture), strUnit);
+            return String.Format("{0}{1}", value.Value.ToString("0.##", CultureInfo.InvariantCulture), strUnit);
         }
     }
 }
