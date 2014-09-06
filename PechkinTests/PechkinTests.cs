@@ -215,8 +215,10 @@ namespace PechkinTests
 
         private AppDomain GetAppDomain(string name)
         {
-            var pathName = Path.GetDirectoryName(typeof(Factory).Assembly.Location);
-            var appDomainSetup = new AppDomainSetup { ApplicationBase = pathName };
+            // This is setup for using the Visual Studio test runner 
+            // Specifically, the xUnit.net runner by Outercurve Foundation
+
+            var appDomainSetup = new AppDomainSetup { ApplicationBase = AppDomain.CurrentDomain.BaseDirectory };
             var domain = AppDomain.CreateDomain(name, null, appDomainSetup);
 
             return domain;
