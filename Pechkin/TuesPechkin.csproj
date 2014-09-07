@@ -95,7 +95,7 @@
     <Compile Include="Attributes\GlobalSettingAttribute.cs" />
     <Compile Include="Attributes\SettingBagAttribute.cs" />
     <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="HtmlToPdfDocument.cs" />
     <Compile Include="EventHandlers\BeginEventHandler.cs" />
     <Compile Include="EventHandlers\ErrorEventHandler.cs" />
@@ -121,19 +121,19 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Proxy.cs" />
-    <Compile Include="SettingApplicator.cs" />
+    <Compile Include="Util\SettingApplicator.cs" />
     <Compile Include="SimplePechkin.cs" />
     <None Include="TableOfContentsSettings.cs" />
-    <Compile Include="Tracer.cs" />
+    <Compile Include="Util\Tracer.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Util\IntCallback.cs" />
     <Compile Include="Util\RetroDelegates.cs" />
     <Compile Include="Util\StringCallback.cs" />
-    <Compile Include="SynchronizedDispatcher.cs" />
+    <Compile Include="Util\SynchronizedDispatcher.cs" />
     <Compile Include="Util\UTF8Marshaller.cs" />
     <Compile Include="Util\VoidCallback.cs" />
     <Compile Include="WebSettings.cs" />
-    <Compile Include="WinApiHelper.cs" />
+    <Compile Include="Util\WinApiHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
