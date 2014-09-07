@@ -24,16 +24,8 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value); 
                 this.global = value;
-            }
-        }
-
-        private void AssertNotNull(object value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
             }
         }
 

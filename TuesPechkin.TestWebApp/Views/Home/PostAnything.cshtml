@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "PostAnything";
+}
+
+<h2>Congratulations, you delivered a ton of junk to this page</h2>
+
+<h3>Cookies</h3>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Value</th>
+    </tr>
+@foreach (HttpCookie cookie in Request.Cookies)
+{
+    <tr>
+        <td>@cookie.Name</td>
+        <td>@cookie.Value</td>
+    </tr>
+}
+</table>
+
+<h3>Headers</h3>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Value</th>
+    </tr>
+@foreach (string key in Request.Headers)
+{
+    <tr>
+        <td>@key</td>
+        <td>@Request.Headers[key]</td>
+    </tr>
+}
+</table>

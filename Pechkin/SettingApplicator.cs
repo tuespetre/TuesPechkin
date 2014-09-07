@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
@@ -32,15 +33,31 @@ namespace TuesPechkin
                     continue;
                 }
 
-                var value = GetStringValue(property, rawValue);
-
-                if (global)
+                if (property.PropertyType != typeof(Dictionary<string, string>))
                 {
-                    PechkinStatic.SetGlobalSetting(config, attribute.SettingName, value);
+                    var value = GetStringValue(property, rawValue);
+                    Set(global, config, attribute.SettingName, value);
                 }
                 else
                 {
-                    PechkinStatic.SetObjectSetting(config, attribute.SettingName, value);
+                    var dictionary = (Dictionary<string, string>)rawValue;
+                    var index = 0;
+
+                    foreach (var entry in dictionary)
+                    {
+                        if (entry.Key == null || entry.Value == null)
+                        {
+                            continue;
+                        }
+
+                        var name = string.Format("{0}[{1}]", attribute.SettingName, index);
+                        var value = entry.Key + "," + entry.Value;
+
+                        Set(global, config, attribute.SettingName + ".append", null);
+                        Set(global, config, name, value);
+
+                        index++;
+                    }
                 }
             }
         }
@@ -60,6 +77,18 @@ namespace TuesPechkin
             else
             {
                 return value.ToString();
+            }
+        }
+
+        private static void Set(bool global, IntPtr config, string name, string value)
+        {
+            if (global)
+            {
+                PechkinStatic.SetGlobalSetting(config, name, value);
+            }
+            else
+            {
+                PechkinStatic.SetObjectSetting(config, name, value);
             }
         }
     }

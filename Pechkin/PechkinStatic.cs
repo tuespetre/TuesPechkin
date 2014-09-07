@@ -39,7 +39,11 @@ namespace TuesPechkin
                     value,
                     setting));
 
-            return PechkinBindings.wkhtmltopdf_set_global_setting(setting, name, value);
+            var success = PechkinBindings.wkhtmltopdf_set_global_setting(setting, name, value);
+
+            Tracer.Trace(String.Format("...setting was {0}", success == 1 ? "successful" : "not successful"));
+
+            return success;
         }
 
         public static string GetGlobalSetting(IntPtr setting, string name)
@@ -72,12 +76,20 @@ namespace TuesPechkin
                     value,
                     setting));
 
-            return PechkinBindings.wkhtmltopdf_set_object_setting(setting, name, value);
+            var success = PechkinBindings.wkhtmltopdf_set_object_setting(setting, name, value);
+
+            Tracer.Trace(String.Format("...setting was {0}", success == 1 ? "successful" : "not successful"));
+
+            return success;
         }
 
         public static string GetObjectSetting(IntPtr setting, string name)
         {
-            Tracer.Trace("T:" + Thread.CurrentThread.Name + " Getting object setting (wkhtmltopdf_get_object_setting)");
+            Tracer.Trace(string.Format(
+                "T:{0} Getting object setting '{1}' for config {2}",
+                Thread.CurrentThread.Name,
+                name,
+                setting));
 
             byte[] buf = new byte[2048];
 

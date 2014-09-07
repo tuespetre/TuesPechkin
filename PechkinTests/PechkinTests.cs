@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TuesPechkin;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace PechkinTests
 {

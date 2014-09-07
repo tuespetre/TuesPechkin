@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace TuesPechkin
@@ -7,6 +8,12 @@ namespace TuesPechkin
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class LoadSettings
     {
+        public LoadSettings()
+        {
+            this.Cookies = new Dictionary<string, string>();
+            this.CustomHeaders = new Dictionary<string, string>();
+        }
+
         public enum ContentErrorHandling
         {
             Abort,
@@ -16,6 +23,12 @@ namespace TuesPechkin
 
         [WkhtmltopdfSetting("load.blockLocalFileAccess")]
         public bool? BlockLocalFileAccess { get; set; }
+
+        [WkhtmltopdfSetting("load.cookies")]
+        public Dictionary<string, string> Cookies { get; private set; }
+
+        [WkhtmltopdfSetting("load.customHeaders")]
+        public Dictionary<string, string> CustomHeaders { get; private set; }
 
         [WkhtmltopdfSetting("load.debugJavascript")]
         public bool? DebugJavascript { get; set; }
@@ -31,6 +44,9 @@ namespace TuesPechkin
 
         [WkhtmltopdfSetting("load.jsdelay")]
         public int? RenderDelay { get; set; }
+
+        [WkhtmltopdfSetting("load.repeatCustomHeaders")]
+        public bool? RepeatCustomHeaders { get; set; }
 
         [WkhtmltopdfSetting("load.stopSlowScript")]
         public bool? StopSlowScript { get; set; }

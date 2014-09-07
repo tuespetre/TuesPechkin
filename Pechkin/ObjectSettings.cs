@@ -43,7 +43,7 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value);
                 this.footer = value;
             }
         }
@@ -56,7 +56,7 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value);
                 this.header = value;
             }
         }
@@ -69,7 +69,7 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value);
                 this.data = System.Text.Encoding.UTF8.GetBytes(value);
             }
         }
@@ -82,7 +82,7 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value);
                 this.load = value;
             }
         }
@@ -96,7 +96,7 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value);
                 this.data = value;
             }
         }
@@ -109,7 +109,7 @@ namespace TuesPechkin
             }
             set
             {
-                this.AssertNotNull(value);
+                Assert.BestAintBeNull(value);
                 this.web = value;
             }
         }
@@ -125,14 +125,6 @@ namespace TuesPechkin
             SettingApplicator.ApplySettings(config, this.LoadSettings);
 
             PechkinStatic.AddObject(converter, config, this.data);
-        }
-
-        private void AssertNotNull(object value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
         }
     }
 }

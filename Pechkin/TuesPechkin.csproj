@@ -91,6 +91,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HtmlToPdfDocument.cs" />
     <Compile Include="EventHandlers\BeginEventHandler.cs" />
     <Compile Include="EventHandlers\ErrorEventHandler.cs" />
@@ -129,7 +130,7 @@
     <Compile Include="Util\VoidCallback.cs" />
     <Compile Include="WebSettings.cs" />
     <Compile Include="WinApiHelper.cs" />
-    <Compile Include="WkhtmltopdfSettingAttribute.cs" />
+    <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
