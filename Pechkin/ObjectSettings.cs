@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
@@ -7,34 +8,25 @@ namespace TuesPechkin
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ObjectSettings
     {
-        [WkhtmltopdfSetting("includeInOutline")]
+        [ObjectSetting("includeInOutline")]
         public bool? IncludeInOutline { get; set; }
 
-        [WkhtmltopdfSetting("pagesCount")]
+        [ObjectSetting("pagesCount")]
         public bool? CountPages { get; set; }
 
-        [WkhtmltopdfSetting("page")]
+        [ObjectSetting("page")]
         public string PageUrl { get; set; }
 
-        [WkhtmltopdfSetting("produceForms")]
+        [ObjectSetting("produceForms")]
         public bool? ProduceForms { get; set; }
 
-        [WkhtmltopdfSetting("useExternalLinks")]
+        [ObjectSetting("useExternalLinks")]
         public bool? ProduceExternalLinks { get; set; }
 
-        [WkhtmltopdfSetting("useLocalLinks")]
+        [ObjectSetting("useLocalLinks")]
         public bool? ProduceLocalLinks { get; set; }
 
-        private byte[] data = new byte[0];
-
-        private FooterSettings footer = new FooterSettings();
-
-        private HeaderSettings header = new HeaderSettings();
-
-        private LoadSettings load = new LoadSettings();
-
-        private WebSettings web = new WebSettings();
-
+        [SettingBag]
         public FooterSettings FooterSettings
         {
             get
@@ -48,6 +40,7 @@ namespace TuesPechkin
             }
         }
 
+        [SettingBag]
         public HeaderSettings HeaderSettings
         {
             get
@@ -74,6 +67,7 @@ namespace TuesPechkin
             }
         }
 
+        [SettingBag]
         public LoadSettings LoadSettings
         {
             get
@@ -101,6 +95,7 @@ namespace TuesPechkin
             }
         }
 
+        [SettingBag]
         public WebSettings WebSettings
         {
             get
@@ -119,12 +114,18 @@ namespace TuesPechkin
             var config = PechkinStatic.CreateObjectSettings();
 
             SettingApplicator.ApplySettings(config, this);
-            SettingApplicator.ApplySettings(config, this.HeaderSettings);
-            SettingApplicator.ApplySettings(config, this.FooterSettings);
-            SettingApplicator.ApplySettings(config, this.WebSettings);
-            SettingApplicator.ApplySettings(config, this.LoadSettings);
 
             PechkinStatic.AddObject(converter, config, this.data);
         }
+
+        private byte[] data = new byte[0];
+
+        private FooterSettings footer = new FooterSettings();
+
+        private HeaderSettings header = new HeaderSettings();
+
+        private LoadSettings load = new LoadSettings();
+
+        private WebSettings web = new WebSettings();
     }
 }

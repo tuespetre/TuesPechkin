@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
@@ -18,31 +19,31 @@ namespace TuesPechkin
         /// * [date]       Replaced by the current date in system local format
         /// * [time]       Replaced by the current time in system local format
         /// </summary>
-        [WkhtmltopdfSetting("header.center")]
+        [ObjectSetting("header.center")]
         public string CenterText { get; set; }
 
         /// <summary>
         /// Amount of space between header/footer and content in millimeters
         /// </summary>
-        [WkhtmltopdfSetting("header.spacing")]
+        [ObjectSetting("header.spacing")]
         public double? ContentSpacing { get; set; }
 
         /// <summary>
         /// Font name for the header, e.g. "Courier New"
         /// </summary>
-        [WkhtmltopdfSetting("header.fontName")]
+        [ObjectSetting("header.fontName")]
         public string FontName { get; set; }
 
         /// <summary>
         /// The font size in pt
         /// </summary>
-        [WkhtmltopdfSetting("header.fontSize")]
+        [ObjectSetting("header.fontSize")]
         public double? FontSize { get; set; }
 
         /// <summary>
         /// URL for the HTML document to use as a header
         /// </summary>
-        [WkhtmltopdfSetting("header.htmlUrl")]
+        [ObjectSetting("header.htmlUrl")]
         public string HtmlUrl { get; set; }
 
         /// <summary>
@@ -56,13 +57,13 @@ namespace TuesPechkin
         /// * [date]       Replaced by the current date in system local format
         /// * [time]       Replaced by the current time in system local format
         /// </summary>
-        [WkhtmltopdfSetting("header.left")]
+        [ObjectSetting("header.left")]
         public string LeftText { get; set; }
 
         /// <summary>
         /// Whether or not to print a line between the header/footer and content (Default: false)
         /// </summary>
-        [WkhtmltopdfSetting("header.line")]
+        [ObjectSetting("header.line")]
         public bool? UseLineSeparator { get; set; }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace TuesPechkin
         /// * [date]       Replaced by the current date in system local format
         /// * [time]       Replaced by the current time in system local format
         /// </summary>
-        [WkhtmltopdfSetting("header.right")]
+        [ObjectSetting("header.right")]
         public string RightText { get; set; }
     }
 }

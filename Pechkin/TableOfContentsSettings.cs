@@ -3,14 +3,12 @@
 namespace Pechkin
 {
     [Serializable]
-    public class TableOfContentsSettings
+    public class TableOfContentsSettings : ObjectSettings
     {
         public TableOfContentsSettings()
         {
             this.ProduceTableOfContents = true;
         }
-
-        private readonly ObjectSettings objectSettings = new ObjectSettings();
 
         private string xslStyleSheet;
 
@@ -50,11 +48,6 @@ namespace Pechkin
             var config = PechkinStatic.CreateObjectSettings();
 
             SettingApplicator.ApplySettings(config, this);
-            SettingApplicator.ApplySettings(config, this.objectSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.HeaderSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.FooterSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.WebSettings);
-            SettingApplicator.ApplySettings(config, this.objectSettings.LoadSettings);
 
             PechkinStatic.AddObject(converter, config, (byte[])null);
         }

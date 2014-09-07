@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
@@ -31,7 +32,7 @@ namespace TuesPechkin
         /// <summary>
         /// Whether to collate the copies. (Default: false)
         /// </summary>
-        [WkhtmltopdfSetting("collate")]
+        [GlobalSetting("collate")]
         public bool? Collate { get; set; }
 
         /// <summary>
@@ -42,40 +43,40 @@ namespace TuesPechkin
         /// <summary>
         /// The path of a file used to store cookies.
         /// </summary>
-        [WkhtmltopdfSetting("load.cookieJar")]
+        [GlobalSetting("load.cookieJar")]
         public string CookieJar { get; set; }
 
         /// <summary>
         /// How many copies to print. (Default: 1)
         /// </summary>
-        [WkhtmltopdfSetting("copies")]
+        [GlobalSetting("copies")]
         public int? Copies { get; set; }
 
         /// <summary>
         /// The title of the PDF document.
         /// </summary>
-        [WkhtmltopdfSetting("documentTitle")]
+        [GlobalSetting("documentTitle")]
         public string DocumentTitle { get; set; }
 
         /// <summary>
         /// The DPI to use when printing.
         /// </summary>
-        [WkhtmltopdfSetting("dpi")]
+        [GlobalSetting("dpi")]
         public int? DPI { get; set; }
 
         /// <summary>
         /// The path of a file to dump an XML outline of the document to.
         /// </summary>
-        [WkhtmltopdfSetting("dumpOutline")]
+        [GlobalSetting("dumpOutline")]
         public string DumpOutline { get; set; }
 
         /// <summary>
         /// The maximum DPI to use for images printed in the document.
         /// </summary>
-        [WkhtmltopdfSetting("imageDPI")]
+        [GlobalSetting("imageDPI")]
         public int? ImageDPI { get; set; }
 
-        [WkhtmltopdfSetting("imageQuality")]
+        [GlobalSetting("imageQuality")]
         public int? ImageQuality { get; set; }
 
         /// <summary>
@@ -101,31 +102,31 @@ namespace TuesPechkin
         /// <summary>
         /// The orientation of the output document, either Portrait or Landscape. (Default: Portrait)
         /// </summary>
-        [WkhtmltopdfSetting("orientation")]
+        [GlobalSetting("orientation")]
         public PaperOrientation? Orientation { get; set; }
 
         /// <summary>
         /// The maximum depth of the outline. (Default: 4)
         /// </summary>
-        [WkhtmltopdfSetting("outlineDepth")]
+        [GlobalSetting("outlineDepth")]
         public int? OutlineDepth { get; set; }
 
         /// <summary>
         /// A path to output the converted document to.
         /// </summary>
-        [WkhtmltopdfSetting("out")]
+        [GlobalSetting("out")]
         public string OutputFile { get; set; }
 
         /// <summary>
         /// Whether to output PDF or PostScript. (Default: PDF)
         /// </summary>
-        [WkhtmltopdfSetting("outputFormat")]
+        [GlobalSetting("outputFormat")]
         public DocumentOutputFormat? OutputFormat { get; set; }
 
         /// <summary>
         /// A number that is added to all page numbers when printing headers, footers and table of content.
         /// </summary>
-        [WkhtmltopdfSetting("pageOffset")]
+        [GlobalSetting("pageOffset")]
         public int? PageOffset { get; set; }
 
         /// <summary>
@@ -136,16 +137,16 @@ namespace TuesPechkin
         /// <summary>
         /// Whether to generate an outline for the document. (Default: false)
         /// </summary>
-        [WkhtmltopdfSetting("outline")]
+        [GlobalSetting("outline")]
         public bool? ProduceOutline { get; set; }
         
         /// <summary>
         /// Whether to use lossless compression when creating the pdf file. (Default: true)
         /// </summary>
-        [WkhtmltopdfSetting("useCompression")]
+        [GlobalSetting("useCompression")]
         public bool? UseCompression { get; set; }
 
-        [WkhtmltopdfSetting("margin.bottom")]
+        [GlobalSetting("margin.bottom")]
         internal string MarginBottom
         {
             get
@@ -154,7 +155,7 @@ namespace TuesPechkin
             }
         }
 
-        [WkhtmltopdfSetting("margin.left")]
+        [GlobalSetting("margin.left")]
         internal string MarginLeft
         {
             get
@@ -163,7 +164,7 @@ namespace TuesPechkin
             }
         }
 
-        [WkhtmltopdfSetting("margin.right")]
+        [GlobalSetting("margin.right")]
         internal string MarginRight
         {
             get
@@ -172,7 +173,7 @@ namespace TuesPechkin
             }
         }
 
-        [WkhtmltopdfSetting("margin.top")]
+        [GlobalSetting("margin.top")]
         internal string MarginTop
         {
             get
@@ -184,7 +185,7 @@ namespace TuesPechkin
         /// <summary>
         /// The height of the output document, e.g. "12in".
         /// </summary>
-        [WkhtmltopdfSetting("size.height")]
+        [GlobalSetting("size.height")]
         internal string PaperHeight
         {
             get
@@ -196,7 +197,7 @@ namespace TuesPechkin
         /// <summary>
         /// The with of the output document, e.g. "4cm".
         /// </summary>
-        [WkhtmltopdfSetting("size.width")]
+        [GlobalSetting("size.width")]
         internal string PaperWidth
         {
             get
@@ -205,7 +206,7 @@ namespace TuesPechkin
             }
         }
 
-        [WkhtmltopdfSetting("colorMode")]
+        [GlobalSetting("colorMode")]
         internal string StringColorMode
         {
             get

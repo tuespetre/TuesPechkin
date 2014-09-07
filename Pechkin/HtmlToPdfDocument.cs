@@ -40,7 +40,7 @@ namespace TuesPechkin
 
             var config = PechkinStatic.CreateGlobalSetting();
 
-            SettingApplicator.ApplySettings(config, this.global, true);
+            SettingApplicator.ApplySettings(config, this.global);
 
             converter = PechkinStatic.CreateConverter(config);
 

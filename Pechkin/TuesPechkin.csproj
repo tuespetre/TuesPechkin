@@ -91,6 +91,10 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ObjectSettingAttribute.cs" />
+    <Compile Include="Attributes\GlobalSettingAttribute.cs" />
+    <Compile Include="Attributes\SettingBagAttribute.cs" />
+    <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="HtmlToPdfDocument.cs" />
     <Compile Include="EventHandlers\BeginEventHandler.cs" />
@@ -130,7 +134,6 @@
     <Compile Include="Util\VoidCallback.cs" />
     <Compile Include="WebSettings.cs" />
     <Compile Include="WinApiHelper.cs" />
-    <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

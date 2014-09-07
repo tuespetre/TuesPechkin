@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
@@ -21,40 +22,40 @@ namespace TuesPechkin
             Ignore
         }
 
-        [WkhtmltopdfSetting("load.blockLocalFileAccess")]
+        [ObjectSetting("load.blockLocalFileAccess")]
         public bool? BlockLocalFileAccess { get; set; }
 
-        [WkhtmltopdfSetting("load.cookies")]
+        [ObjectSetting("load.cookies")]
         public Dictionary<string, string> Cookies { get; private set; }
 
-        [WkhtmltopdfSetting("load.customHeaders")]
+        [ObjectSetting("load.customHeaders")]
         public Dictionary<string, string> CustomHeaders { get; private set; }
 
-        [WkhtmltopdfSetting("load.debugJavascript")]
+        [ObjectSetting("load.debugJavascript")]
         public bool? DebugJavascript { get; set; }
 
-        [WkhtmltopdfSetting("load.loadErrorHandling")]
+        [ObjectSetting("load.loadErrorHandling")]
         public ContentErrorHandling? ErrorHandling { get; set; }
 
-        [WkhtmltopdfSetting("load.password")]
+        [ObjectSetting("load.password")]
         public string Password { get; set; }
 
-        [WkhtmltopdfSetting("load.proxy")]
+        [ObjectSetting("load.proxy")]
         public string Proxy { get; set; }
 
-        [WkhtmltopdfSetting("load.jsdelay")]
+        [ObjectSetting("load.jsdelay")]
         public int? RenderDelay { get; set; }
 
-        [WkhtmltopdfSetting("load.repeatCustomHeaders")]
+        [ObjectSetting("load.repeatCustomHeaders")]
         public bool? RepeatCustomHeaders { get; set; }
 
-        [WkhtmltopdfSetting("load.stopSlowScript")]
+        [ObjectSetting("load.stopSlowScript")]
         public bool? StopSlowScript { get; set; }
 
-        [WkhtmltopdfSetting("load.username")]
+        [ObjectSetting("load.username")]
         public string Username { get; set; }
 
-        [WkhtmltopdfSetting("load.zoomFactor")]
+        [ObjectSetting("load.zoomFactor")]
         public double? ZoomFactor { get; set; }
     }
 }
