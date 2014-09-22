@@ -211,7 +211,14 @@ namespace TuesPechkin
         {
             get
             {
-				return this.ColorMode == DocumentColorMode.Color ? "color" : "grayscale";
+                if (this.ColorMode.HasValue)
+                {
+                    return this.ColorMode == DocumentColorMode.Color ? "color" : "grayscale";
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
