@@ -49,8 +49,6 @@ namespace PechkinTests
         public void ConvertsAfterAppDomainRecycles()
         {
             // arrange
-            Factory.TearDownAppDomain(null, null);
-
             var domain1 = this.GetAppDomain("testing_unload_1");
             byte[] result1 = null;
             var domain2 = this.GetAppDomain("testing_unload_2");
@@ -199,8 +197,6 @@ namespace PechkinTests
         public void UnloadsWkhtmltoxWhenAppDomainUnloads()
         {
             // arrange
-            Factory.TearDownAppDomain(null, null);
-
             var domain = this.GetAppDomain("testing_unload");
 
             // act
@@ -216,6 +212,8 @@ namespace PechkinTests
 
         private AppDomain GetAppDomain(string name)
         {
+            Factory.TearDownAppDomain(null, null);
+
             // This is setup for using the Visual Studio test runner 
             // Specifically, the xUnit.net runner by Outercurve Foundation
 

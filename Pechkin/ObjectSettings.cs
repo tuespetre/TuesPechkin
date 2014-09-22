@@ -109,15 +109,6 @@ namespace TuesPechkin
             }
         }
 
-        internal void ApplyToConverter(IntPtr converter)
-        {
-            var config = PechkinStatic.CreateObjectSettings();
-
-            SettingApplicator.ApplySettings(config, this);
-
-            PechkinStatic.AddObject(converter, config, this.data);
-        }
-
         private byte[] data = new byte[0];
 
         private FooterSettings footer = new FooterSettings();

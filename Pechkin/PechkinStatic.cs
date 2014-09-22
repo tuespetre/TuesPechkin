@@ -46,24 +46,25 @@ namespace TuesPechkin
             return success;
         }
 
-        public static string GetGlobalSetting(IntPtr setting, string name)
+        public unsafe static string GetGlobalSetting(IntPtr setting, string name)
         {
             Tracer.Trace("T:" + Thread.CurrentThread.Name + " Getting global setting (wkhtmltopdf_get_global_setting)");
 
             byte[] buf = new byte[2048];
 
-            PechkinBindings.wkhtmltopdf_get_global_setting(setting, name, ref buf, buf.Length);
+            fixed (byte* p = buf)
+            {
+                PechkinBindings.wkhtmltopdf_get_global_setting(setting, name, p, buf.Length);
+            }
 
             int walk = 0;
+
             while (walk < buf.Length && buf[walk] != 0)
             {
                 walk++;
             }
 
-            byte[] buf2 = new byte[walk];
-            Array.Copy(buf, 0, buf2, 0, walk);
-
-            return Encoding.UTF8.GetString(buf2);
+            return Encoding.UTF8.GetString(buf, 0, walk);
         }
 
         public static int SetObjectSetting(IntPtr setting, string name, string value)
@@ -83,7 +84,7 @@ namespace TuesPechkin
             return success;
         }
 
-        public static string GetObjectSetting(IntPtr setting, string name)
+        public unsafe static string GetObjectSetting(IntPtr setting, string name)
         {
             Tracer.Trace(string.Format(
                 "T:{0} Getting object setting '{1}' for config {2}",
@@ -93,18 +94,19 @@ namespace TuesPechkin
 
             byte[] buf = new byte[2048];
 
-            PechkinBindings.wkhtmltopdf_get_object_setting(setting, name, ref buf, buf.Length);
+            fixed (byte* p = buf)
+            {
+                PechkinBindings.wkhtmltopdf_get_object_setting(setting, name, p, buf.Length);
+            }
 
             int walk = 0;
+
             while (walk < buf.Length && buf[walk] != 0)
             {
                 walk++;
             }
 
-            byte[] buf2 = new byte[walk];
-            Array.Copy(buf, 0, buf2, 0, walk);
-
-            return Encoding.UTF8.GetString(buf2);
+            return Encoding.UTF8.GetString(buf, 0, walk);
         }
 
         public static IntPtr CreateConverter(IntPtr globalSettings)

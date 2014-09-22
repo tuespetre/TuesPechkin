@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Security;
 using System.Security.Principal;
 using System.Threading;
+using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
@@ -41,17 +44,8 @@ namespace TuesPechkin
         /// <param name="config">A GlobalSettings object for the converter to apply.</param>
         /// <returns>IPechkin</returns>
         public static IPechkin Create()
-        {
-            if (Factory.operatingDomain == null)
-            {
-                lock (setupLock)
-                {
-                    if (Factory.operatingDomain == null)
-                    {
-                        Factory.SetupAppDomain();
-                    }
-                }
-            }
+        { 
+            EnsureAppDomainSetup();
             
             ObjectHandle handle = Activator.CreateInstanceFrom(
                 Factory.operatingDomain,
@@ -70,6 +64,20 @@ namespace TuesPechkin
             return new Proxy(instance);
         }
 
+        private static void EnsureAppDomainSetup()
+        {         
+            if (Factory.operatingDomain == null)
+            {
+                lock (setupLock)
+                {
+                    if (Factory.operatingDomain == null)
+                    {
+                        Factory.SetupAppDomain();
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Creates and initializes a private AppDomain and therein loads and initializes the
         /// wkhtmltopdf library. Attaches to the current AppDomain's DomainUnload event in IIS environments 
@@ -79,14 +87,27 @@ namespace TuesPechkin
         {
             SynchronizedDispatcher.Invoke(() =>
             {
-                var dirName = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-				var setup = new AppDomainSetup() { ApplicationBase = dirName, LoaderOptimization = LoaderOptimization.SingleDomain };
+                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+                var dirName = System.IO.Path.GetDirectoryName(assemblyLocation);
+
+                var setup = new AppDomainSetup() 
+                { 
+                    ApplicationBase = dirName, 
+                    LoaderOptimization = LoaderOptimization.SingleDomain 
+                };
+
                 var domain = Factory.operatingDomain = AppDomain.CreateDomain("pechkin_internal_domain", null, setup);
 
-                domain.SetData("useX11Graphics", Factory.UseX11Graphics);
+                domain.SetData("useX11Graphics", UseX11Graphics);
+                domain.SetData("extraPaths", ExtraAssemblyPaths);
 
                 domain.DoCallBack(() =>
                 {
+                    foreach (var path in AppDomain.CurrentDomain.GetData("extraPaths") as List<string>)
+                    {
+                        Assembly.LoadFile(path);
+                    }
+
                     var useX11Graphics = (bool)AppDomain.CurrentDomain.GetData("useX11Graphics");
                     PechkinBindings.wkhtmltopdf_init(useX11Graphics ? 1 : 0);
                 });
@@ -117,7 +138,7 @@ namespace TuesPechkin
 
                 foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
                 {
-                    if (module.ModuleName == "wkhtmltox.dll")
+                    if (module.ModuleName == PechkinBindings.DLLNAME)
                     {
                         while (WinApiHelper.FreeLibrary(module.BaseAddress))
                         {
@@ -127,6 +148,29 @@ namespace TuesPechkin
 
                 Factory.operatingDomain = null;
             }
+        }
+
+        // This is here mostly to enable testing of the bindings
+        // Delicious spaghetti, spicy meatball, etc.
+        internal static readonly List<string> ExtraAssemblyPaths = new List<string>();
+
+        // This is here mostly to enable testing of the bindings
+        // Delicious spaghetti, spicy meatball, etc.
+        // Parmesan: in your callback, set "testdata" to be pulled
+        // from the appdomain
+        internal static object FreeFormCallback(CrossAppDomainDelegate callback)
+        {
+            EnsureAppDomainSetup();
+
+            object result = null;
+
+            SynchronizedDispatcher.Invoke(() =>
+            {
+                operatingDomain.DoCallBack(callback);
+                result = operatingDomain.GetData("testdata");
+            });
+
+            return result;
         }
     }
 }

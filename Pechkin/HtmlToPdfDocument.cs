@@ -38,11 +38,13 @@ namespace TuesPechkin
 
             converter = IntPtr.Zero;
 
-            var config = PechkinStatic.CreateGlobalSetting();
+            {
+                var config = PechkinStatic.CreateGlobalSetting();
 
-            SettingApplicator.ApplySettings(config, this.global);
+                SettingApplicator.ApplySettings(config, this.global);
 
-            converter = PechkinStatic.CreateConverter(config);
+                converter = PechkinStatic.CreateConverter(config);
+            }
 
             //if (this.TableOfContents != null)
             //{
@@ -53,7 +55,11 @@ namespace TuesPechkin
             {
                 if (setting != null)
                 {
-                    setting.ApplyToConverter(converter);
+                    var config = PechkinStatic.CreateObjectSettings();
+
+                    SettingApplicator.ApplySettings(config, setting);
+
+                    PechkinStatic.AddObject(converter, config, setting.RawData);
                 }
             }
         }
