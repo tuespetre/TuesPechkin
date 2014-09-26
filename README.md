@@ -92,6 +92,8 @@ byte[] result = converter.Convert(document);
 As of 1.1.0, TuesPechkin will not prescribe any default settings, so as to more closely imitate the command-line interface of wkhtmltopdf; however, this section will provide a convenient mapping of command-line arguments to TuesPechkin object-oriented settings for quick reference. For documentation of the settings themselves, it would be wise to refer to wkhtmltopdf's own documentation.
 
 #### Global Options
+Command line arg | Description | TuesPechkin equivalent
+----|----|----
     --collate                         |Collate when printing multiple copies (default)|GlobalSettings.Collate
     --no-collate                      |Do not collate when printing multiple copies|GlobalSettings.Collate
     --cookie-jar <path>               |Read and write cookies from and to the supplied cookie jar file|GlobalSettings.CookieJar
