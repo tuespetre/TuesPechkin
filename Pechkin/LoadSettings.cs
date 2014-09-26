@@ -11,8 +11,8 @@ namespace TuesPechkin
     {
         public LoadSettings()
         {
-            this.Cookies = new Dictionary<string, string>();
-            this.CustomHeaders = new Dictionary<string, string>();
+            //this.Cookies = new Dictionary<string, string>();
+            //this.CustomHeaders = new Dictionary<string, string>();
         }
 
         public enum ContentErrorHandling
@@ -25,11 +25,11 @@ namespace TuesPechkin
         [ObjectSetting("load.blockLocalFileAccess")]
         public bool? BlockLocalFileAccess { get; set; }
 
-        [ObjectSetting("load.cookies")]
-        public Dictionary<string, string> Cookies { get; private set; }
+        /*[ObjectSetting("load.cookies")]
+        public Dictionary<string, string> Cookies { get; private set; }*/
 
-        [ObjectSetting("load.customHeaders")]
-        public Dictionary<string, string> CustomHeaders { get; private set; }
+        /*[ObjectSetting("load.customHeaders")]
+        public Dictionary<string, string> CustomHeaders { get; private set; }*/
 
         [ObjectSetting("load.debugJavascript")]
         public bool? DebugJavascript { get; set; }

@@ -91,6 +91,32 @@ byte[] result = converter.Convert(document);
 
 As of 1.1.0, TuesPechkin will not prescribe any default settings, so as to more closely imitate the command-line interface of wkhtmltopdf; however, this section will provide a convenient mapping of command-line arguments to TuesPechkin object-oriented settings for quick reference. For documentation of the settings themselves, it would be wise to refer to wkhtmltopdf's own documentation.
 
+#### Headers And Footer Options
+
+Header and footer options are accessed via `ObjectSettings.HeaderSettings` and `ObjectSettings.FooterSettings`.
+
+Command line arg | Description | TuesPechkin equivalent
+----|----|----
+    --footer-center * <text>          |Centered footer text|FooterSettings.CenterText
+    --footer-font-name * <name>       |Set footer font name (default Arial)|FooterSettings.FontName
+    --footer-font-size * <size>       |Set footer font size (default 12)|FooterSettings.FontSize
+    --footer-html * <url>             |Adds a html footer|FooterSettings.HtmlUrl
+    --footer-left * <text>            |Left aligned footer text|FooterSettings.LeftText
+    --footer-line *                   |Display line above the footer|FooterSettings.UseLineSeparator
+    --no-footer-line *                |Do not display line above the footer (default)|FooterSettings.UseLineSeparator
+    --footer-right * <text>           |Right aligned footer text|FooterSettings.RightText
+    --footer-spacing * <real>         |Spacing between footer and content in mm (default 0)|FooterSettings.ContentSpacing
+    --header-center * <text>          |Centered header text|HeaderSettings.CenterText
+    --header-font-name * <name>       |Set header font name (default Arial)|HeaderSettings.FontName
+    --header-font-size * <size>       |Set header font size (default 12)|HeaderSettings.FontSize
+    --header-html * <url>             |Adds a html header|HeaderSettings.HtmlUrl
+    --header-left * <text>            |Left aligned header text|HeaderSettings.LeftText
+    --header-line *                   |Display line below the header|HeaderSettings.UseLineSeparator
+    --no-header-line *                |Do not display line below the header (default)|HeaderSettings.UseLineSeparator
+    --header-right * <text>           |Right aligned header text|HeaderSettings.RightText
+    --header-spacing * <real>         |Spacing between header and content in mm (default 0)|HeaderSettings.ContentSpacing
+    --replace * <name> <value>        |Replace [name] with value in header and footer (repeatable)|(no equivalent)
+
 License
 -------
 
