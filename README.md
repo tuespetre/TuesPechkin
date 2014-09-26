@@ -91,7 +91,37 @@ byte[] result = converter.Convert(document);
 
 As of 1.1.0, TuesPechkin will not prescribe any default settings, so as to more closely imitate the command-line interface of wkhtmltopdf; however, this section will provide a convenient mapping of command-line arguments to TuesPechkin object-oriented settings for quick reference. For documentation of the settings themselves, it would be wise to refer to wkhtmltopdf's own documentation.
 
-#### Headers And Footer Options
+#### Global Options
+    --collate                         |Collate when printing multiple copies (default)|GlobalSettings.Collate
+    --no-collate                      |Do not collate when printing multiple copies|GlobalSettings.Collate
+    --cookie-jar <path>               |Read and write cookies from and to the supplied cookie jar file|GlobalSettings.CookieJar
+    --copies <number>                 |Number of copies to print into the pdf file (default 1)|GlobalSettings.Copies
+-d, --dpi <dpi>                       |Change the dpi explicitly (this has no effect on X11 based systems)|GlobalSettings.DPI
+-H, --extended-help                   |Display more extensive help, detailing less common command switches|(no equivalent)
+-g, --grayscale                       |PDF will be generated in grayscale|GlobalSettings.ColorMode
+-h, --help                            |Display help|(no equivalent)
+    --htmldoc                         |Output program html help|(no equivalent)
+    --image-dpi * <integer>           |When embedding images scale them down to this dpi (default 600)|GlobalSettings.ImageDPI
+    --image-quality * <integer>       |When jpeg compressing images use this quality (default 94)|GlobalSettings.ImageQuality
+-l, --lowquality                      |Generates lower quality pdf/ps. Useful to shrink the result document space|(no equivalent)
+    --manpage                         |Output program man page|(no equivalent)
+-B, --margin-bottom <unitreal>        |Set the page bottom margin|GlobalSettings.MarginSettings.Bottom
+-L, --margin-left <unitreal>          |Set the page left margin (default 10mm)|GlobalSettings.MarginSettings.Left
+-R, --margin-right <unitreal>         |Set the page right margin (default 10mm)|GlobalSettings.MarginSettings.Right
+-T, --margin-top <unitreal>           |Set the page top margin|GlobalSettings.MarginSettings.Top
+-O, --orientation <orientation>       |Set orientation to Landscape or Portrait (default Portrait)|GlobalSettings.Orientation
+    --output-format <format>          |Specify an output format to use pdf or ps, instead of looking at the extention of the output filename|GlobalSettings.OutputFormat
+    --page-height <unitreal>          |Page height|GlobalSettings.PaperSize.Height
+-s, --page-size <Size>                |Set paper size to: A4, Letter, etc. (default A4)|GlobalSettings.PaperSize (implicit conversion from PaperKind)
+    --page-width <unitreal>           |Page width|GlobalSettings.PaperSize.Width
+    --no-pdf-compression *            |Do not use lossless compression on pdf objects|GlobalSettings.UseCompression
+-q, --quiet                           |Be less verbose|(no equivalent)
+    --read-args-from-stdin            |Read command line arguments from stdin|(no equivalent)
+    --readme                          |Output program readme|(no equivalent)
+    --title <text>                    |The title of the generated pdf file (The title of the first document is used if not specified)|GlobalSettings.DocumentTitle
+-V, --version                         |Output version information an exit|(no equivalent)
+
+#### Header And Footer Options
 
 Header and footer options are accessed via `ObjectSettings.HeaderSettings` and `ObjectSettings.FooterSettings`.
 
