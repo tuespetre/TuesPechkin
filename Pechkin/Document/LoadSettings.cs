@@ -54,6 +54,9 @@ namespace TuesPechkin
         [WkhtmltoxSetting("load.username")]
         public string Username { get; set; }
 
+        [WkhtmltoxSetting("load.windowStatus")]
+        public string WindowStatus { get; set; }
+
         [WkhtmltoxSetting("load.zoomFactor")]
         public double? ZoomFactor { get; set; }
     }
