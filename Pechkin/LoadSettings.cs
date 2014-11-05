@@ -44,5 +44,8 @@ namespace TuesPechkin
 
         [WkhtmltopdfSetting("load.zoomFactor")]
         public double? ZoomFactor { get; set; }
+
+        [WkhtmltopdfSetting("load.windowStatus")]
+        public string WindowStatus { get; set; }
     }
 }
