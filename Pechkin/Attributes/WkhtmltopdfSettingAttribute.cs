@@ -11,7 +11,7 @@ namespace TuesPechkin.Attributes
     {
         public string SettingName { get; set; }
 
-        public abstract void Apply(IntPtr config, object value);
+        public abstract void Apply(IAssembly assembly, IntPtr config, object value);
 
         protected void Apply(IntPtr config, object value, Func<IntPtr, string, string, int> applicator)
         {

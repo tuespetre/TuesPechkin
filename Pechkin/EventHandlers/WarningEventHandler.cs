@@ -1,4 +1,4 @@
 namespace TuesPechkin.EventHandlers
 {
-    public delegate void WarningEventHandler(IPechkin converter, string warningText);
+    public delegate void WarningEventHandler(IConverter converter, string warningText);
 }

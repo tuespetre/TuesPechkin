@@ -1,4 +1,4 @@
 namespace TuesPechkin.EventHandlers
 {
-    public delegate void PhaseChangedEventHandler(IPechkin converter, int phaseNumber, string phaseDescription);
+    public delegate void PhaseChangedEventHandler(IConverter converter, int phaseNumber, string phaseDescription);
 }

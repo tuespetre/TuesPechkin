@@ -3,39 +3,99 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
+using TuesPechkin.EventHandlers;
 using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
-    /// <summary>
-    /// This class runs the thread and lets users to run delegates synchronously on that thread while obtaining results of the execution.
-    /// 
-    /// It's like <code>ISynchronizedInvoke</code>, but with only synchronous methods (because we don't need more).
-    /// </summary>
-    internal static class SynchronizedDispatcher
+    public class ThreadSafeConverter : IConverter
     {
-        private static readonly object queueLock = new object();
+        public IConverter InnerConverter { get; private set; }
 
-        private static readonly List<Task> taskQueue = new List<Task>();
-
-        static SynchronizedDispatcher()
+        public ThreadSafeConverter(IConverter converter)
         {
-            Thread = new Thread(Run)
+            InnerConverter = converter;
+
+            InnerConverter.Begin += (a, b) =>
+            {
+                if (this.Begin != null)
+                {
+                    this.Begin(this, b);
+                }
+            };
+
+            InnerConverter.Error += (a, b) =>
+            {
+                if (this.Error != null)
+                {
+                    this.Error(this, b);
+                }
+            };
+
+            InnerConverter.Finished += (a, b) =>
+            {
+                if (this.Finished != null)
+                {
+                    this.Finished(this, b);
+                }
+            };
+
+            InnerConverter.PhaseChanged += (a, b, c) =>
+            {
+                if (this.PhaseChanged != null)
+                {
+                    this.PhaseChanged(this, b, c);
+                }
+            };
+
+            InnerConverter.ProgressChanged += (a, b, c) =>
+            {
+                if (this.ProgressChanged != null)
+                {
+                    this.ProgressChanged(this, b, c);
+                }
+            };
+
+            InnerConverter.Warning += (a, b) =>
+            {
+                if (this.Warning != null)
+                {
+                    this.Warning(this, b);
+                }
+            };
+
+            Funnel = new Thread(Run)
             {
                 IsBackground = true
             };
 
-            Thread.Start();
+            Funnel.Start();
         }
 
-        private static Thread Thread { get; set; }
+        public byte[] Convert(HtmlDocument document)
+        {
+            throw new NotImplementedException();
+        }
 
-        /// <summary>
-        /// Invokes specified delegate with parameters on the dispatcher thread synchronously.
-        /// </summary>
-        /// <param name="task">delegate to run on the thread</param>
-        /// <returns>result of an action</returns>
-        public static TResult Invoke<TResult>(Func<TResult> @delegate)
+        public event BeginEventHandler Begin;
+
+        public event WarningEventHandler Warning;
+
+        public event ErrorEventHandler Error;
+
+        public event PhaseChangedEventHandler PhaseChanged;
+
+        public event ProgressChangedEventHandler ProgressChanged;
+
+        public event FinishEventHandler Finished;
+
+        private Thread Funnel { get; set; }
+
+        private readonly object queueLock = new object();
+
+        private readonly List<Task> taskQueue = new List<Task>();
+
+        private TResult Invoke<TResult>(Func<TResult> @delegate)
         {
             // create the task
             var task = new Task<TResult>(@delegate);
@@ -63,12 +123,7 @@ namespace TuesPechkin
             }
         }
 
-        /// <summary>
-        /// Invokes specified delegate with parameters on the dispatcher thread synchronously.
-        /// </summary>
-        /// <param name="task">delegate to run on the thread</param>
-        /// <returns>result of an action</returns>
-        public static void Invoke(Action @delegate)
+        private void Invoke(Action @delegate)
         {
             // create the task
             var task = new Task(@delegate);
@@ -93,10 +148,7 @@ namespace TuesPechkin
             }
         }
 
-        /// <summary>
-        /// This method is used as a Thread.Run for the delegate hosting thread.
-        /// </summary>
-        private static void Run()
+        private void Run()
         {
             try
             {
@@ -158,9 +210,6 @@ namespace TuesPechkin
             public Exception Exception { get; set; }
         }
 
-        /// <summary>
-        /// Task object that's pushed to the queue.
-        /// </summary>
         private class Task<TResult> : Task
         {
             public Task(Func<TResult> @delegate) : base(null)

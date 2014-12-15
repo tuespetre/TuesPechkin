@@ -41,7 +41,7 @@ namespace PechkinTests
         {
             Assert.Throws<ApplicationException>(() =>
             {
-                SynchronizedDispatcher.Invoke(() => { throw new ApplicationException(); });
+                ThreadSafeConverter.Invoke(() => { throw new ApplicationException(); });
             });
         }
 
@@ -86,7 +86,7 @@ namespace PechkinTests
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
-                IPechkin sc = Factory.Create();
+                IConverter sc = Factory.Create();
                 Assert.NotNull(sc.Convert(html));
                 completed++;
                 Debug.WriteLine(String.Format("#{0} completed", i + 1));
@@ -105,7 +105,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = Factory.Create();
+            IConverter c = Factory.Create();
 
             byte[] ret = c.Convert(html);
 
@@ -124,7 +124,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = Factory.Create();
+            IConverter c = Factory.Create();
 
             byte[] ret = c.Convert(html);
 
@@ -140,7 +140,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = Factory.Create();
+            IConverter c = Factory.Create();
 
             byte[] ret = c.Convert(html);
 
@@ -172,7 +172,7 @@ namespace PechkinTests
 
             sw.Close();
 
-            IPechkin c = Factory.Create();
+            IConverter c = Factory.Create();
 
             byte[] ret = c.Convert(new ObjectSettings() { PageUrl = fn });
 
@@ -186,7 +186,7 @@ namespace PechkinTests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IPechkin c = Factory.Create();
+            IConverter c = Factory.Create();
 
             byte[] ret = c.Convert(html);
 

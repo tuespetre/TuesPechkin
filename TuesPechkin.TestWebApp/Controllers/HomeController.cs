@@ -27,7 +27,7 @@ namespace TuesPechkin.TestWebApp.Controllers
         [HttpGet]
         public FileResult ScratchPad()
         {
-            var doc = new HtmlToPdfDocument();
+            var doc = new HtmlDocument();
             var obj = new ObjectSettings();
 
             obj.PageUrl = Url.Action("PostAnything", "Home", routeValues: null, protocol: Request.Url.Scheme);

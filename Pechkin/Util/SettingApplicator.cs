@@ -8,7 +8,7 @@ namespace TuesPechkin
 {
     internal static class SettingApplicator
     {
-        public static void ApplySettings(IntPtr config, object settings)
+        public static void ApplySettings(IAssembly assembly, IntPtr config, object settings)
         {
             if (settings == null)
             {
@@ -30,11 +30,11 @@ namespace TuesPechkin
                 {
                     var attribute = attributes[0] as WkhtmltopdfSettingAttribute;
 
-                    attribute.Apply(config, rawValue);
+                    attribute.Apply(assembly, config, rawValue);
                 }
                 else if (attributes[0] is SettingBagAttribute)
                 {
-                    ApplySettings(config, rawValue);
+                    ApplySettings(assembly, config, rawValue);
                 }
             }
         }

@@ -12,9 +12,9 @@ namespace TuesPechkin.Attributes
             this.SettingName = settingName;
         }
 
-        public override void Apply(IntPtr config, object value)
+        public override void Apply(IAssembly assembly, IntPtr config, object value)
         {
-            Apply(config, value, PechkinStatic.SetGlobalSetting);
+            Apply(config, value, assembly.SetGlobalSetting);
         }
     }
 }

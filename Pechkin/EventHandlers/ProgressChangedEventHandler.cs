@@ -1,4 +1,4 @@
 namespace TuesPechkin.EventHandlers
 {
-    public delegate void ProgressChangedEventHandler(IPechkin converter, int progress, string progressDescription);
+    public delegate void ProgressChangedEventHandler(IConverter converter, int progress, string progressDescription);
 }

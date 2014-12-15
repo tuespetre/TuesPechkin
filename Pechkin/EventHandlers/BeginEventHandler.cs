@@ -1,4 +1,4 @@
 namespace TuesPechkin.EventHandlers
 {
-    public delegate void BeginEventHandler(IPechkin converter, int expectedPhaseCount);
+    public delegate void BeginEventHandler(IConverter converter, int expectedPhaseCount);
 }

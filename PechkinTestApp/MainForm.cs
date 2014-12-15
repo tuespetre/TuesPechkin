@@ -10,7 +10,7 @@ namespace Html2PdfTestApp
 {
     public partial class MainForm : Form
     {
-        private HtmlToPdfDocument Document = new HtmlToPdfDocument
+        private HtmlDocument Document = new HtmlDocument
         {
             Objects =
             {
@@ -31,7 +31,7 @@ namespace Html2PdfTestApp
 
             try
             {
-                IPechkin sc2 = Factory.Create();
+                IConverter sc2 = Factory.Create();
                 buf = sc2.Convert(this.Document);
                 MessageBox.Show("All conversions done");
 
