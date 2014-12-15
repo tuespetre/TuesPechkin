@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 [assembly: InternalsVisibleTo("PechkinTests")]
+[assembly: InternalsVisibleTo("TuesPechkin.Wkhtmltox")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("11f63696-7105-436d-9ec6-2fee54c40b11")]

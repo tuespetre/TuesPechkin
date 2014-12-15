@@ -9,6 +9,8 @@ namespace TuesPechkin
     {
         public IAssembly Assembly { get; private set; }
 
+        public HtmlDocument ProcessingDocument { get; private set; }
+
         public StandardConverter(IAssembly assembly)
         {
             Assembly = assembly;
@@ -36,7 +38,8 @@ namespace TuesPechkin
 
         public byte[] Convert(HtmlDocument document)
         {
-            converter = CreateConverter(document);
+            ProcessingDocument = document;
+            var converter = CreateConverter(document);
 
             Tracer.Trace(string.Format("T:{0} Created converter", Thread.CurrentThread.Name));
 
@@ -51,25 +54,26 @@ namespace TuesPechkin
             // run OnBegin
             OnBegin(converter);
 
+            byte[] result = null;
+
             // run conversion process
             if (!Assembly.PerformConversion(converter))
             {
                 Tracer.Trace(string.Format("T:{0} Conversion failed, null returned", Thread.CurrentThread.Name));
-
-                return null;
+            }
+            else
+            {
+                // get output
+                result = Assembly.GetConverterResult(converter);
             }
 
-            // get output
-            var result = Assembly.GetConverterResult(converter);
-
             Tracer.Trace(string.Format("T:{0} Releasing unmanaged converter", Thread.CurrentThread.Name));
-
             Assembly.DestroyConverter(converter);
-
+            ProcessingDocument = null;
             return result;
         }
 
-        protected virtual void OnBegin(IntPtr converter)
+        private void OnBegin(IntPtr converter)
         {
             int expectedPhaseCount = Assembly.GetPhaseCount(converter);
 
@@ -80,7 +84,7 @@ namespace TuesPechkin
             {
                 if (handler != null)
                 {
-                    handler(this, expectedPhaseCount);
+                    handler(this, ProcessingDocument, expectedPhaseCount);
                 }
             }
             catch (Exception e)
@@ -89,7 +93,7 @@ namespace TuesPechkin
             }
         }
 
-        protected virtual void OnError(IntPtr converter, string errorText)
+        private void OnError(IntPtr converter, string errorText)
         {
             Tracer.Warn(string.Format("T:{0} Conversion Error: {1}", Thread.CurrentThread.Name, errorText));
 
@@ -98,7 +102,7 @@ namespace TuesPechkin
             {
                 if (handler != null)
                 {
-                    handler(this, errorText);
+                    handler(this, ProcessingDocument, errorText);
                 }
             }
             catch (Exception e)
@@ -107,7 +111,7 @@ namespace TuesPechkin
             }
         }
 
-        protected virtual void OnFinished(IntPtr converter, int success)
+        private void OnFinished(IntPtr converter, int success)
         {
             Tracer.Trace(string.Format("T:{0} Conversion Finished: {1}", Thread.CurrentThread.Name, success != 0 ? "Succeeded" : "Failed"));
 
@@ -116,7 +120,7 @@ namespace TuesPechkin
             {
                 if (handler != null)
                 {
-                    handler(this, success != 0);
+                    handler(this, ProcessingDocument, success != 0);
                 }
             }
             catch (Exception e)
@@ -125,7 +129,7 @@ namespace TuesPechkin
             }
         }
 
-        protected virtual void OnPhaseChanged(IntPtr converter)
+        private void OnPhaseChanged(IntPtr converter)
         {
             int phaseNumber = Assembly.GetPhaseNumber(converter);
             string phaseDescription = Assembly.GetPhaseDescription(converter, phaseNumber);
@@ -137,7 +141,7 @@ namespace TuesPechkin
             {
                 if (handler != null)
                 {
-                    handler(this, phaseNumber, phaseDescription);
+                    handler(this, ProcessingDocument, phaseNumber, phaseDescription);
                 }
             }
             catch (Exception e)
@@ -146,7 +150,7 @@ namespace TuesPechkin
             }
         }
 
-        protected virtual void OnProgressChanged(IntPtr converter, int progress)
+        private void OnProgressChanged(IntPtr converter, int progress)
         {
             string progressDescription = Assembly.GetProgressDescription(converter);
 
@@ -157,7 +161,7 @@ namespace TuesPechkin
             {
                 if (handler != null)
                 {
-                    handler(this, progress, progressDescription);
+                    handler(this, ProcessingDocument, progress, progressDescription);
                 }
             }
             catch (Exception e)
@@ -166,7 +170,7 @@ namespace TuesPechkin
             }
         }
 
-        protected virtual void OnWarning(IntPtr converter, string warningText)
+        private void OnWarning(IntPtr converter, string warningText)
         {
             Tracer.Warn(string.Format("T:{0} Conversion Warning: {1}", Thread.CurrentThread.Name, warningText));
 
@@ -175,7 +179,7 @@ namespace TuesPechkin
             {
                 if (handler != null)
                 {
-                    handler(this, warningText);
+                    handler(this, ProcessingDocument, warningText);
                 }
             }
             catch (Exception e)
@@ -226,6 +230,5 @@ namespace TuesPechkin
         private readonly VoidCallback onPhaseChangedDelegate;
         private readonly IntCallback onProgressChangedDelegate;
         private readonly StringCallback onWarningDelegate;
-        private IntPtr converter;
     }
 }

@@ -16,6 +16,10 @@ namespace TuesPechkin
 
         public Version Version { get; private set; }
 
+        public RemotingAssembly(IAssembly prototype) : this(prototype.Path, prototype.Version)
+        {
+        }
+
         public RemotingAssembly(string path, Version version)
         {
             Path = path;
@@ -173,7 +177,7 @@ namespace TuesPechkin
                 null,
                 setup);
 
-            RemoteDomain.SetData("path", Path);
+            RemoteDomain.SetData("path", assemblyLocation);
 
             RemoteDomain.DoCallBack(() =>
             {

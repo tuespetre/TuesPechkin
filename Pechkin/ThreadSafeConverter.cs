@@ -12,71 +12,6 @@ namespace TuesPechkin
     {
         public IConverter InnerConverter { get; private set; }
 
-        public ThreadSafeConverter(IConverter converter)
-        {
-            InnerConverter = converter;
-
-            InnerConverter.Begin += (a, b) =>
-            {
-                if (this.Begin != null)
-                {
-                    this.Begin(this, b);
-                }
-            };
-
-            InnerConverter.Error += (a, b) =>
-            {
-                if (this.Error != null)
-                {
-                    this.Error(this, b);
-                }
-            };
-
-            InnerConverter.Finished += (a, b) =>
-            {
-                if (this.Finished != null)
-                {
-                    this.Finished(this, b);
-                }
-            };
-
-            InnerConverter.PhaseChanged += (a, b, c) =>
-            {
-                if (this.PhaseChanged != null)
-                {
-                    this.PhaseChanged(this, b, c);
-                }
-            };
-
-            InnerConverter.ProgressChanged += (a, b, c) =>
-            {
-                if (this.ProgressChanged != null)
-                {
-                    this.ProgressChanged(this, b, c);
-                }
-            };
-
-            InnerConverter.Warning += (a, b) =>
-            {
-                if (this.Warning != null)
-                {
-                    this.Warning(this, b);
-                }
-            };
-
-            Funnel = new Thread(Run)
-            {
-                IsBackground = true
-            };
-
-            Funnel.Start();
-        }
-
-        public byte[] Convert(HtmlDocument document)
-        {
-            throw new NotImplementedException();
-        }
-
         public event BeginEventHandler Begin;
 
         public event WarningEventHandler Warning;
@@ -89,7 +24,72 @@ namespace TuesPechkin
 
         public event FinishEventHandler Finished;
 
-        private Thread Funnel { get; set; }
+        public ThreadSafeConverter(IConverter converter)
+        {
+            InnerConverter = converter;
+
+            InnerConverter.Begin += (a, b, c) =>
+            {
+                if (Begin != null)
+                {
+                    Begin(this, b, c);
+                }
+            };
+
+            InnerConverter.Error += (a, b, c) =>
+            {
+                if (this.Error != null)
+                {
+                    this.Error(this, b, c);
+                }
+            };
+
+            InnerConverter.Finished += (a, b, c) =>
+            {
+                if (this.Finished != null)
+                {
+                    this.Finished(this, b, c);
+                }
+            };
+
+            InnerConverter.PhaseChanged += (a, b, c, d) =>
+            {
+                if (this.PhaseChanged != null)
+                {
+                    this.PhaseChanged(this, b, c, d);
+                }
+            };
+
+            InnerConverter.ProgressChanged += (a, b, c, d) =>
+            {
+                if (this.ProgressChanged != null)
+                {
+                    this.ProgressChanged(this, b, c, d);
+                }
+            };
+
+            InnerConverter.Warning += (a, b, c) =>
+            {
+                if (this.Warning != null)
+                {
+                    this.Warning(this, b, c);
+                }
+            };
+
+            InnerThread = new Thread(Run)
+            {
+                IsBackground = true
+            };
+
+            InnerThread.Start();
+        }
+
+        public byte[] Convert(HtmlDocument document)
+        {
+            return Invoke(() => InnerConverter.Convert(document));
+        }
+
+        private Thread InnerThread { get; set; }
 
         private readonly object queueLock = new object();
 
@@ -212,7 +212,8 @@ namespace TuesPechkin
 
         private class Task<TResult> : Task
         {
-            public Task(Func<TResult> @delegate) : base(null)
+            public Task(Func<TResult> @delegate)
+                : base(null)
             {
                 this.Delegate = @delegate;
                 this.Action = () => this.Result = this.Delegate();

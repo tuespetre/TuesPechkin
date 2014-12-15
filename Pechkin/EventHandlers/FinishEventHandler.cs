@@ -1,4 +1,4 @@
 namespace TuesPechkin.EventHandlers
 {
-    public delegate void FinishEventHandler(IConverter converter, bool success);
+    public delegate void FinishEventHandler(IConverter converter, HtmlDocument document, bool success);
 }

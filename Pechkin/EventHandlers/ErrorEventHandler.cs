@@ -1,4 +1,4 @@
 namespace TuesPechkin.EventHandlers
 {
-    public delegate void ErrorEventHandler(IConverter converter, string errorText);
+    public delegate void ErrorEventHandler(IConverter converter, HtmlDocument document, string errorText);
 }

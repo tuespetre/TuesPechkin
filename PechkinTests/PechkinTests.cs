@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,12 +8,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TuesPechkin;
-using Xunit;
-using Assert = Xunit.Assert;
+using TuesPechkin.Wkhtmltox;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace PechkinTests
 {
-    [Serializable]
+    [TestClass]
     public class PechkinTests
     {
         static PechkinTests()
@@ -35,7 +36,7 @@ namespace PechkinTests
 
             return new StreamReader(s).ReadToEnd();
         }
-
+        /*
         [Fact]
         public void BubblesExceptionsFromSyncedThread()
         {
@@ -179,32 +180,44 @@ namespace PechkinTests
             Assert.NotNull(ret);
 
             File.Delete(fn);
-        }
+        }*/
 
-        [Fact]
+        [TestMethod]
         public void ReturnsResultFromString()
         {
-            string html = GetResourceString("PechkinTests.Resources.page.html");
+            var converter =
+                new StandardConverter(
+                    new EmbeddedAssembly());
 
-            IConverter c = Factory.Create();
+            var document = new HtmlDocument("<p>some html</p>");
 
-            byte[] ret = c.Convert(html);
+            var result = converter.Convert(document);
 
-            Assert.NotNull(ret);
+            Assert.IsNotNull(result);
         }
 
-        [Fact]
+        [TestMethod]
         public void UnloadsWkhtmltoxWhenAppDomainUnloads()
         {
             // arrange
-            var domain = this.GetAppDomain("testing_unload");
+            var domain = GetAppDomain("testing_unload");
 
             // act
-            domain.DoCallBack(() => Factory.Create().Convert("<p>some html</p>"));
+            domain.DoCallBack(() => 
+            {
+                var converter = 
+                    new StandardConverter(
+                        new RemotingAssembly(
+                            new EmbeddedAssembly()));
+
+                var document = new HtmlDocument("<p>some html</p>");
+
+                converter.Convert(document);
+            });
             AppDomain.Unload(domain);
 
             // assert
-            Assert.False(Process.GetCurrentProcess()
+            Assert.IsFalse(Process.GetCurrentProcess()
                                 .Modules
                                 .Cast<ProcessModule>()
                                 .Any(m => m.ModuleName == "wkhtmltox.dll"));
@@ -212,8 +225,6 @@ namespace PechkinTests
 
         private AppDomain GetAppDomain(string name)
         {
-            Factory.TearDownAppDomain(null, null);
-
             // This is setup for using the Visual Studio test runner 
             // Specifically, the xUnit.net runner by Outercurve Foundation
 

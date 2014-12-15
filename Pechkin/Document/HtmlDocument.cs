@@ -10,6 +10,11 @@ namespace TuesPechkin
             this.Objects = new List<ObjectSettings>();
         }
 
+        public HtmlDocument(string html) : this()
+        {
+            this.Objects.Add(new ObjectSettings { HtmlText = html });
+        }
+
         private GlobalSettings global = new GlobalSettings();
 
         public List<ObjectSettings> Objects { get; private set; }
