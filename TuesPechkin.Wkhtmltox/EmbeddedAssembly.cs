@@ -9,33 +9,31 @@ using SysPath = System.IO.Path;
 
 namespace TuesPechkin.Wkhtmltox
 {
-    public class EmbeddedAssembly : IAssembly
+    public class EmbeddedAssembly : NestingAssembly, IAssembly
     {
-        public IAssembly InnerAssembly { get; private set; }
-
-        public string Path
+        /// <summary>
+        /// Loads the assembly from its path. Throws AssemblyAlreadyLoadedException
+        /// if the assembly was already loaded.
+        /// </summary>
+        /// <param name="pathOverride">This parameter is ignored.</param>
+        public override void Load(string pathOverride = null)
         {
-            get
+            if (Loaded)
             {
-                return InnerAssembly.Path;
+                throw new AssemblyAlreadyLoadedException();
             }
-        }
 
-        public Version Version
-        {
-            get 
-            { 
-                return InnerAssembly.Version; 
-            }
-        }
-
-        public EmbeddedAssembly()
-        {
             var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64_dll : Resources.wkhtmltox_32_dll;
 
             var path = SetupUnmanagedAssembly("wkhtmltox.dll", raw);
 
-            InnerAssembly = new StandardAssembly(path, new Version(0, 9, 0));
+            WrappedAssembly = new StandardAssembly(path);
+
+            WrappedAssembly.Load(path);
+
+            Path = path;
+
+            Loaded = true;
         }
 
         private static string SetupUnmanagedAssembly(string fileName, byte[] assemblyRaw)
@@ -62,8 +60,6 @@ namespace TuesPechkin.Wkhtmltox
 
             WriteStreamToFile(fileName, new GZipStream(new MemoryStream(assemblyRaw), CompressionMode.Decompress));
 
-            WinApiHelper.LoadLibrary(fileName);
-
             return fileName;
         }
 
@@ -82,116 +78,6 @@ namespace TuesPechkin.Wkhtmltox
                     }
                 }
             }
-        }
-
-        public void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html)
-        {
-            InnerAssembly.AddObject(converter, objectConfig, html);
-        }
-
-        public void AddObject(IntPtr converter, IntPtr objectConfig, string html)
-        {
-            InnerAssembly.AddObject(converter, objectConfig, html);
-        }
-
-        public IntPtr CreateConverter(IntPtr globalSettings)
-        {
-            return InnerAssembly.CreateConverter(globalSettings);
-        }
-
-        public IntPtr CreateGlobalSettings()
-        {
-            return InnerAssembly.CreateGlobalSettings();
-        }
-
-        public IntPtr CreateObjectSettings()
-        {
-            return InnerAssembly.CreateObjectSettings();
-        }
-
-        public void DestroyConverter(IntPtr converter)
-        {
-            InnerAssembly.DestroyConverter(converter);
-        }
-
-        public byte[] GetConverterResult(IntPtr converter)
-        {
-            return InnerAssembly.GetConverterResult(converter);
-        }
-
-        public string GetGlobalSetting(IntPtr setting, string name)
-        {
-            return InnerAssembly.GetGlobalSetting(setting, name);
-        }
-
-        public int GetHttpErrorCode(IntPtr converter)
-        {
-            return InnerAssembly.GetHttpErrorCode(converter);
-        }
-
-        public string GetObjectSetting(IntPtr setting, string name)
-        {
-            return InnerAssembly.GetObjectSetting(setting, name);
-        }
-
-        public int GetPhaseCount(IntPtr converter)
-        {
-            return InnerAssembly.GetPhaseCount(converter);
-        }
-
-        public string GetPhaseDescription(IntPtr converter, int phase)
-        {
-            return InnerAssembly.GetPhaseDescription(converter, phase);
-        }
-
-        public int GetPhaseNumber(IntPtr converter)
-        {
-            return InnerAssembly.GetPhaseNumber(converter);
-        }
-
-        public string GetProgressDescription(IntPtr converter)
-        {
-            return InnerAssembly.GetProgressDescription(converter);
-        }
-
-        public bool PerformConversion(IntPtr converter)
-        {
-            return InnerAssembly.PerformConversion(converter);
-        }
-
-        public void SetErrorCallback(IntPtr converter, Util.StringCallback callback)
-        {
-            InnerAssembly.SetErrorCallback(converter, callback);
-        }
-
-        public void SetFinishedCallback(IntPtr converter, Util.IntCallback callback)
-        {
-            InnerAssembly.SetFinishedCallback(converter, callback);
-        }
-
-        public int SetGlobalSetting(IntPtr setting, string name, string value)
-        {
-            return InnerAssembly.SetGlobalSetting(setting, name, value);
-        }
-
-        public int SetObjectSetting(IntPtr setting, string name, string value)
-        {
-            return InnerAssembly.SetObjectSetting(setting, name, value);
-        }
-
-        public void SetPhaseChangedCallback(IntPtr converter, Util.VoidCallback callback)
-        {
-            InnerAssembly.SetPhaseChangedCallback(converter, callback);
-        }
-
-        public void SetProgressChangedCallback(IntPtr converter, Util.IntCallback callback)
-        {
-            InnerAssembly.SetProgressChangedCallback(converter, callback);
-        }
-
-        public void SetWarningCallback(IntPtr converter, Util.StringCallback callback)
-        {
-            InnerAssembly.SetWarningCallback(converter, callback);
         }
     }
 }

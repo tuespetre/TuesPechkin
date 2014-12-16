@@ -1,9 +1,31 @@
 ﻿using System;
+using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
     public interface IAssembly
     {
+        /// <summary>
+        /// Loads the assembly from its path. Throws AssemblyAlreadyLoadedException
+        /// if the assembly was already loaded.
+        /// </summary>
+        /// <param name="pathOverride">
+        /// Optionally supplies a specific assembly path. This path must overwrite 
+        /// the Path property of the IAssembly.
+        /// </param>
+        void Load (string pathOverride = null);
+
+        /// <summary>
+        /// Gets whether the assembly has been loaded.
+        /// </summary>
+        bool Loaded { get; }
+
+        /// <summary>
+        /// Gets the path from which the assembly is loaded.
+        /// </summary>
+        string Path { get; }
+
+        #region calls to native API
         void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html);
         void AddObject(IntPtr converter, IntPtr objectConfig, string html);
         IntPtr CreateConverter(IntPtr globalSettings);
@@ -18,15 +40,14 @@ namespace TuesPechkin
         string GetPhaseDescription(IntPtr converter, int phase);
         int GetPhaseNumber(IntPtr converter);
         string GetProgressDescription(IntPtr converter);
-        string Path { get; }
         bool PerformConversion(IntPtr converter);
-        void SetErrorCallback(IntPtr converter, TuesPechkin.Util.StringCallback callback);
-        void SetFinishedCallback(IntPtr converter, TuesPechkin.Util.IntCallback callback);
+        void SetErrorCallback(IntPtr converter, StringCallback callback);
+        void SetFinishedCallback(IntPtr converter, IntCallback callback);
         int SetGlobalSetting(IntPtr setting, string name, string value);
         int SetObjectSetting(IntPtr setting, string name, string value);
-        void SetPhaseChangedCallback(IntPtr converter, TuesPechkin.Util.VoidCallback callback);
-        void SetProgressChangedCallback(IntPtr converter, TuesPechkin.Util.IntCallback callback);
-        void SetWarningCallback(IntPtr converter, TuesPechkin.Util.StringCallback callback);
-        Version Version { get; }
+        void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback);
+        void SetProgressChangedCallback(IntPtr converter, IntCallback callback);
+        void SetWarningCallback(IntPtr converter, StringCallback callback);
+        #endregion
     }
 }

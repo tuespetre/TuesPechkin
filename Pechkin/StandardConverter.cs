@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using TuesPechkin.EventHandlers;
 using TuesPechkin.Util;
@@ -7,21 +8,20 @@ namespace TuesPechkin
 {
     public class StandardConverter : MarshalByRefObject, IConverter
     {
-        public IAssembly Assembly { get; private set; }
+        protected IAssembly Assembly { get; private set; }
 
-        public HtmlDocument ProcessingDocument { get; private set; }
+        protected HtmlDocument ProcessingDocument { get; private set; }
 
         public StandardConverter(IAssembly assembly)
         {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException("assembly");
+            }
+
             Assembly = assembly;
 
-            this.onErrorDelegate = new StringCallback(this.OnError);
-            this.onFinishedDelegate = new IntCallback(this.OnFinished);
-            this.onPhaseChangedDelegate = new VoidCallback(this.OnPhaseChanged);
-            this.onProgressChangedDelegate = new IntCallback(this.OnProgressChanged);
-            this.onWarningDelegate = new StringCallback(this.OnWarning);
-
-            Tracer.Trace(string.Format("T:{0} Created SimplePechkin", Thread.CurrentThread.Name));
+            Tracer.Trace(string.Format("T:{0} Created StandardConverter", Thread.CurrentThread.Name));
         }
 
         public event BeginEventHandler Begin;
@@ -36,18 +36,23 @@ namespace TuesPechkin
 
         public event WarningEventHandler Warning;
 
-        public byte[] Convert(HtmlDocument document)
+        public virtual byte[] Convert(HtmlDocument document)
         {
+            if (!Assembly.Loaded)
+            {
+                Assembly.Load();
+            }
+
             ProcessingDocument = document;
             var converter = CreateConverter(document);
 
             Tracer.Trace(string.Format("T:{0} Created converter", Thread.CurrentThread.Name));
-
-            Assembly.SetErrorCallback(converter, onErrorDelegate);
-            Assembly.SetWarningCallback(converter, onWarningDelegate);
-            Assembly.SetPhaseChangedCallback(converter, onPhaseChangedDelegate);
-            Assembly.SetProgressChangedCallback(converter, onProgressChangedDelegate);
-            Assembly.SetFinishedCallback(converter, onFinishedDelegate);
+            
+            Assembly.SetErrorCallback(converter, OnError);
+            Assembly.SetWarningCallback(converter, OnWarning);
+            Assembly.SetPhaseChangedCallback(converter, OnPhaseChanged);
+            Assembly.SetProgressChangedCallback(converter, OnProgressChanged);
+            Assembly.SetFinishedCallback(converter, OnFinished);
 
             Tracer.Trace(string.Format("T:{0} Added callbacks to converter", Thread.CurrentThread.Name));
 
@@ -224,11 +229,5 @@ namespace TuesPechkin
 
             return converter;
         }
-
-        private readonly StringCallback onErrorDelegate;
-        private readonly IntCallback onFinishedDelegate;
-        private readonly VoidCallback onPhaseChangedDelegate;
-        private readonly IntCallback onProgressChangedDelegate;
-        private readonly StringCallback onWarningDelegate;
     }
 }

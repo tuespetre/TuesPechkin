@@ -95,7 +95,9 @@
     <Compile Include="Attributes\GlobalSettingAttribute.cs" />
     <Compile Include="Attributes\SettingBagAttribute.cs" />
     <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
+    <Compile Include="AssemblyAlreadyLoadedException.cs" />
     <Compile Include="IAssembly.cs" />
+    <Compile Include="NestingAssembly.cs" />
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Document\HtmlDocument.cs" />
     <Compile Include="EventHandlers\BeginEventHandler.cs" />

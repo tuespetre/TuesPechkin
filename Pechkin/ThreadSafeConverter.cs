@@ -8,74 +8,10 @@ using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
-    public class ThreadSafeConverter : IConverter
+    public class ThreadSafeConverter : StandardConverter, IConverter
     {
-        public IConverter InnerConverter { get; private set; }
-
-        public event BeginEventHandler Begin;
-
-        public event WarningEventHandler Warning;
-
-        public event ErrorEventHandler Error;
-
-        public event PhaseChangedEventHandler PhaseChanged;
-
-        public event ProgressChangedEventHandler ProgressChanged;
-
-        public event FinishEventHandler Finished;
-
-        public ThreadSafeConverter(IConverter converter)
+        public ThreadSafeConverter(IAssembly assembly) : base(assembly)
         {
-            InnerConverter = converter;
-
-            InnerConverter.Begin += (a, b, c) =>
-            {
-                if (Begin != null)
-                {
-                    Begin(this, b, c);
-                }
-            };
-
-            InnerConverter.Error += (a, b, c) =>
-            {
-                if (this.Error != null)
-                {
-                    this.Error(this, b, c);
-                }
-            };
-
-            InnerConverter.Finished += (a, b, c) =>
-            {
-                if (this.Finished != null)
-                {
-                    this.Finished(this, b, c);
-                }
-            };
-
-            InnerConverter.PhaseChanged += (a, b, c, d) =>
-            {
-                if (this.PhaseChanged != null)
-                {
-                    this.PhaseChanged(this, b, c, d);
-                }
-            };
-
-            InnerConverter.ProgressChanged += (a, b, c, d) =>
-            {
-                if (this.ProgressChanged != null)
-                {
-                    this.ProgressChanged(this, b, c, d);
-                }
-            };
-
-            InnerConverter.Warning += (a, b, c) =>
-            {
-                if (this.Warning != null)
-                {
-                    this.Warning(this, b, c);
-                }
-            };
-
             InnerThread = new Thread(Run)
             {
                 IsBackground = true
@@ -84,9 +20,9 @@ namespace TuesPechkin
             InnerThread.Start();
         }
 
-        public byte[] Convert(HtmlDocument document)
+        public override byte[] Convert(HtmlDocument document)
         {
-            return Invoke(() => InnerConverter.Convert(document));
+            return Invoke(() => base.Convert(document));
         }
 
         private Thread InnerThread { get; set; }

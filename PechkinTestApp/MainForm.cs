@@ -5,11 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TuesPechkin;
+using TuesPechkin.Wkhtmltox;
+using HtmlDocument = TuesPechkin.HtmlDocument;
 
 namespace Html2PdfTestApp
 {
     public partial class MainForm : Form
     {
+        private IAssembly assembly = new EmbeddedAssembly();
+
         private HtmlDocument Document = new HtmlDocument
         {
             Objects =
@@ -31,7 +35,7 @@ namespace Html2PdfTestApp
 
             try
             {
-                IConverter sc2 = Factory.Create();
+                IConverter sc2 = new StandardConverter(assembly);
                 buf = sc2.Convert(this.Document);
                 MessageBox.Show("All conversions done");
 

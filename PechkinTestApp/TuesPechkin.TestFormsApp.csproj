@@ -121,6 +121,10 @@
       <Project>{023DF833-B252-48B3-B6AF-DBBB13E39B13}</Project>
       <Name>TuesPechkin</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TuesPechkin.Wkhtmltox\TuesPechkin.Wkhtmltox.csproj">
+      <Project>{1bcd70ef-32ef-4339-9ccf-ea07415a39a9}</Project>
+      <Name>TuesPechkin.Wkhtmltox</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

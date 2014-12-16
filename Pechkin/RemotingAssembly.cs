@@ -10,36 +10,54 @@ using SysPath = System.IO.Path;
 
 namespace TuesPechkin
 {
-    public class RemotingAssembly : MarshalByRefObject, IAssembly
+    public class RemotingAssembly<TAssembly> : IAssembly
+        where TAssembly : MarshalByRefObject, IAssembly, new()
     {
+        public bool Loaded { get; private set; }
+
         public string Path { get; private set; }
 
-        public Version Version { get; private set; }
-
-        public RemotingAssembly(IAssembly prototype) : this(prototype.Path, prototype.Version)
+        public RemotingAssembly(TAssembly prototype)
         {
+            if (prototype == null)
+            {
+                throw new ArgumentNullException("prototype");
+            }
+
+            Prototype = prototype;
         }
 
-        public RemotingAssembly(string path, Version version)
+        public void Load(string pathOverride = null)
         {
-            Path = path;
-            Version = version;
+            if (Loaded)
+            {
+                throw new AssemblyAlreadyLoadedException();
+            }
+
+            if (pathOverride != null)
+            {
+                Path = pathOverride;
+            }
 
             SetupAppDomain();
 
             var handle = Activator.CreateInstanceFrom(
                 RemoteDomain,
-                typeof(StandardAssembly).Assembly.Location,
-                typeof(StandardAssembly).FullName,
+                typeof(TAssembly).Assembly.Location,
+                typeof(TAssembly).FullName,
                 false,
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, 
-                null, 
-                new object[] { Path, Version },
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                null,
+                null,
                 null,
                 null,
                 null);
 
             RemoteAssembly = handle.Unwrap() as IAssembly;
+            RemoteAssembly.Load(Path);
+            Path = RemoteAssembly.Path;
+
+            Loaded = true;
         }
 
         public void Unload()
@@ -47,6 +65,7 @@ namespace TuesPechkin
             TearDownAppDomain(null, EventArgs.Empty);
         }
 
+        #region forwarding calls
         public void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html)
         {
             RemoteAssembly.AddObject(converter, objectConfig, html);
@@ -156,6 +175,9 @@ namespace TuesPechkin
         {
             RemoteAssembly.SetWarningCallback(converter, callback);
         }
+        #endregion
+
+        private IAssembly Prototype { get; set; }
 
         private IAssembly RemoteAssembly { get; set; }
 
@@ -184,7 +206,6 @@ namespace TuesPechkin
                 var path = AppDomain.CurrentDomain.GetData("path") as string;
 
                 SysAssembly.LoadFile(path);
-                WkhtmltoxBindings.wkhtmltopdf_init(0);
             });
 
             if (AppDomain.CurrentDomain.IsDefaultAppDomain() == false)

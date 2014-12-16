@@ -195,7 +195,7 @@ namespace PechkinTests
 
             Assert.IsNotNull(result);
         }
-
+        
         [TestMethod]
         public void UnloadsWkhtmltoxWhenAppDomainUnloads()
         {
@@ -207,7 +207,7 @@ namespace PechkinTests
             {
                 var converter = 
                     new StandardConverter(
-                        new RemotingAssembly(
+                        new RemotingAssembly<EmbeddedAssembly>(
                             new EmbeddedAssembly()));
 
                 var document = new HtmlDocument("<p>some html</p>");
@@ -220,15 +220,20 @@ namespace PechkinTests
             Assert.IsFalse(Process.GetCurrentProcess()
                                 .Modules
                                 .Cast<ProcessModule>()
-                                .Any(m => m.ModuleName == "wkhtmltox.dll"));
+                                .Any(m => 
+                                {
+                                    return m.ModuleName == "wkhtmltox.dll";
+                                    }));
         }
 
         private AppDomain GetAppDomain(string name)
         {
-            // This is setup for using the Visual Studio test runner 
-            // Specifically, the xUnit.net runner by Outercurve Foundation
+            var appDomainSetup = new AppDomainSetup 
+            { 
+                ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                LoaderOptimization = LoaderOptimization.SingleDomain
+            };
 
-            var appDomainSetup = new AppDomainSetup { ApplicationBase = AppDomain.CurrentDomain.BaseDirectory };
             var domain = AppDomain.CreateDomain(name, null, appDomainSetup);
 
             return domain;
