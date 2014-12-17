@@ -29,9 +29,14 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value); 
+                DEPRECAAAAATED.BestAintBeNull(value); 
                 this.global = value;
             }
+        }
+
+        public static implicit operator HtmlDocument(string html)
+        {
+            return new HtmlDocument(html);
         }
     }
 }

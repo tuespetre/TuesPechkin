@@ -9,9 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using TuesPechkin;
 using TuesPechkin.Wkhtmltox;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace PechkinTests
+namespace TuesPechkin.Tests
 {
     [TestClass]
     public class PechkinTests
@@ -36,17 +35,21 @@ namespace PechkinTests
 
             return new StreamReader(s).ReadToEnd();
         }
-        /*
-        [Fact]
+
+        [TestMethod]
         public void BubblesExceptionsFromSyncedThread()
         {
-            Assert.Throws<ApplicationException>(() =>
-            {
-                ThreadSafeConverter.Invoke(() => { throw new ApplicationException(); });
-            });
-        }
+            var converter = new ThreadSafeConverter(new BogusToolset());
 
-        [Fact]
+            try
+            {
+                converter.Convert("wuttup");
+                Assert.Fail();
+            }
+            catch (NotImplementedException) { }
+        }
+        
+        [TestMethod]
         public void ConvertsAfterAppDomainRecycles()
         {
             // arrange
@@ -54,41 +57,50 @@ namespace PechkinTests
             byte[] result1 = null;
             var domain2 = this.GetAppDomain("testing_unload_2");
             byte[] result2 = null;
+            CrossAppDomainDelegate callback = () =>
+            {
+                var dllPath = AppDomain.CurrentDomain.GetData("dllpath") as string;
+
+                var converter =
+                    new ThreadSafeConverter(
+                        new RemotingToolset<PdfToolset>(
+                            new WinEmbeddedDeployment(
+                                new StaticDeployment(dllPath))));
+
+                var document = new HtmlDocument("<p>some html</p>");
+
+                AppDomain.CurrentDomain.SetData("result", converter.Convert(document));
+            };
 
             // act
-            domain1.DoCallBack(() =>
-            {
-                byte[] convert = Factory.Create().Convert("<p>some html</p>");
-                AppDomain.CurrentDomain.SetData("result1", convert);
-            });
-            result1 = domain1.GetData("result1") as byte[];
+            domain1.SetData("dllpath", GetDllPath());
+            domain1.DoCallBack(callback);
+            result1 = domain1.GetData("result") as byte[];
             AppDomain.Unload(domain1);
 
-            domain2.DoCallBack(() =>
-            {
-                byte[] convert = Factory.Create().Convert("<p>some html</p>");
-                AppDomain.CurrentDomain.SetData("result2", convert);
-            });
-            result2 = domain2.GetData("result2") as byte[];
+            domain2.SetData("dllpath", GetDllPath());
+            domain2.DoCallBack(callback);
+            result2 = domain2.GetData("result") as byte[];
             AppDomain.Unload(domain2);
 
             // assert
-            Assert.NotNull(result1);
-            Assert.NotNull(result2);
+            Assert.IsNotNull(result1);
+            Assert.IsNotNull(result2);
         }
 
-        [Fact]
+        [TestMethod]
         public void HandlesConcurrentThreads()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
             int numberOfTasks = 10;
             int completed = 0;
 
+            IConverter converter = new ThreadSafeConverter(GetNewToolset());
+
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
-                IConverter sc = Factory.Create();
-                Assert.NotNull(sc.Convert(html));
+                Assert.IsNotNull(converter.Convert(html));
                 completed++;
                 Debug.WriteLine(String.Format("#{0} completed", i + 1));
             }));
@@ -101,66 +113,47 @@ namespace PechkinTests
             }
         }
 
-        [Fact]
-        public void ObjectIsHappilyGarbageCollected()
-        {
-            string html = GetResourceString("PechkinTests.Resources.page.html");
-
-            IConverter c = Factory.Create();
-
-            byte[] ret = c.Convert(html);
-
-            Assert.NotNull(ret);
-
-            c = Factory.Create();
-            ret = c.Convert(html);
-
-            Assert.NotNull(ret);
-
-            GC.Collect();
-        }
-
-        [Fact]
+        [TestMethod]
         public void OneObjectPerformsTwoConversionSequentially()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IConverter c = Factory.Create();
+            IConverter c = GetNewConverter();
 
             byte[] ret = c.Convert(html);
 
-            Assert.NotNull(ret);
+            Assert.IsNotNull(ret);
 
             ret = c.Convert(html);
 
-            Assert.NotNull(ret);
+            Assert.IsNotNull(ret);
         }
 
-        [Fact]
+        [TestMethod]
         public void ResultIsPdf()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IConverter c = Factory.Create();
+            IConverter c = GetNewConverter();
 
             byte[] ret = c.Convert(html);
 
-            Assert.NotNull(ret);
+            Assert.IsNotNull(ret);
 
             byte[] right = Encoding.UTF8.GetBytes("%PDF");
 
-            Assert.True(right.Length <= ret.Length);
+            Assert.IsTrue(right.Length <= ret.Length);
 
             byte[] test = new byte[right.Length];
             Array.Copy(ret, 0, test, 0, right.Length);
 
             for (int i = 0; i < right.Length; i++)
             {
-                Assert.Equal(right[i], test[i]);
+                Assert.AreEqual(right[i], test[i]);
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void ReturnsResultFromFile()
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
@@ -173,21 +166,24 @@ namespace PechkinTests
 
             sw.Close();
 
-            IConverter c = Factory.Create();
+            var c = GetNewConverter();
 
-            byte[] ret = c.Convert(new ObjectSettings() { PageUrl = fn });
+            byte[] ret = c.Convert(new HtmlDocument
+            {
+                Objects = { 
+                    new ObjectSettings { PageUrl = fn } 
+                }
+            });
 
-            Assert.NotNull(ret);
+            Assert.IsNotNull(ret);
 
             File.Delete(fn);
-        }*/
+        }
 
         [TestMethod]
         public void ReturnsResultFromString()
         {
-            var converter =
-                new StandardConverter(
-                    new EmbeddedAssembly());
+            var converter = GetNewConverter();
 
             var document = new HtmlDocument("<p>some html</p>");
 
@@ -195,7 +191,7 @@ namespace PechkinTests
 
             Assert.IsNotNull(result);
         }
-        
+
         [TestMethod]
         public void UnloadsWkhtmltoxWhenAppDomainUnloads()
         {
@@ -203,12 +199,16 @@ namespace PechkinTests
             var domain = GetAppDomain("testing_unload");
 
             // act
-            domain.DoCallBack(() => 
+            domain.SetData("dllpath", GetDllPath());
+            domain.DoCallBack(() =>
             {
-                var converter = 
+                var dllPath = AppDomain.CurrentDomain.GetData("dllpath") as string;
+
+                var converter =
                     new StandardConverter(
-                        new RemotingAssembly<EmbeddedAssembly>(
-                            new EmbeddedAssembly()));
+                        new RemotingToolset<PdfToolset>(
+                            new WinEmbeddedDeployment(
+                                new StaticDeployment(dllPath))));
 
                 var document = new HtmlDocument("<p>some html</p>");
 
@@ -217,19 +217,17 @@ namespace PechkinTests
             AppDomain.Unload(domain);
 
             // assert
-            Assert.IsFalse(Process.GetCurrentProcess()
-                                .Modules
-                                .Cast<ProcessModule>()
-                                .Any(m => 
-                                {
-                                    return m.ModuleName == "wkhtmltox.dll";
-                                    }));
+            Assert.IsFalse(Process
+                .GetCurrentProcess()
+                .Modules
+                .Cast<ProcessModule>()
+                .Any(m => m.ModuleName == "wkhtmltox.dll"));
         }
 
         private AppDomain GetAppDomain(string name)
         {
-            var appDomainSetup = new AppDomainSetup 
-            { 
+            var appDomainSetup = new AppDomainSetup
+            {
                 ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
                 LoaderOptimization = LoaderOptimization.SingleDomain
             };
@@ -237,6 +235,39 @@ namespace PechkinTests
             var domain = AppDomain.CreateDomain(name, null, appDomainSetup);
 
             return domain;
+        }
+
+        private string GetDllPath()
+        {
+            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+            var basePath = Path.Combine(
+                Path.GetTempPath(),
+                String.Format(
+                    "{0}{1}_{2}_{3}",
+                    assemblyName.Name.ToString(),
+                    assemblyName.Version.ToString(),
+                    IntPtr.Size == 8 ? "x64" : "x86",
+                    String.Join(
+                        String.Empty,
+                        AppDomain.CurrentDomain.BaseDirectory.Split(
+                            Path.GetInvalidFileNameChars()))));
+
+            return Path.Combine(basePath, WkhtmltoxBindings.DLLNAME);
+        }
+
+        private IConverter GetNewConverter()
+        {
+            return new StandardConverter(GetNewToolset());
+        }
+
+        private IToolset GetNewToolset()
+        {
+            return new PdfToolset(GetNewDeployment());
+        }
+
+        private IDeployment GetNewDeployment()
+        {
+            return new WinEmbeddedDeployment(new StaticDeployment(GetDllPath()));
         }
     }
 }

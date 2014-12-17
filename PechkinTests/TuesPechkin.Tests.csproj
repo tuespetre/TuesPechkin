@@ -86,6 +86,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BogusToolset.cs" />
     <Compile Include="PechkinTests.cs" />
   </ItemGroup>
   <ItemGroup>

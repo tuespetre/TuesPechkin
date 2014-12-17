@@ -10,7 +10,7 @@ namespace TuesPechkin
 {
     public class ThreadSafeConverter : StandardConverter, IConverter
     {
-        public ThreadSafeConverter(IAssembly assembly) : base(assembly)
+        public ThreadSafeConverter(IToolset toolset) : base(toolset)
         {
             InnerThread = new Thread(Run)
             {

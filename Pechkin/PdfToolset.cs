@@ -8,45 +8,44 @@ using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
-    public class StandardAssembly : MarshalByRefObject, IAssembly
+    public class PdfToolset : MarshalByRefObject, IToolset
     {
+        public IDeployment Deployment { get; private set; }
+
         public bool Loaded { get; private set; }
 
-        public string Path { get; private set; }
-
-        public StandardAssembly()
+        public PdfToolset()
         {
         }
 
-        public StandardAssembly(string path)
+        public PdfToolset(IDeployment deployment)
         {
-            if (path == null)
+            if (deployment == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException("deployment");
             }
 
-            Path = path;
+            Deployment = deployment;
         }
 
-        public void Load(string pathOverride = null)
+        public void Load(IDeployment deployment = null)
         {
             if (Loaded)
             {
-                throw new AssemblyAlreadyLoadedException();
+                return;
             }
 
-            if (pathOverride != null)
+            if (deployment != null)
             {
-                Path = pathOverride;
+                Deployment = deployment;
             }
 
-            WinApiHelper.LoadLibrary(Path);
-            WkhtmltoxBindings.wkhtmltopdf_init(0);
+            WinApiHelper.LoadLibrary(Deployment.Path);
 
             Loaded = true;
         }
 
-        #region Rest of IAssembly stuff
+        #region Rest of IToolset stuff
         public IntPtr CreateGlobalSettings()
         {
             Tracer.Trace("T:" + Thread.CurrentThread.Name + " Creating global settings (wkhtmltopdf_create_global_settings)");
@@ -154,7 +153,7 @@ namespace TuesPechkin
 
             WkhtmltoxBindings.wkhtmltopdf_destroy_converter(converter);
 
-            PinnedCallbacks.Unregister(converter);
+            pinnedCallbacks.Unregister(converter);
         }
 
         public void SetWarningCallback(IntPtr converter, StringCallback callback)
@@ -163,7 +162,7 @@ namespace TuesPechkin
             
             WkhtmltoxBindings.wkhtmltopdf_set_warning_callback(converter, callback);
 
-            PinnedCallbacks.Register(converter, callback);
+            pinnedCallbacks.Register(converter, callback);
         }
 
         public void SetErrorCallback(IntPtr converter, StringCallback callback)
@@ -172,7 +171,7 @@ namespace TuesPechkin
             
             WkhtmltoxBindings.wkhtmltopdf_set_error_callback(converter, callback);
 
-            PinnedCallbacks.Register(converter, callback);
+            pinnedCallbacks.Register(converter, callback);
         }
 
         public void SetFinishedCallback(IntPtr converter, IntCallback callback)
@@ -181,7 +180,7 @@ namespace TuesPechkin
 
             WkhtmltoxBindings.wkhtmltopdf_set_finished_callback(converter, callback);
 
-            PinnedCallbacks.Register(converter, callback);
+            pinnedCallbacks.Register(converter, callback);
         }
 
         public void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback)
@@ -190,7 +189,7 @@ namespace TuesPechkin
 
             WkhtmltoxBindings.wkhtmltopdf_set_phase_changed_callback(converter, callback);
 
-            PinnedCallbacks.Register(converter, callback);
+            pinnedCallbacks.Register(converter, callback);
         }
 
         public void SetProgressChangedCallback(IntPtr converter, IntCallback callback)
@@ -199,7 +198,7 @@ namespace TuesPechkin
 
             WkhtmltoxBindings.wkhtmltopdf_set_progress_changed_callback(converter, callback);
 
-            PinnedCallbacks.Register(converter, callback);
+            pinnedCallbacks.Register(converter, callback);
         }
 
         public bool PerformConversion(IntPtr converter)
@@ -268,29 +267,18 @@ namespace TuesPechkin
             Marshal.Copy(tmp, output, 0, output.Length);
             return output;
         }
+
+        public void SetUp(bool useGraphics = false)
+        {
+            WkhtmltoxBindings.wkhtmltopdf_init(useGraphics ? 1 : 0);
+        }
+
+        public void TearDown()
+        {
+            WkhtmltoxBindings.wkhtmltopdf_deinit();
+        }
         #endregion
 
-        private static class PinnedCallbacks
-        {
-            private static readonly Dictionary<IntPtr, List<Delegate>> registry = new Dictionary<IntPtr,List<Delegate>>();
-
-            public static void Register(IntPtr converter, Delegate callback)
-            {
-                List<Delegate> delegates;
-
-                if (!registry.TryGetValue(converter, out delegates))
-                {
-                    delegates = new List<Delegate>();
-                    registry.Add(converter, delegates);
-                }
-
-                delegates.Add(callback);
-            }
-
-            public static void Unregister(IntPtr converter)
-            {
-                registry.Remove(converter);
-            }
-        }
+        private DelegateRegistry pinnedCallbacks = new DelegateRegistry();
     }
 }

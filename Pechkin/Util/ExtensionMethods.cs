@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TuesPechkin
 {
-    internal static class Assert
+    internal static class DEPRECAAAAATED
     {
         public static void BestAintBeNull(object value)
         {

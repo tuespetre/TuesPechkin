@@ -8,7 +8,7 @@ namespace TuesPechkin
 {
     internal static class SettingApplicator
     {
-        public static void ApplySettings(IAssembly assembly, IntPtr config, object settings)
+        public static void ApplySettings(IToolset assembly, IntPtr config, object settings)
         {
             if (settings == null)
             {

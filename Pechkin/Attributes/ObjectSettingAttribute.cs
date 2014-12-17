@@ -12,7 +12,7 @@ namespace TuesPechkin.Attributes
             this.SettingName = settingName;
         }
 
-        public override void Apply(IAssembly assembly, IntPtr config, object value)
+        public override void Apply(IToolset assembly, IntPtr config, object value)
         {
             Apply(config, value, assembly.SetObjectSetting);
         }

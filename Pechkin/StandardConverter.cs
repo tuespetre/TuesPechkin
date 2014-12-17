@@ -8,18 +8,18 @@ namespace TuesPechkin
 {
     public class StandardConverter : MarshalByRefObject, IConverter
     {
-        protected IAssembly Assembly { get; private set; }
+        protected IToolset Toolset { get; private set; }
 
         protected HtmlDocument ProcessingDocument { get; private set; }
 
-        public StandardConverter(IAssembly assembly)
+        public StandardConverter(IToolset assembly)
         {
             if (assembly == null)
             {
                 throw new ArgumentNullException("assembly");
             }
 
-            Assembly = assembly;
+            Toolset = assembly;
 
             Tracer.Trace(string.Format("T:{0} Created StandardConverter", Thread.CurrentThread.Name));
         }
@@ -38,21 +38,19 @@ namespace TuesPechkin
 
         public virtual byte[] Convert(HtmlDocument document)
         {
-            if (!Assembly.Loaded)
-            {
-                Assembly.Load();
-            }
+            Toolset.Load();
+            Toolset.SetUp();
 
             ProcessingDocument = document;
             var converter = CreateConverter(document);
 
             Tracer.Trace(string.Format("T:{0} Created converter", Thread.CurrentThread.Name));
             
-            Assembly.SetErrorCallback(converter, OnError);
-            Assembly.SetWarningCallback(converter, OnWarning);
-            Assembly.SetPhaseChangedCallback(converter, OnPhaseChanged);
-            Assembly.SetProgressChangedCallback(converter, OnProgressChanged);
-            Assembly.SetFinishedCallback(converter, OnFinished);
+            Toolset.SetErrorCallback(converter, OnError);
+            Toolset.SetWarningCallback(converter, OnWarning);
+            Toolset.SetPhaseChangedCallback(converter, OnPhaseChanged);
+            Toolset.SetProgressChangedCallback(converter, OnProgressChanged);
+            Toolset.SetFinishedCallback(converter, OnFinished);
 
             Tracer.Trace(string.Format("T:{0} Added callbacks to converter", Thread.CurrentThread.Name));
 
@@ -62,25 +60,26 @@ namespace TuesPechkin
             byte[] result = null;
 
             // run conversion process
-            if (!Assembly.PerformConversion(converter))
+            if (!Toolset.PerformConversion(converter))
             {
                 Tracer.Trace(string.Format("T:{0} Conversion failed, null returned", Thread.CurrentThread.Name));
             }
             else
             {
                 // get output
-                result = Assembly.GetConverterResult(converter);
+                result = Toolset.GetConverterResult(converter);
             }
 
             Tracer.Trace(string.Format("T:{0} Releasing unmanaged converter", Thread.CurrentThread.Name));
-            Assembly.DestroyConverter(converter);
+            Toolset.DestroyConverter(converter);
+            Toolset.TearDown();
             ProcessingDocument = null;
             return result;
         }
 
         private void OnBegin(IntPtr converter)
         {
-            int expectedPhaseCount = Assembly.GetPhaseCount(converter);
+            int expectedPhaseCount = Toolset.GetPhaseCount(converter);
 
             Tracer.Trace(string.Format("T:{0} Conversion started, {1} phases awaiting", Thread.CurrentThread.Name, expectedPhaseCount));
 
@@ -136,8 +135,8 @@ namespace TuesPechkin
 
         private void OnPhaseChanged(IntPtr converter)
         {
-            int phaseNumber = Assembly.GetPhaseNumber(converter);
-            string phaseDescription = Assembly.GetPhaseDescription(converter, phaseNumber);
+            int phaseNumber = Toolset.GetPhaseNumber(converter);
+            string phaseDescription = Toolset.GetPhaseDescription(converter, phaseNumber);
 
             Tracer.Trace(string.Format("T:{0} Conversion Phase Changed: #{1} {2}", Thread.CurrentThread.Name, phaseNumber, phaseDescription));
 
@@ -157,7 +156,7 @@ namespace TuesPechkin
 
         private void OnProgressChanged(IntPtr converter, int progress)
         {
-            string progressDescription = Assembly.GetProgressDescription(converter);
+            string progressDescription = Toolset.GetProgressDescription(converter);
 
             Tracer.Trace(string.Format("T:{0} Conversion Progress Changed: ({1}) {2}", Thread.CurrentThread.Name, progress, progressDescription));
 
@@ -203,11 +202,11 @@ namespace TuesPechkin
             var converter = IntPtr.Zero;
 
             {
-                var config = Assembly.CreateGlobalSettings();
+                var config = Toolset.CreateGlobalSettings();
 
-                SettingApplicator.ApplySettings(Assembly, config, document.GlobalSettings);
+                SettingApplicator.ApplySettings(Toolset, config, document.GlobalSettings);
 
-                converter = Assembly.CreateConverter(config);
+                converter = Toolset.CreateConverter(config);
             }
 
             //if (this.TableOfContents != null)
@@ -219,11 +218,11 @@ namespace TuesPechkin
             {
                 if (setting != null)
                 {
-                    var config = Assembly.CreateObjectSettings();
+                    var config = Toolset.CreateObjectSettings();
 
-                    SettingApplicator.ApplySettings(Assembly, config, setting);
+                    SettingApplicator.ApplySettings(Toolset, config, setting);
 
-                    Assembly.AddObject(converter, config, setting.RawData);
+                    Toolset.AddObject(converter, config, setting.RawData);
                 }
             }
 

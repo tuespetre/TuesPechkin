@@ -1,29 +1,29 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
-    public interface IAssembly
+    public interface IToolset
     {
         /// <summary>
-        /// Loads the assembly from its path. Throws AssemblyAlreadyLoadedException
-        /// if the assembly was already loaded.
+        /// Loads the toolset's deployment from its path. It must behave idempotently,
+        /// performing no operation if the deployment is already loaded.
         /// </summary>
-        /// <param name="pathOverride">
-        /// Optionally supplies a specific assembly path. This path must overwrite 
-        /// the Path property of the IAssembly.
+        /// <param name="deployment">
+        /// Optionally supplies a specific deployment to be used.
         /// </param>
-        void Load (string pathOverride = null);
+        void Load(IDeployment deployment = null);
 
         /// <summary>
-        /// Gets whether the assembly has been loaded.
+        /// Gets whether the toolset's deployment has been loaded.
         /// </summary>
         bool Loaded { get; }
 
         /// <summary>
-        /// Gets the path from which the assembly is loaded.
+        /// The deployment loaded by (or to be loaded by) the toolset.
         /// </summary>
-        string Path { get; }
+        IDeployment Deployment { get; }
 
         #region calls to native API
         void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html);
@@ -48,6 +48,9 @@ namespace TuesPechkin
         void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback);
         void SetProgressChangedCallback(IntPtr converter, IntCallback callback);
         void SetWarningCallback(IntPtr converter, StringCallback callback);
+
+        void SetUp(bool useGraphics = false);
+        void TearDown();
         #endregion
     }
 }

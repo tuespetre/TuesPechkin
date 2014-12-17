@@ -1,127 +1,146 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace TuesPechkin
+namespace TuesPechkin.Tests
 {
-    public abstract class NestingAssembly : MarshalByRefObject, IAssembly
+    public class BogusToolset : IToolset
     {
-        protected IAssembly WrappedAssembly { get; set; }
+        public void Load(IDeployment deployment = null)
+        {
+            throw new NotImplementedException();
+        }
 
-        public bool Loaded { get; protected set; }
+        public bool Loaded
+        {
+            get { throw new NotImplementedException(); }
+        }
 
-        public string Path { get; protected set; }
-
-        public abstract void Load(string pathOverride = null);
+        public IDeployment Deployment
+        {
+            get { throw new NotImplementedException(); }
+        }
 
         public void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html)
         {
-            WrappedAssembly.AddObject(converter, objectConfig, html);
+            throw new NotImplementedException();
         }
 
         public void AddObject(IntPtr converter, IntPtr objectConfig, string html)
         {
-            WrappedAssembly.AddObject(converter, objectConfig, html);
+            throw new NotImplementedException();
         }
 
         public IntPtr CreateConverter(IntPtr globalSettings)
         {
-            return WrappedAssembly.CreateConverter(globalSettings);
+            throw new NotImplementedException();
         }
 
         public IntPtr CreateGlobalSettings()
         {
-            return WrappedAssembly.CreateGlobalSettings();
+            throw new NotImplementedException();
         }
 
         public IntPtr CreateObjectSettings()
         {
-            return WrappedAssembly.CreateObjectSettings();
+            throw new NotImplementedException();
         }
 
         public void DestroyConverter(IntPtr converter)
         {
-            WrappedAssembly.DestroyConverter(converter);
+            throw new NotImplementedException();
         }
 
         public byte[] GetConverterResult(IntPtr converter)
         {
-            return WrappedAssembly.GetConverterResult(converter);
+            throw new NotImplementedException();
         }
 
         public string GetGlobalSetting(IntPtr setting, string name)
         {
-            return WrappedAssembly.GetGlobalSetting(setting, name);
+            throw new NotImplementedException();
         }
 
         public int GetHttpErrorCode(IntPtr converter)
         {
-            return WrappedAssembly.GetHttpErrorCode(converter);
+            throw new NotImplementedException();
         }
 
         public string GetObjectSetting(IntPtr setting, string name)
         {
-            return WrappedAssembly.GetObjectSetting(setting, name);
+            throw new NotImplementedException();
         }
 
         public int GetPhaseCount(IntPtr converter)
         {
-            return WrappedAssembly.GetPhaseCount(converter);
+            throw new NotImplementedException();
         }
 
         public string GetPhaseDescription(IntPtr converter, int phase)
         {
-            return WrappedAssembly.GetPhaseDescription(converter, phase);
+            throw new NotImplementedException();
         }
 
         public int GetPhaseNumber(IntPtr converter)
         {
-            return WrappedAssembly.GetPhaseNumber(converter);
+            throw new NotImplementedException();
         }
 
         public string GetProgressDescription(IntPtr converter)
         {
-            return WrappedAssembly.GetProgressDescription(converter);
+            throw new NotImplementedException();
         }
 
         public bool PerformConversion(IntPtr converter)
         {
-            return WrappedAssembly.PerformConversion(converter);
+            throw new NotImplementedException();
         }
 
         public void SetErrorCallback(IntPtr converter, Util.StringCallback callback)
         {
-            WrappedAssembly.SetErrorCallback(converter, callback);
+            throw new NotImplementedException();
         }
 
         public void SetFinishedCallback(IntPtr converter, Util.IntCallback callback)
         {
-            WrappedAssembly.SetFinishedCallback(converter, callback);
+            throw new NotImplementedException();
         }
 
         public int SetGlobalSetting(IntPtr setting, string name, string value)
         {
-            return WrappedAssembly.SetGlobalSetting(setting, name, value);
+            throw new NotImplementedException();
         }
 
         public int SetObjectSetting(IntPtr setting, string name, string value)
         {
-            return WrappedAssembly.SetObjectSetting(setting, name, value);
+            throw new NotImplementedException();
         }
 
         public void SetPhaseChangedCallback(IntPtr converter, Util.VoidCallback callback)
         {
-            WrappedAssembly.SetPhaseChangedCallback(converter, callback);
+            throw new NotImplementedException();
         }
 
         public void SetProgressChangedCallback(IntPtr converter, Util.IntCallback callback)
         {
-            WrappedAssembly.SetProgressChangedCallback(converter, callback);
+            throw new NotImplementedException();
         }
 
         public void SetWarningCallback(IntPtr converter, Util.StringCallback callback)
         {
-            WrappedAssembly.SetWarningCallback(converter, callback);
+            throw new NotImplementedException();
+        }
+
+        public void SetUp(bool useGraphics = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TearDown()
+        {
+            throw new NotImplementedException();
         }
     }
 }

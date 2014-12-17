@@ -35,7 +35,7 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value);
+                DEPRECAAAAATED.BestAintBeNull(value);
                 this.footer = value;
             }
         }
@@ -49,7 +49,7 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value);
+                DEPRECAAAAATED.BestAintBeNull(value);
                 this.header = value;
             }
         }
@@ -62,7 +62,7 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value);
+                DEPRECAAAAATED.BestAintBeNull(value);
                 this.data = System.Text.Encoding.UTF8.GetBytes(value);
             }
         }
@@ -76,7 +76,7 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value);
+                DEPRECAAAAATED.BestAintBeNull(value);
                 this.load = value;
             }
         }
@@ -90,7 +90,7 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value);
+                DEPRECAAAAATED.BestAintBeNull(value);
                 this.data = value;
             }
         }
@@ -104,7 +104,7 @@ namespace TuesPechkin
             }
             set
             {
-                Assert.BestAintBeNull(value);
+                DEPRECAAAAATED.BestAintBeNull(value);
                 this.web = value;
             }
         }

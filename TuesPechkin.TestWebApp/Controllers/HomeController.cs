@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using TuesPechkin.Wkhtmltox;
 
 namespace TuesPechkin.TestWebApp.Controllers
 {
@@ -10,21 +12,27 @@ namespace TuesPechkin.TestWebApp.Controllers
         // GET: /Home/
         public ActionResult Index()
         {
-            /*var html = "<p>Just some test HTML</p>";
+            var html = "<p>Just some test HTML</p>";
             
             for (var i = 0; i < 5; i++)
             {
-                var converter = Factory.Create();
+                var converter = 
+                    new StandardConverter(
+                        new PdfToolset(
+                            new WinEmbeddedDeployment(
+                                new StaticDeployment(
+                                    Path.Combine(Path.GetTempPath(), "wkhtmltox.dll")))));
+
                 var result = converter.Convert(html);
-                var path = this.Server.MapPath(String.Format("/{0}.pdf", i));
+                var path = Path.Combine(Path.GetTempPath(), String.Format("{0}.pdf", i));
 
                 System.IO.File.WriteAllBytes(path, result);
-            }*/
+            }
 
             return this.View();
         }
 
-        [HttpGet]
+        /*[HttpGet]
         public FileResult ScratchPad()
         {
             var doc = new HtmlDocument();
@@ -38,7 +46,7 @@ namespace TuesPechkin.TestWebApp.Controllers
             var result = converter.Convert(obj);
 
             return File(result, "application/pdf");
-        }
+        }*/
 
         public ActionResult PostAnything()
         {
