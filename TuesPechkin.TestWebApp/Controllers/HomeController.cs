@@ -8,6 +8,13 @@ namespace TuesPechkin.TestWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private static IConverter converter =
+            new ThreadSafeConverter(
+                new PdfToolset(
+                    new WinEmbeddedDeployment(
+                        new StaticDeployment(
+                            Path.Combine(Path.GetTempPath(), "wkhtmltox.dll")))));
+
         //
         // GET: /Home/
         public ActionResult Index()
@@ -16,13 +23,6 @@ namespace TuesPechkin.TestWebApp.Controllers
             
             for (var i = 0; i < 5; i++)
             {
-                var converter = 
-                    new StandardConverter(
-                        new PdfToolset(
-                            new WinEmbeddedDeployment(
-                                new StaticDeployment(
-                                    Path.Combine(Path.GetTempPath(), "wkhtmltox.dll")))));
-
                 var result = converter.Convert(html);
                 var path = Path.Combine(Path.GetTempPath(), String.Format("{0}.pdf", i));
 

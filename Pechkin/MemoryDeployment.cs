@@ -6,7 +6,7 @@ using System.Text;
 namespace TuesPechkin
 {
     [Serializable]
-    public abstract class MemoryDeployment : IDeployment
+    public abstract class EmbeddedDeployment : IDeployment
     {
         public virtual string Path
         {
@@ -35,7 +35,7 @@ namespace TuesPechkin
             }
         }
 
-        public MemoryDeployment(IDeployment physical)
+        public EmbeddedDeployment(IDeployment physical)
         {
             if (physical == null)
             {

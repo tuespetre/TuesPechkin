@@ -10,7 +10,7 @@ using SysPath = System.IO.Path;
 namespace TuesPechkin.Wkhtmltox
 {
     [Serializable]
-    public class WinEmbeddedDeployment : MemoryDeployment
+    public class WinEmbeddedDeployment : EmbeddedDeployment
     {
         public WinEmbeddedDeployment(IDeployment physical) : base(physical) { }
 

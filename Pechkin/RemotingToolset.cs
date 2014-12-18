@@ -69,28 +69,14 @@ namespace TuesPechkin
 
         private void SetupAppDomain()
         {
-            var assemblyLocation = SysAssembly.GetExecutingAssembly().Location;
-            var dirName = SysPath.GetDirectoryName(assemblyLocation);
+            var setup = AppDomain.CurrentDomain.SetupInformation;
 
-            var setup = new AppDomainSetup
-            {
-                ApplicationBase = dirName,
-                LoaderOptimization = LoaderOptimization.SingleDomain
-            };
+            setup.LoaderOptimization = LoaderOptimization.SingleDomain;
 
             remoteDomain = AppDomain.CreateDomain(
                 string.Format("tuespechkin_{0}", Guid.NewGuid()),
                 null,
                 setup);
-
-            remoteDomain.SetData("path", assemblyLocation);
-
-            remoteDomain.DoCallBack(() =>
-            {
-                var path = AppDomain.CurrentDomain.GetData("path") as string;
-
-                SysAssembly.LoadFile(path);
-            });
 
             if (AppDomain.CurrentDomain.IsDefaultAppDomain() == false)
             {

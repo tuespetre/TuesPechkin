@@ -7,8 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TuesPechkin;
-using TuesPechkin.Wkhtmltox;
 
 namespace TuesPechkin.Tests
 {
@@ -64,8 +62,7 @@ namespace TuesPechkin.Tests
                 var converter =
                     new ThreadSafeConverter(
                         new RemotingToolset<PdfToolset>(
-                            new WinEmbeddedDeployment(
-                                new StaticDeployment(dllPath))));
+                            new StaticDeployment(dllPath)));
 
                 var document = new HtmlDocument("<p>some html</p>");
 
@@ -207,8 +204,7 @@ namespace TuesPechkin.Tests
                 var converter =
                     new StandardConverter(
                         new RemotingToolset<PdfToolset>(
-                            new WinEmbeddedDeployment(
-                                new StaticDeployment(dllPath))));
+                            new StaticDeployment(dllPath)));
 
                 var document = new HtmlDocument("<p>some html</p>");
 
@@ -226,33 +222,16 @@ namespace TuesPechkin.Tests
 
         private AppDomain GetAppDomain(string name)
         {
-            var appDomainSetup = new AppDomainSetup
-            {
-                ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
-                LoaderOptimization = LoaderOptimization.SingleDomain
-            };
-
-            var domain = AppDomain.CreateDomain(name, null, appDomainSetup);
-
-            return domain;
+            return AppDomain.CreateDomain(name, null, AppDomain.CurrentDomain.SetupInformation);
         }
 
         private string GetDllPath()
         {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName();
-            var basePath = Path.Combine(
-                Path.GetTempPath(),
-                String.Format(
-                    "{0}{1}_{2}_{3}",
-                    assemblyName.Name.ToString(),
-                    assemblyName.Version.ToString(),
-                    IntPtr.Size == 8 ? "x64" : "x86",
-                    String.Join(
-                        String.Empty,
-                        AppDomain.CurrentDomain.BaseDirectory.Split(
-                            Path.GetInvalidFileNameChars()))));
-
-            return Path.Combine(basePath, WkhtmltoxBindings.DLLNAME);
+            return Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory, 
+                "wk-ver",
+                "0.12.0",
+                WkhtmltoxBindings.DLLNAME);
         }
 
         private IConverter GetNewConverter()
@@ -267,7 +246,7 @@ namespace TuesPechkin.Tests
 
         private IDeployment GetNewDeployment()
         {
-            return new WinEmbeddedDeployment(new StaticDeployment(GetDllPath()));
+            return new StaticDeployment(GetDllPath());
         }
     }
 }
