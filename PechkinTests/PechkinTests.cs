@@ -13,6 +13,8 @@ namespace TuesPechkin.Tests
     [TestClass]
     public class PechkinTests
     {
+        private const string TEST_WK_VER = "0.12.1";
+
         static PechkinTests()
         {
             Debug.Listeners.Add(new DefaultTraceListener());
@@ -61,7 +63,7 @@ namespace TuesPechkin.Tests
 
                 var converter =
                     new ThreadSafeConverter(
-                        new RemotingToolset<PdfToolset>(
+                        new PdfToolset(
                             new StaticDeployment(dllPath)));
 
                 var document = new HtmlDocument("<p>some html</p>");
@@ -70,12 +72,12 @@ namespace TuesPechkin.Tests
             };
 
             // act
-            domain1.SetData("dllpath", GetDllPath());
+            domain1.SetData("dllpath", GetDeploymentPath());
             domain1.DoCallBack(callback);
             result1 = domain1.GetData("result") as byte[];
             AppDomain.Unload(domain1);
 
-            domain2.SetData("dllpath", GetDllPath());
+            domain2.SetData("dllpath", GetDeploymentPath());
             domain2.DoCallBack(callback);
             result2 = domain2.GetData("result") as byte[];
             AppDomain.Unload(domain2);
@@ -196,7 +198,7 @@ namespace TuesPechkin.Tests
             var domain = GetAppDomain("testing_unload");
 
             // act
-            domain.SetData("dllpath", GetDllPath());
+            domain.SetData("dllpath", GetDeploymentPath());
             domain.DoCallBack(() =>
             {
                 var dllPath = AppDomain.CurrentDomain.GetData("dllpath") as string;
@@ -225,13 +227,12 @@ namespace TuesPechkin.Tests
             return AppDomain.CreateDomain(name, null, AppDomain.CurrentDomain.SetupInformation);
         }
 
-        private string GetDllPath()
+        private string GetDeploymentPath()
         {
             return Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory, 
                 "wk-ver",
-                "0.12.0",
-                WkhtmltoxBindings.DLLNAME);
+                TEST_WK_VER);
         }
 
         private IConverter GetNewConverter()
@@ -246,7 +247,7 @@ namespace TuesPechkin.Tests
 
         private IDeployment GetNewDeployment()
         {
-            return new StaticDeployment(GetDllPath());
+            return new StaticDeployment(GetDeploymentPath());
         }
     }
 }

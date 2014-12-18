@@ -90,7 +90,11 @@ namespace TuesPechkin
 
             foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
             {
-                if (module.FileName == Deployment.Path)
+                var expected = Path.Combine(
+                    Deployment.Path, 
+                    Path.GetFileName(module.FileName));
+
+                if (module.FileName == expected)
                 {
                     while (WinApiHelper.FreeLibrary(module.BaseAddress))
                     {

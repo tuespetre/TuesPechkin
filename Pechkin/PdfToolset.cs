@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -40,7 +42,7 @@ namespace TuesPechkin
                 Deployment = deployment;
             }
 
-            WinApiHelper.LoadLibrary(Deployment.Path);
+            WinApiHelper.SetDllDirectory(Deployment.Path);
 
             Loaded = true;
         }
