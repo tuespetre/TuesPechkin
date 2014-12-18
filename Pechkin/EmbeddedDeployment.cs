@@ -14,24 +14,27 @@ namespace TuesPechkin
             {
                 if (!deployed) 
                 { 
-                    path = physical.Path;
-
-                    var basePath = System.IO.Path.GetDirectoryName(path);
-
-                    if (!Directory.Exists(basePath))
+                    if (!Directory.Exists(physical.Path))
                     {
-                        Directory.CreateDirectory(basePath);
+                        Directory.CreateDirectory(physical.Path);
                     }
 
-                    if (!File.Exists(path)) 
-                    { 
-                        WriteStreamToFile(path, GetStream());
+                    foreach (var nameAndContents in GetContents())
+                    {
+                        var filename = System.IO.Path.Combine(
+                            physical.Path,
+                            nameAndContents.Key);
+
+                        if (!File.Exists(filename))
+                        {
+                            WriteStreamToFile(filename, nameAndContents.Value);
+                        }
                     }
 
                     deployed = true;
                 }
 
-                return path;
+                return physical.Path;
             }
         }
 
@@ -47,11 +50,9 @@ namespace TuesPechkin
 
         protected IDeployment physical;
 
-        protected abstract Stream GetStream();
+        protected abstract IEnumerable<KeyValuePair<string, Stream>> GetContents();
 
         private bool deployed;
-
-        private string path;
 
         private void WriteStreamToFile(string fileName, Stream stream)
         {

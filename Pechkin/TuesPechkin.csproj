@@ -95,7 +95,7 @@
     <Compile Include="Attributes\GlobalSettingAttribute.cs" />
     <Compile Include="Attributes\SettingBagAttribute.cs" />
     <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
-    <Compile Include="MemoryDeployment.cs" />
+    <Compile Include="EmbeddedDeployment.cs" />
     <Compile Include="IToolset.cs" />
     <Compile Include="IDeployment.cs" />
     <Compile Include="NestingToolset.cs" />

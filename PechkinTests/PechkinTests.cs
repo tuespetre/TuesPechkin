@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TuesPechkin.Wkhtmltox;
 
 namespace TuesPechkin.Tests
 {
@@ -198,15 +199,13 @@ namespace TuesPechkin.Tests
             var domain = GetAppDomain("testing_unload");
 
             // act
-            domain.SetData("dllpath", GetDeploymentPath());
             domain.DoCallBack(() =>
             {
-                var dllPath = AppDomain.CurrentDomain.GetData("dllpath") as string;
-
                 var converter =
                     new StandardConverter(
                         new RemotingToolset<PdfToolset>(
-                            new StaticDeployment(dllPath)));
+                            new WinEmbeddedDeployment(
+                                new StaticDeployment(Path.GetTempPath()))));
 
                 var document = new HtmlDocument("<p>some html</p>");
 

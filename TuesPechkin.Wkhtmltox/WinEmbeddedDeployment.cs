@@ -14,11 +14,16 @@ namespace TuesPechkin.Wkhtmltox
     {
         public WinEmbeddedDeployment(IDeployment physical) : base(physical) { }
 
-        protected override Stream GetStream()
+        protected override IEnumerable<KeyValuePair<string, Stream>> GetContents()
         {
             var raw = (IntPtr.Size == 8) ? Resources.wkhtmltox_64_dll : Resources.wkhtmltox_32_dll;
 
-            return new GZipStream(new MemoryStream(raw), CompressionMode.Decompress);
+            return new []
+            { 
+                new KeyValuePair<string, Stream>(
+                    key: WkhtmltoxBindings.DLLNAME,
+                    value: new GZipStream(new MemoryStream(raw), CompressionMode.Decompress))
+            };
         }
     }
 }
