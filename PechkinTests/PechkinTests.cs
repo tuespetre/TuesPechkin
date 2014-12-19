@@ -15,6 +15,7 @@ namespace TuesPechkin.Tests
     public class PechkinTests
     {
         private const string TEST_WK_VER = "0.12.1";
+        private const string TEST_URL = "www.google.com";
 
         static PechkinTests()
         {
@@ -49,7 +50,7 @@ namespace TuesPechkin.Tests
             }
             catch (NotImplementedException) { }
         }
-        
+
         [TestMethod]
         public void ConvertsAfterAppDomainRecycles()
         {
@@ -114,19 +115,67 @@ namespace TuesPechkin.Tests
         }
 
         [TestMethod]
-        public void OneObjectPerformsTwoConversionSequentially()
+        public void TwoSequentialConversionsFromString()
         {
-            string html = GetResourceString("PechkinTests.Resources.page.html");
+            var document = Document(StringObject());
+            var converter = GetNewConverter();
+            byte[] result = null;
 
-            IConverter c = GetNewConverter();
+            result = converter.Convert(document);
 
-            byte[] ret = c.Convert(html);
+            Assert.IsNotNull(result);
 
-            Assert.IsNotNull(ret);
+            result = converter.Convert(document);
 
-            ret = c.Convert(html);
+            Assert.IsNotNull(result);
+        }
 
-            Assert.IsNotNull(ret);
+        [TestMethod]
+        public void MultipleObjectConversionFromString()
+        {
+            var document = Document(StringObject(), StringObject());
+            var converter = GetNewConverter();
+            byte[] result = null;
+
+            result = converter.Convert(document);
+
+            Assert.IsNotNull(result);
+
+            result = converter.Convert(document);
+
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void TwoSequentialConversionsFromUrl()
+        {
+            var converter = GetNewConverter();
+            var document = Document(UrlObject());
+            byte[] result = null;
+
+            result = converter.Convert(document);
+
+            Assert.IsNotNull(result);
+
+            result = converter.Convert(document);
+
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void MultipleObjectConversionFromUrl()
+        {
+            var document = Document(UrlObject(), UrlObject());
+            var converter = GetNewConverter();
+            byte[] result = null;
+
+            result = converter.Convert(document);
+
+            Assert.IsNotNull(result);
+
+            result = converter.Convert(document);
+
+            Assert.IsNotNull(result);
         }
 
         [TestMethod]
@@ -229,7 +278,7 @@ namespace TuesPechkin.Tests
         private string GetDeploymentPath()
         {
             return Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory, 
+                AppDomain.CurrentDomain.BaseDirectory,
                 "wk-ver",
                 TEST_WK_VER);
         }
@@ -247,6 +296,26 @@ namespace TuesPechkin.Tests
         private IDeployment GetNewDeployment()
         {
             return new StaticDeployment(GetDeploymentPath());
+        }
+
+        private HtmlDocument Document(params ObjectSettings[] objects)
+        {
+            var doc = new HtmlDocument();
+            doc.Objects.AddRange(objects);
+
+            return doc;
+        }
+
+        private ObjectSettings StringObject()
+        {
+            var html = GetResourceString("PechkinTests.Resources.page.html");
+            
+            return new ObjectSettings { HtmlText = html };
+        }
+
+        private ObjectSettings UrlObject()
+        {
+            return new ObjectSettings { PageUrl = TEST_URL };
         }
     }
 }
