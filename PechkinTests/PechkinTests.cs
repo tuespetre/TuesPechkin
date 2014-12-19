@@ -30,6 +30,7 @@ namespace TuesPechkin.Tests
             }
 
             Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+
             if (s == null)
             {
                 return null;
@@ -117,15 +118,14 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void TwoSequentialConversionsFromString()
         {
-            var document = Document(StringObject());
             var converter = GetNewConverter();
             byte[] result = null;
 
-            result = converter.Convert(document);
+            result = converter.Convert(Document(StringObject()));
 
             Assert.IsNotNull(result);
 
-            result = converter.Convert(document);
+            result = converter.Convert(Document(StringObject()));
 
             Assert.IsNotNull(result);
         }
@@ -133,15 +133,10 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void MultipleObjectConversionFromString()
         {
-            var document = Document(StringObject(), StringObject());
             var converter = GetNewConverter();
             byte[] result = null;
 
-            result = converter.Convert(document);
-
-            Assert.IsNotNull(result);
-
-            result = converter.Convert(document);
+            result = converter.Convert(Document(StringObject(), StringObject()));
 
             Assert.IsNotNull(result);
         }
@@ -150,14 +145,13 @@ namespace TuesPechkin.Tests
         public void TwoSequentialConversionsFromUrl()
         {
             var converter = GetNewConverter();
-            var document = Document(UrlObject());
             byte[] result = null;
 
-            result = converter.Convert(document);
+            result = converter.Convert(Document(UrlObject()));
 
             Assert.IsNotNull(result);
 
-            result = converter.Convert(document);
+            result = converter.Convert(Document(UrlObject()));
 
             Assert.IsNotNull(result);
         }
@@ -165,15 +159,10 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void MultipleObjectConversionFromUrl()
         {
-            var document = Document(UrlObject(), UrlObject());
             var converter = GetNewConverter();
             byte[] result = null;
 
-            result = converter.Convert(document);
-
-            Assert.IsNotNull(result);
-
-            result = converter.Convert(document);
+            result = converter.Convert(Document(UrlObject(), UrlObject()));
 
             Assert.IsNotNull(result);
         }
