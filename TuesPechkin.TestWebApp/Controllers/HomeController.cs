@@ -20,10 +20,11 @@ namespace TuesPechkin.TestWebApp.Controllers
         public ActionResult Index()
         {
             var html = "<p>Just some test HTML</p>";
+            var doc = new HtmlDocument(html);
             
             for (var i = 0; i < 5; i++)
             {
-                var result = converter.Convert(html);
+                var result = converter.Convert(doc);
                 var path = Path.Combine(Path.GetTempPath(), String.Format("{0}.pdf", i));
 
                 System.IO.File.WriteAllBytes(path, result);

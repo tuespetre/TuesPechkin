@@ -1,32 +1,30 @@
 ﻿using System;
 using System.ComponentModel;
-using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
     [Serializable]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class ObjectSettings
+    public class ObjectSettings : IObject
     {
-        [ObjectSetting("includeInOutline")]
+        [WkhtmltoxSetting("includeInOutline")]
         public bool? IncludeInOutline { get; set; }
 
-        [ObjectSetting("pagesCount")]
+        [WkhtmltoxSetting("pagesCount")]
         public bool? CountPages { get; set; }
 
-        [ObjectSetting("page")]
+        [WkhtmltoxSetting("page")]
         public string PageUrl { get; set; }
 
-        [ObjectSetting("produceForms")]
+        [WkhtmltoxSetting("produceForms")]
         public bool? ProduceForms { get; set; }
 
-        [ObjectSetting("useExternalLinks")]
+        [WkhtmltoxSetting("useExternalLinks")]
         public bool? ProduceExternalLinks { get; set; }
 
-        [ObjectSetting("useLocalLinks")]
+        [WkhtmltoxSetting("useLocalLinks")]
         public bool? ProduceLocalLinks { get; set; }
 
-        [SettingBag]
         public FooterSettings FooterSettings
         {
             get
@@ -40,7 +38,6 @@ namespace TuesPechkin
             }
         }
 
-        [SettingBag]
         public HeaderSettings HeaderSettings
         {
             get
@@ -67,7 +64,6 @@ namespace TuesPechkin
             }
         }
 
-        [SettingBag]
         public LoadSettings LoadSettings
         {
             get
@@ -95,7 +91,6 @@ namespace TuesPechkin
             }
         }
 
-        [SettingBag]
         public WebSettings WebSettings
         {
             get
@@ -107,6 +102,11 @@ namespace TuesPechkin
                 DEPRECAAAAATED.BestAintBeNull(value);
                 this.web = value;
             }
+        }
+
+        public byte[] GetData()
+        {
+            return RawData;
         }
 
         private byte[] data = new byte[0];

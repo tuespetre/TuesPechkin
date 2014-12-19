@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace TuesPechkin
 {
     [Serializable]
-    public class HtmlDocument
+    public class HtmlDocument : IDocument
     {
         public HtmlDocument()
         {
@@ -15,11 +15,14 @@ namespace TuesPechkin
             this.Objects.Add(new ObjectSettings { HtmlText = html });
         }
 
-        private GlobalSettings global = new GlobalSettings();
-
         public List<ObjectSettings> Objects { get; private set; }
 
-        //public TableOfContentsSettings TableOfContents { get; set; }
+        public IEnumerable<IObject> GetObjects()
+        {
+            return Objects.ToArray();
+        }
+
+        private GlobalSettings global = new GlobalSettings();
 
         public GlobalSettings GlobalSettings
         {

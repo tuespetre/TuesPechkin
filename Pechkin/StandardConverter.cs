@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using TuesPechkin.EventHandlers;
@@ -10,7 +13,7 @@ namespace TuesPechkin
     {
         protected IToolset Toolset { get; private set; }
 
-        protected HtmlDocument ProcessingDocument { get; private set; }
+        protected IDocument ProcessingDocument { get; private set; }
 
         public StandardConverter(IToolset assembly)
         {
@@ -36,7 +39,7 @@ namespace TuesPechkin
 
         public event WarningEventHandler Warning;
 
-        public virtual byte[] Convert(HtmlDocument document)
+        public virtual byte[] Convert(IDocument document)
         {
             Toolset.Load();
             Toolset.SetUp();
@@ -192,41 +195,98 @@ namespace TuesPechkin
             }
         }
 
-        private IntPtr CreateConverter(HtmlDocument document)
+        private IntPtr CreateConverter(IDocument document)
         {
-            if (document.Objects.Count == 0)
-            {
-                throw new InvalidOperationException("No objects defined for document; cannot convert");
-            }
-
             var converter = IntPtr.Zero;
 
             {
                 var config = Toolset.CreateGlobalSettings();
 
-                SettingApplicator.ApplySettings(Toolset, config, document.GlobalSettings);
+                ApplySettingsToConfig(config, document, true);
 
                 converter = Toolset.CreateConverter(config);
             }
 
-            //if (this.TableOfContents != null)
-            //{
-            //    this.TableOfContents.ApplyToConverter(converter);
-            //}
-
-            foreach (var setting in document.Objects)
+            foreach (var setting in document.GetObjects())
             {
                 if (setting != null)
                 {
                     var config = Toolset.CreateObjectSettings();
 
-                    SettingApplicator.ApplySettings(Toolset, config, setting);
+                    ApplySettingsToConfig(config, setting, false);
 
-                    Toolset.AddObject(converter, config, setting.RawData);
+                    Toolset.AddObject(converter, config, setting.GetData());
                 }
             }
 
             return converter;
+        }
+
+        private void ApplySettingsToConfig(IntPtr config, ISettings settings, bool isGlobal)
+        {
+            if (settings == null)
+            {
+                return;
+            }
+
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            foreach (var property in settings.GetType().GetProperties(bindingFlags))
+            {
+                var attributes = property.GetCustomAttributes(true);
+                var rawValue = property.GetValue(settings, null);
+
+                if (rawValue == null || attributes.Length == 0)
+                {
+                    continue;
+                }
+                else if (attributes[0] is WkhtmltoxSettingAttribute)
+                {
+                    var attribute = attributes[0] as WkhtmltoxSettingAttribute;
+
+                    Apply(config, attribute.Name, rawValue, isGlobal);
+                }
+                else if (rawValue is ISettings)
+                {
+                    ApplySettingsToConfig(config, rawValue as ISettings, isGlobal);
+                }
+            }
+        }
+        
+        private void Apply(IntPtr config, string name, object value, bool isGlobal)
+        {
+            var type = value.GetType();
+            var apply = isGlobal 
+                ? (Func<string, string, int>)((k, v) => Toolset.SetGlobalSetting(config, k, v))
+                : (Func<string, string, int>)((k, v) => Toolset.SetObjectSetting(config, k, v));
+
+            if (type == typeof(double?))
+            {
+                apply(name, ((double?)value).Value.ToString("0.##", CultureInfo.InvariantCulture));
+            }
+            else if (type == typeof(bool?))
+            {
+                apply(name, ((bool?)value).Value ? "true" : "false");
+            }
+            else if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
+            {
+                var dictionary = (IEnumerable<KeyValuePair<string, string>>)value;
+
+                foreach (var entry in dictionary)
+                {
+                    if (entry.Key == null || entry.Value == null)
+                    {
+                        continue;
+                    }
+
+                    apply(name + ".append", null);
+                    apply(string.Format("{0}[0]", name), entry.Key + "," + entry.Value);
+                }
+            }
+            else
+            {
+                apply(name, value.ToString());
+            }
         }
     }
 }

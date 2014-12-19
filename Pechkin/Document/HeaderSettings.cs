@@ -1,12 +1,11 @@
 using System;
 using System.ComponentModel;
-using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
     [Serializable]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class HeaderSettings
+    public class HeaderSettings : ISettings
     {
         /// <summary>
         /// Sets center text for the header/footer. Following replaces occur in this text:
@@ -19,31 +18,31 @@ namespace TuesPechkin
         /// * [date]       Replaced by the current date in system local format
         /// * [time]       Replaced by the current time in system local format
         /// </summary>
-        [ObjectSetting("header.center")]
+        [WkhtmltoxSetting("header.center")]
         public string CenterText { get; set; }
 
         /// <summary>
         /// Amount of space between header/footer and content in millimeters
         /// </summary>
-        [ObjectSetting("header.spacing")]
+        [WkhtmltoxSetting("header.spacing")]
         public double? ContentSpacing { get; set; }
 
         /// <summary>
         /// Font name for the header, e.g. "Courier New"
         /// </summary>
-        [ObjectSetting("header.fontName")]
+        [WkhtmltoxSetting("header.fontName")]
         public string FontName { get; set; }
 
         /// <summary>
         /// The font size in pt
         /// </summary>
-        [ObjectSetting("header.fontSize")]
+        [WkhtmltoxSetting("header.fontSize")]
         public double? FontSize { get; set; }
 
         /// <summary>
         /// URL for the HTML document to use as a header
         /// </summary>
-        [ObjectSetting("header.htmlUrl")]
+        [WkhtmltoxSetting("header.htmlUrl")]
         public string HtmlUrl { get; set; }
 
         /// <summary>
@@ -57,13 +56,13 @@ namespace TuesPechkin
         /// * [date]       Replaced by the current date in system local format
         /// * [time]       Replaced by the current time in system local format
         /// </summary>
-        [ObjectSetting("header.left")]
+        [WkhtmltoxSetting("header.left")]
         public string LeftText { get; set; }
 
         /// <summary>
         /// Whether or not to print a line between the header/footer and content (Default: false)
         /// </summary>
-        [ObjectSetting("header.line")]
+        [WkhtmltoxSetting("header.line")]
         public bool? UseLineSeparator { get; set; }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace TuesPechkin
         /// * [date]       Replaced by the current date in system local format
         /// * [time]       Replaced by the current time in system local format
         /// </summary>
-        [ObjectSetting("header.right")]
+        [WkhtmltoxSetting("header.right")]
         public string RightText { get; set; }
     }
 }

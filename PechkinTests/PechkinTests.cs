@@ -46,7 +46,7 @@ namespace TuesPechkin.Tests
 
             try
             {
-                converter.Convert("wuttup");
+                converter.Convert(Document(StringObject()));
                 Assert.Fail();
             }
             catch (NotImplementedException) { }
@@ -93,7 +93,6 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void HandlesConcurrentThreads()
         {
-            string html = GetResourceString("PechkinTests.Resources.page.html");
             int numberOfTasks = 10;
             int completed = 0;
 
@@ -102,7 +101,7 @@ namespace TuesPechkin.Tests
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
-                Assert.IsNotNull(converter.Convert(html));
+                Assert.IsNotNull(converter.Convert(Document(StringObject())));
                 completed++;
                 Debug.WriteLine(String.Format("#{0} completed", i + 1));
             }));
@@ -174,7 +173,7 @@ namespace TuesPechkin.Tests
 
             IConverter c = GetNewConverter();
 
-            byte[] ret = c.Convert(html);
+            byte[] ret = c.Convert(Document(StringObject()));
 
             Assert.IsNotNull(ret);
 

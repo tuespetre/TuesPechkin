@@ -20,7 +20,7 @@ namespace TuesPechkin
             InnerThread.Start();
         }
 
-        public override byte[] Convert(HtmlDocument document)
+        public override byte[] Convert(IDocument document)
         {
             return Invoke(() => base.Convert(document));
         }

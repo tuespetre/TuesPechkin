@@ -5,7 +5,7 @@ namespace TuesPechkin
 {
     public interface IConverter
     {
-        byte[] Convert(HtmlDocument document);
+        byte[] Convert(IDocument document);
 
         event BeginEventHandler Begin;
 

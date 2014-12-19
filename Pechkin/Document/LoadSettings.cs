@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using TuesPechkin.Attributes;
 
 namespace TuesPechkin
 {
     [Serializable]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class LoadSettings
+    public class LoadSettings : ISettings
     {
         public LoadSettings()
         {
@@ -22,40 +21,40 @@ namespace TuesPechkin
             Ignore
         }
 
-        [ObjectSetting("load.blockLocalFileAccess")]
+        [WkhtmltoxSetting("load.blockLocalFileAccess")]
         public bool? BlockLocalFileAccess { get; set; }
 
-        /*[ObjectSetting("load.cookies")]
+        /*[WkhtmltoxSetting("load.cookies")]
         public Dictionary<string, string> Cookies { get; private set; }*/
 
-        /*[ObjectSetting("load.customHeaders")]
+        /*[WkhtmltoxSetting("load.customHeaders")]
         public Dictionary<string, string> CustomHeaders { get; private set; }*/
 
-        [ObjectSetting("load.debugJavascript")]
+        [WkhtmltoxSetting("load.debugJavascript")]
         public bool? DebugJavascript { get; set; }
 
-        [ObjectSetting("load.loadErrorHandling")]
+        [WkhtmltoxSetting("load.loadErrorHandling")]
         public ContentErrorHandling? ErrorHandling { get; set; }
 
-        [ObjectSetting("load.password")]
+        [WkhtmltoxSetting("load.password")]
         public string Password { get; set; }
 
-        [ObjectSetting("load.proxy")]
+        [WkhtmltoxSetting("load.proxy")]
         public string Proxy { get; set; }
 
-        [ObjectSetting("load.jsdelay")]
+        [WkhtmltoxSetting("load.jsdelay")]
         public int? RenderDelay { get; set; }
 
-        [ObjectSetting("load.repeatCustomHeaders")]
+        [WkhtmltoxSetting("load.repeatCustomHeaders")]
         public bool? RepeatCustomHeaders { get; set; }
 
-        [ObjectSetting("load.stopSlowScript")]
+        [WkhtmltoxSetting("load.stopSlowScript")]
         public bool? StopSlowScript { get; set; }
 
-        [ObjectSetting("load.username")]
+        [WkhtmltoxSetting("load.username")]
         public string Username { get; set; }
 
-        [ObjectSetting("load.zoomFactor")]
+        [WkhtmltoxSetting("load.zoomFactor")]
         public double? ZoomFactor { get; set; }
     }
 }

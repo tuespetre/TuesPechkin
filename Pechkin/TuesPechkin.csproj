@@ -91,13 +91,13 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\ObjectSettingAttribute.cs" />
-    <Compile Include="Attributes\GlobalSettingAttribute.cs" />
-    <Compile Include="Attributes\SettingBagAttribute.cs" />
-    <Compile Include="Attributes\WkhtmltopdfSettingAttribute.cs" />
+    <Compile Include="WkhtmltoxSettingAttribute.cs" />
     <Compile Include="EmbeddedDeployment.cs" />
-    <Compile Include="IToolset.cs" />
-    <Compile Include="IDeployment.cs" />
+    <Compile Include="Interfaces\IDocument.cs" />
+    <Compile Include="Interfaces\IObject.cs" />
+    <Compile Include="Interfaces\ISettings.cs" />
+    <Compile Include="Interfaces\IToolset.cs" />
+    <Compile Include="Interfaces\IDeployment.cs" />
     <Compile Include="NestingToolset.cs" />
     <Compile Include="StaticDeployment.cs" />
     <Compile Include="Util\DelegateRegistry.cs" />
@@ -115,15 +115,13 @@
     <Compile Include="Document\MarginSettings.cs" />
     <Compile Include="Document\PechkinPaperSize.cs" />
     <Compile Include="PdfToolset.cs" />
-    <Compile Include="IConverter.cs" />
+    <Compile Include="Interfaces\IConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WkhtmltoxBindings.cs" />
     <Compile Include="Document\GlobalSettings.cs" />
     <Compile Include="Document\ObjectSettings.cs" />
     <Compile Include="RemotingToolset.cs" />
-    <Compile Include="Util\SettingApplicator.cs" />
     <Compile Include="StandardConverter.cs" />
-    <None Include="Document\TableOfContentsSettings.cs" />
     <Compile Include="Util\Tracer.cs" />
     <Compile Include="Document\Unit.cs" />
     <Compile Include="Util\IntCallback.cs" />
