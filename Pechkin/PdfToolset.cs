@@ -10,7 +10,7 @@ using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
-    public class PdfToolset : MarshalByRefObject, IToolset
+    public sealed class PdfToolset : MarshalByRefObject, IToolset
     {
         public IDeployment Deployment { get; private set; }
 
@@ -45,6 +45,11 @@ namespace TuesPechkin
             WinApiHelper.SetDllDirectory(Deployment.Path);
 
             Loaded = true;
+        }
+
+        public override object InitializeLifetimeService()
+        {
+            return null;
         }
 
         #region Rest of IToolset stuff

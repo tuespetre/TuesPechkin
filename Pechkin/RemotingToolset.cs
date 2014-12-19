@@ -14,7 +14,7 @@ namespace TuesPechkin
     /// Deployments loaded with this class must be marked Serializable.
     /// </summary>
     /// <typeparam name="TToolset">The type of toolset to manage remotely.</typeparam>
-    public class RemotingToolset<TToolset> : NestingToolset
+    public sealed class RemotingToolset<TToolset> : NestingToolset
         where TToolset : MarshalByRefObject, IToolset, new()
     {
         public RemotingToolset(IDeployment deployment)

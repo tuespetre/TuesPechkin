@@ -7,7 +7,7 @@ using TuesPechkin.Util;
 namespace TuesPechkin
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class WkhtmltoxSettingAttribute : Attribute
+    public sealed class WkhtmltoxSettingAttribute : Attribute
     {
         public string Name { get; set; }
 

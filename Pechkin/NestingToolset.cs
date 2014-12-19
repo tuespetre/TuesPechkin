@@ -15,6 +15,11 @@ namespace TuesPechkin
 
         public abstract void Load(IDeployment deployment = null);
 
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         public void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html)
         {
             NestedToolset.AddObject(converter, objectConfig, html);

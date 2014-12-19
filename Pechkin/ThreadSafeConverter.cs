@@ -8,7 +8,7 @@ using TuesPechkin.Util;
 
 namespace TuesPechkin
 {
-    public class ThreadSafeConverter : StandardConverter, IConverter
+    public sealed class ThreadSafeConverter : StandardConverter, IConverter
     {
         public ThreadSafeConverter(IToolset toolset) : base(toolset)
         {

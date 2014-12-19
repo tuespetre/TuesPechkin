@@ -5,7 +5,7 @@ using System.Text;
 namespace TuesPechkin
 {
     [Serializable]
-    public class StaticDeployment : IDeployment
+    public sealed class StaticDeployment : IDeployment
     {
         public string Path { get; private set; }
 
