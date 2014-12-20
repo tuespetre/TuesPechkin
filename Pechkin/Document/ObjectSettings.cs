@@ -109,6 +109,11 @@ namespace TuesPechkin
             return RawData;
         }
 
+        public static implicit operator ObjectSettings(string html)
+        {
+            return new ObjectSettings { HtmlText = html };
+        }
+
         private byte[] data = new byte[0];
 
         private FooterSettings footer = new FooterSettings();

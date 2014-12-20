@@ -17,26 +17,30 @@ namespace TuesPechkin.Tests
         private const string TEST_WK_VER = "0.12.1";
         private const string TEST_URL = "www.google.com";
 
+        // Simulates 1.x.x
+        private static readonly IConverter converter;
+
+        private static readonly IToolset toolset;
+
         static PechkinTests()
         {
             Debug.Listeners.Add(new DefaultTraceListener());
+
+            toolset =
+                new RemotingToolset<PdfToolset>(
+                    new StaticDeployment(
+                        Path.Combine(
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            "wk-ver",
+                            TEST_WK_VER)));
+
+            converter = new ThreadSafeConverter(toolset);
         }
 
-        public static string GetResourceString(string name)
+        [TestCleanup]
+        public void TestCleanup()
         {
-            if (name == null)
-            {
-                return null;
-            }
-
-            Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
-
-            if (s == null)
-            {
-                return null;
-            }
-
-            return new StreamReader(s).ReadToEnd();
+            (toolset as RemotingToolset<PdfToolset>).Unload();
         }
 
         [TestMethod]
@@ -96,8 +100,6 @@ namespace TuesPechkin.Tests
             int numberOfTasks = 10;
             int completed = 0;
 
-            IConverter converter = new ThreadSafeConverter(GetNewToolset());
-
             var tasks = Enumerable.Range(0, numberOfTasks).Select(i => new Task(() =>
             {
                 Debug.WriteLine(String.Format("#{0} started", i + 1));
@@ -117,7 +119,6 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void TwoSequentialConversionsFromString()
         {
-            var converter = GetNewConverter();
             byte[] result = null;
 
             result = converter.Convert(Document(StringObject()));
@@ -132,10 +133,7 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void MultipleObjectConversionFromString()
         {
-            var converter = GetNewConverter();
-            byte[] result = null;
-
-            result = converter.Convert(Document(StringObject(), StringObject()));
+            var result = converter.Convert(Document("Hey girl", "What's up"));
 
             Assert.IsNotNull(result);
         }
@@ -143,7 +141,6 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void TwoSequentialConversionsFromUrl()
         {
-            var converter = GetNewConverter();
             byte[] result = null;
 
             result = converter.Convert(Document(UrlObject()));
@@ -158,10 +155,7 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void MultipleObjectConversionFromUrl()
         {
-            var converter = GetNewConverter();
-            byte[] result = null;
-
-            result = converter.Convert(Document(UrlObject(), UrlObject()));
+            var result = converter.Convert(Document(UrlObject(), UrlObject()));
 
             Assert.IsNotNull(result);
         }
@@ -171,9 +165,7 @@ namespace TuesPechkin.Tests
         {
             string html = GetResourceString("PechkinTests.Resources.page.html");
 
-            IConverter c = GetNewConverter();
-
-            byte[] ret = c.Convert(Document(StringObject()));
+            byte[] ret = converter.Convert(Document(StringObject()));
 
             Assert.IsNotNull(ret);
 
@@ -203,9 +195,7 @@ namespace TuesPechkin.Tests
 
             sw.Close();
 
-            var c = GetNewConverter();
-
-            byte[] ret = c.Convert(new HtmlDocument
+            byte[] ret = converter.Convert(new HtmlDocument
             {
                 Objects = { 
                     new ObjectSettings { PageUrl = fn } 
@@ -220,8 +210,6 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void ReturnsResultFromString()
         {
-            var converter = GetNewConverter();
-
             var document = new HtmlDocument("<p>some html</p>");
 
             var result = converter.Convert(document);
@@ -263,7 +251,7 @@ namespace TuesPechkin.Tests
             return AppDomain.CreateDomain(name, null, AppDomain.CurrentDomain.SetupInformation);
         }
 
-        private string GetDeploymentPath()
+        private static string GetDeploymentPath()
         {
             return Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
@@ -281,7 +269,7 @@ namespace TuesPechkin.Tests
             return new PdfToolset(GetNewDeployment());
         }
 
-        private IDeployment GetNewDeployment()
+        private static IDeployment GetNewDeployment()
         {
             return new StaticDeployment(GetDeploymentPath());
         }
@@ -304,6 +292,23 @@ namespace TuesPechkin.Tests
         private ObjectSettings UrlObject()
         {
             return new ObjectSettings { PageUrl = TEST_URL };
+        }
+
+        private static string GetResourceString(string name)
+        {
+            if (name == null)
+            {
+                return null;
+            }
+
+            Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+
+            if (s == null)
+            {
+                return null;
+            }
+
+            return new StreamReader(s).ReadToEnd();
         }
     }
 }

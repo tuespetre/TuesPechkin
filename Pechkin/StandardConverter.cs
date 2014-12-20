@@ -15,14 +15,14 @@ namespace TuesPechkin
 
         protected IDocument ProcessingDocument { get; private set; }
 
-        public StandardConverter(IToolset assembly)
+        public StandardConverter(IToolset toolset)
         {
-            if (assembly == null)
+            if (toolset == null)
             {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException("toolset");
             }
 
-            Toolset = assembly;
+            Toolset = toolset;
 
             Tracer.Trace(string.Format("T:{0} Created StandardConverter", Thread.CurrentThread.Name));
         }

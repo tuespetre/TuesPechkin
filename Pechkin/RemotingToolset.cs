@@ -63,6 +63,7 @@ namespace TuesPechkin
         public void Unload()
         {
             TearDownAppDomain(null, EventArgs.Empty);
+            Loaded = false;
         }
 
         private AppDomain remoteDomain;
@@ -86,6 +87,11 @@ namespace TuesPechkin
 
         private void TearDownAppDomain(object sender, EventArgs e)
         {
+            if (remoteDomain == null)
+            {
+                return;
+            }
+
             AppDomain.Unload(remoteDomain);
 
             foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
@@ -101,6 +107,8 @@ namespace TuesPechkin
                     }
                 }
             }
+
+            remoteDomain = null;
         }
     }
 }
