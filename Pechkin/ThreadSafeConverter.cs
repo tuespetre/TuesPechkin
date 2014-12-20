@@ -15,15 +15,70 @@ namespace TuesPechkin
         {
             toolset.Unloaded += (sender, args) =>
             {
-                StopThread();
+                new Thread(() => StopThread()).Start();
             };
         }
 
         public override byte[] Convert(IDocument document)
         {
+            return Invoke(() => base.Convert(document));
+        }
+
+        public TResult Invoke<TResult>(FuncShim<TResult> @delegate)
+        {
             StartThread();
 
-            return Invoke(() => base.Convert(document));
+            // create the task
+            var task = new Task<TResult>(@delegate);
+
+            // we don't want the task to be completed before we start waiting for that, so the outer lock
+            lock (task)
+            {
+                lock (queueLock)
+                {
+                    taskQueue.Add(task);
+
+                    Monitor.Pulse(queueLock);
+                }
+
+                // until this point, evaluation could not start
+                Monitor.Wait(task);
+
+                if (task.Exception != null)
+                {
+                    throw task.Exception;
+                }
+
+                // and when we're done waiting, we know that the result was already set
+                return task.Result;
+            }
+        }
+        
+        public void Invoke(ActionShim @delegate)
+        {
+            StartThread();
+
+            // create the task
+            var task = new Task(@delegate);
+
+            // we don't want the task to be completed before we start waiting for that, so the outer lock
+            lock (task)
+            {
+                lock (queueLock)
+                {
+                    taskQueue.Add(task);
+
+                    Monitor.Pulse(queueLock);
+                }
+
+                // until this point, evaluation could not start
+                Monitor.Wait(task);
+
+                if (task.Exception != null)
+                {
+                    throw task.Exception;
+                }
+            }
         }
 
         private Thread innerThread;
@@ -65,59 +120,6 @@ namespace TuesPechkin
                     while (innerThread.ThreadState != ThreadState.Stopped) { }
 
                     innerThread = null;
-                }
-            }
-        }
-
-        private TResult Invoke<TResult>(Func<TResult> @delegate)
-        {
-            // create the task
-            var task = new Task<TResult>(@delegate);
-
-            // we don't want the task to be completed before we start waiting for that, so the outer lock
-            lock (task)
-            {
-                lock (queueLock)
-                {
-                    taskQueue.Add(task);
-
-                    Monitor.Pulse(queueLock);
-                }
-
-                // until this point, evaluation could not start
-                Monitor.Wait(task);
-
-                if (task.Exception != null)
-                {
-                    throw task.Exception;
-                }
-
-                // and when we're done waiting, we know that the result was already set
-                return task.Result;
-            }
-        }
-
-        private void Invoke(Action @delegate)
-        {
-            // create the task
-            var task = new Task(@delegate);
-
-            // we don't want the task to be completed before we start waiting for that, so the outer lock
-            lock (task)
-            {
-                lock (queueLock)
-                {
-                    taskQueue.Add(task);
-
-                    Monitor.Pulse(queueLock);
-                }
-
-                // until this point, evaluation could not start
-                Monitor.Wait(task);
-
-                if (task.Exception != null)
-                {
-                    throw task.Exception;
                 }
             }
         }
@@ -168,19 +170,19 @@ namespace TuesPechkin
 
         private class Task
         {
-            public Task(Action action)
+            public Task(ActionShim action)
             {
                 this.Action = action;
             }
 
-            public virtual Action Action { get; protected set; }
+            public virtual ActionShim Action { get; protected set; }
 
             public Exception Exception { get; set; }
         }
 
         private class Task<TResult> : Task
         {
-            public Task(Func<TResult> @delegate)
+            public Task(FuncShim<TResult> @delegate)
                 : base(null)
             {
                 this.Delegate = @delegate;
@@ -188,7 +190,7 @@ namespace TuesPechkin
             }
 
             // task code
-            public Func<TResult> Delegate { get; private set; }
+            public FuncShim<TResult> Delegate { get; private set; }
 
             // result, filled out after it's executed
             public TResult Result { get; private set; }

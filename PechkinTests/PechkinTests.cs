@@ -18,7 +18,7 @@ namespace TuesPechkin.Tests
         private const string TEST_URL = "www.google.com";
 
         // Simulates 1.x.x
-        private static readonly IConverter converter;
+        private static readonly ThreadSafeConverter converter;
 
         private static readonly IToolset toolset;
 
@@ -40,7 +40,7 @@ namespace TuesPechkin.Tests
         [TestCleanup]
         public void TestCleanup()
         {
-            (toolset as RemotingToolset<PdfToolset>).Unload();
+            converter.Invoke(() => toolset.Unload());
 
             Assert.IsFalse(Process
                 .GetCurrentProcess()
@@ -62,7 +62,7 @@ namespace TuesPechkin.Tests
             }
             catch (NotImplementedException) { }
 
-            toolset.FireUnload(); // Needed for testing framework to succeed
+            toolset.Unload(); // Needed for testing framework to succeed
         }
 
         [TestMethod]

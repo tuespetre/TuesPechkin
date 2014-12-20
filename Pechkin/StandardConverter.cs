@@ -42,7 +42,6 @@ namespace TuesPechkin
         public virtual byte[] Convert(IDocument document)
         {
             Toolset.Load();
-            Toolset.SetUp();
 
             ProcessingDocument = document;
             var converter = CreateConverter(document);
@@ -75,7 +74,6 @@ namespace TuesPechkin
 
             Tracer.Trace(string.Format("T:{0} Releasing unmanaged converter", Thread.CurrentThread.Name));
             Toolset.DestroyConverter(converter);
-            Toolset.TearDown();
             ProcessingDocument = null;
             return result;
         }
@@ -257,8 +255,8 @@ namespace TuesPechkin
         {
             var type = value.GetType();
             var apply = isGlobal 
-                ? (Func<string, string, int>)((k, v) => Toolset.SetGlobalSetting(config, k, v))
-                : (Func<string, string, int>)((k, v) => Toolset.SetObjectSetting(config, k, v));
+                ? (FuncShim<string, string, int>)((k, v) => Toolset.SetGlobalSetting(config, k, v))
+                : (FuncShim<string, string, int>)((k, v) => Toolset.SetObjectSetting(config, k, v));
 
             if (type == typeof(double?))
             {

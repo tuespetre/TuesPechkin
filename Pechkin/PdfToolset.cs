@@ -45,8 +45,22 @@ namespace TuesPechkin
             }
 
             WinApiHelper.SetDllDirectory(Deployment.Path);
+            WkhtmltoxBindings.wkhtmltopdf_init(0);
 
             Loaded = true;
+        }
+
+        public void Unload()
+        {
+            if (Loaded)
+            {
+                WkhtmltoxBindings.wkhtmltopdf_deinit();
+
+                if (Unloaded != null)
+                {
+                    Unloaded(this, EventArgs.Empty);
+                }
+            }
         }
 
         public override object InitializeLifetimeService()
@@ -275,16 +289,6 @@ namespace TuesPechkin
             var output = new byte[len];
             Marshal.Copy(tmp, output, 0, output.Length);
             return output;
-        }
-
-        public void SetUp(bool useGraphics = false)
-        {
-            WkhtmltoxBindings.wkhtmltopdf_init(useGraphics ? 1 : 0);
-        }
-
-        public void TearDown()
-        {
-            WkhtmltoxBindings.wkhtmltopdf_deinit();
         }
         #endregion
 

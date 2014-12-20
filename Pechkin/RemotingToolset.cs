@@ -62,9 +62,19 @@ namespace TuesPechkin
 
         public override event EventHandler Unloaded;
 
-        public void Unload()
+        public override void Unload()
         {
-            TearDownAppDomain(null, EventArgs.Empty);
+            if (Loaded)
+            {
+                NestedToolset.Unload();
+
+                TearDownAppDomain(null, EventArgs.Empty);
+
+                if (Unloaded != null)
+                {
+                    Unloaded(this, EventArgs.Empty);
+                }
+            }
         }
 
         private AppDomain remoteDomain;
@@ -95,17 +105,19 @@ namespace TuesPechkin
 
             AppDomain.Unload(remoteDomain);
 
+            var expected = Path.Combine(
+                Deployment.Path, 
+                WkhtmltoxBindings.DLLNAME);
+
             foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
             {
-                var expected = Path.Combine(
-                    Deployment.Path, 
-                    Path.GetFileName(module.FileName));
-
                 if (module.FileName == expected)
                 {
                     while (WinApiHelper.FreeLibrary(module.BaseAddress))
                     {
                     }
+
+                    break;
                 }
             }
 

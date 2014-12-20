@@ -10,7 +10,7 @@ namespace TuesPechkin.Tests
     {
         public event EventHandler Unloaded;
 
-        public void FireUnload()
+        public void Unload()
         {
             if (Unloaded != null)
             {

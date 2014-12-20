@@ -21,7 +21,12 @@ namespace TuesPechkin
         bool Loaded { get; }
 
         /// <summary>
-        /// Fires when the toolset is unloaded.
+        /// Unloads the toolset's deployment.
+        /// </summary>
+        void Unload();
+
+        /// <summary>
+        /// Fires when the toolset's deployment is unloaded.
         /// </summary>
         event EventHandler Unloaded;
 
@@ -53,9 +58,6 @@ namespace TuesPechkin
         void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback);
         void SetProgressChangedCallback(IntPtr converter, IntCallback callback);
         void SetWarningCallback(IntPtr converter, StringCallback callback);
-
-        void SetUp(bool useGraphics = false);
-        void TearDown();
         #endregion
     }
 }

@@ -17,6 +17,8 @@ namespace TuesPechkin
 
         public abstract void Load(IDeployment deployment = null);
 
+        public abstract void Unload();
+
         public override object InitializeLifetimeService()
         {
             return null;
@@ -130,16 +132,6 @@ namespace TuesPechkin
         public void SetWarningCallback(IntPtr converter, Util.StringCallback callback)
         {
             NestedToolset.SetWarningCallback(converter, callback);
-        }
-
-        public void SetUp(bool useGraphics = false)
-        {
-            NestedToolset.SetUp(useGraphics);
-        }
-
-        public void TearDown()
-        {
-            NestedToolset.TearDown();
         }
     }
 }
