@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using ErrorEventArgs = TuesPechkin.ErrorEventArgs;
 
 namespace TuesPechkin
 {
@@ -25,17 +26,17 @@ namespace TuesPechkin
             Tracer.Trace(string.Format("T:{0} Created StandardConverter", Thread.CurrentThread.Name));
         }
 
-        public event BeginEventHandler Begin;
+        public event EventHandler<BeginEventArgs> Begin;
 
-        public event ErrorEventHandler Error;
+        public event EventHandler<ErrorEventArgs> Error;
 
-        public event FinishEventHandler Finished;
+        public event EventHandler<FinishEventArgs> Finish;
 
-        public event PhaseChangedEventHandler PhaseChanged;
+        public event EventHandler<PhaseChangeEventArgs> PhaseChange;
 
-        public event ProgressChangedEventHandler ProgressChanged;
+        public event EventHandler<ProgressChangeEventArgs> ProgressChange;
 
-        public event WarningEventHandler Warning;
+        public event EventHandler<WarningEventArgs> Warning;
 
         public virtual byte[] Convert(IDocument document)
         {
@@ -82,12 +83,17 @@ namespace TuesPechkin
 
             Tracer.Trace(string.Format("T:{0} Conversion started, {1} phases awaiting", Thread.CurrentThread.Name, expectedPhaseCount));
 
-            BeginEventHandler handler = this.Begin;
             try
             {
-                if (handler != null)
+                if (Begin != null)
                 {
-                    handler(this, ProcessingDocument, expectedPhaseCount);
+                    var args = new BeginEventArgs
+                    {
+                        Document = ProcessingDocument,
+                        ExpectedPhaseCount = expectedPhaseCount
+                    };
+
+                    Begin(this, args);
                 }
             }
             catch (Exception e)
@@ -100,12 +106,18 @@ namespace TuesPechkin
         {
             Tracer.Warn(string.Format("T:{0} Conversion Error: {1}", Thread.CurrentThread.Name, errorText));
 
-            ErrorEventHandler handler = this.Error;
             try
             {
-                if (handler != null)
+                if (Error != null)
                 {
-                    handler(this, ProcessingDocument, errorText);
+                    var args = new ErrorEventArgs
+                    {
+                        Document = ProcessingDocument,
+                        ErrorMessage = errorText,
+                        HttpErrorCode = Toolset.GetHttpErrorCode(converter)
+                    };
+
+                    Error(this, args);
                 }
             }
             catch (Exception e)
@@ -118,12 +130,17 @@ namespace TuesPechkin
         {
             Tracer.Trace(string.Format("T:{0} Conversion Finished: {1}", Thread.CurrentThread.Name, success != 0 ? "Succeeded" : "Failed"));
 
-            FinishEventHandler handler = this.Finished;
             try
             {
-                if (handler != null)
+                if (Finish != null)
                 {
-                    handler(this, ProcessingDocument, success != 0);
+                    var args = new FinishEventArgs
+                    {
+                        Document = ProcessingDocument,
+                        Success = success != 0
+                    };
+
+                    Finish(this, args);
                 }
             }
             catch (Exception e)
@@ -136,15 +153,20 @@ namespace TuesPechkin
         {
             int phaseNumber = Toolset.GetPhaseNumber(converter);
             string phaseDescription = Toolset.GetPhaseDescription(converter, phaseNumber);
-
             Tracer.Trace(string.Format("T:{0} Conversion Phase Changed: #{1} {2}", Thread.CurrentThread.Name, phaseNumber, phaseDescription));
 
-            PhaseChangedEventHandler handler = this.PhaseChanged;
             try
             {
-                if (handler != null)
+                if (PhaseChange != null)
                 {
-                    handler(this, ProcessingDocument, phaseNumber, phaseDescription);
+                    var args = new PhaseChangeEventArgs
+                    {
+                        Document = ProcessingDocument,
+                        PhaseNumber = phaseNumber,
+                        PhaseDescription = phaseDescription
+                    };
+
+                    PhaseChange(this, args);
                 }
             }
             catch (Exception e)
@@ -159,12 +181,18 @@ namespace TuesPechkin
 
             Tracer.Trace(string.Format("T:{0} Conversion Progress Changed: ({1}) {2}", Thread.CurrentThread.Name, progress, progressDescription));
 
-            ProgressChangedEventHandler handler = this.ProgressChanged;
             try
             {
-                if (handler != null)
+                var args = new ProgressChangeEventArgs
                 {
-                    handler(this, ProcessingDocument, progress, progressDescription);
+                    Document = ProcessingDocument,
+                    Progress = progress,
+                    ProgressDescription = Toolset.GetProgressDescription(converter)
+                };
+
+                if (ProgressChange != null)
+                {
+                    ProgressChange(this, args);
                 }
             }
             catch (Exception e)
@@ -177,12 +205,17 @@ namespace TuesPechkin
         {
             Tracer.Warn(string.Format("T:{0} Conversion Warning: {1}", Thread.CurrentThread.Name, warningText));
 
-            WarningEventHandler handler = this.Warning;
             try
             {
-                if (handler != null)
+                if (Warning != null)
                 {
-                    handler(this, ProcessingDocument, warningText);
+                    var args = new WarningEventArgs
+                    {
+                        Document = ProcessingDocument,
+                        WarningMessage = warningText
+                    };
+
+                    Warning(this, args);
                 }
             }
             catch (Exception e)

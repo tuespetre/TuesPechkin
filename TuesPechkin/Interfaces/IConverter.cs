@@ -6,16 +6,16 @@ namespace TuesPechkin
     {
         byte[] Convert(IDocument document);
 
-        event BeginEventHandler Begin;
+        event EventHandler<BeginEventArgs> Begin;
 
-        event WarningEventHandler Warning;
+        event EventHandler<WarningEventArgs> Warning;
 
-        event ErrorEventHandler Error;
+        event EventHandler<ErrorEventArgs> Error;
 
-        event PhaseChangedEventHandler PhaseChanged;
+        event EventHandler<PhaseChangeEventArgs> PhaseChange;
 
-        event ProgressChangedEventHandler ProgressChanged;
+        event EventHandler<ProgressChangeEventArgs> ProgressChange;
 
-        event FinishEventHandler Finished;
+        event EventHandler<FinishEventArgs> Finish;
     }
 }
