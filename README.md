@@ -1,61 +1,84 @@
 #TuesPechkin
-.NET Wrapper for [WkHtmlToPdf](http://github.com/antialize/wkhtmltopdf) DLL, a library that uses the Webkit engine to convert HTML pages to PDF. This fork supports .NET 2.0 and up and *now runs in both 64 and 32-bit environments*!
-
-TuesPechkin is available as a *NuGet package* (see: https://www.nuget.org/packages/TuesPechkin/) for your convenience.
-
-
+TuesPechkin is a .NET Wrapper for the [wkhtmltopdf](https://github.com/wkhtmltopdf/wkhtmltopdf) library. 
 
 ## Things to know
 
-
-
-### Reporting issues
-If something looks visually off when you print your document, try converting with [wkhtmltopdf](http://www.wkhtmltopdf.org) directly. If you still have the problem, then you will need to take your issue to [wkhtmltopdf's issues](https://github.com/wkhtmltopdf/wkhtmltopdf). Any issues related to visual problems like this will be closed unless the reporter can show that the problem is unique to this library.
-
-Since this library is maintained on limited resources, please bring the witch here to burn (so to speak) -- it would be most helpful if you could provide steps to reproduce the issue, sample material (raw html, code, etc.), and environment information.
-
-
-
-### Windows Azure usage
-At the time of writing this, Azure Web Sites do not play nice with wkhtmltox.dll because it uses the GDI libraries (Worker Roles and Cloud Services seem to work, however.) Any opened issues in regards to this will be closed.
-
-See: http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview
-
-
+### Supported usage
+- It supports .NET 2.0+, 32 and 64-bit processes, and IIS-hosted applications. 
+- [Azure Websites does not currently support the use of wkhtmltopdf.](http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview)
+- It is not tested with any operating systems besides Windows.
+- [It is available as a *NuGet package* for your convenience.](https://www.nuget.org/packages/TuesPechkin/)
+- It is built and tested around wkhtmltopdf 0.11.0, 0.12.0, and 0.12.1.
 
 ### wkhtmltox.dll 
-The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded resources* so you don't have to worry about messing around with pre- or post-build events to copy the files wherever they go in your solution. When the library is first accessed in the application lifetime, it will copy the embedded resources to a temporary directory named after the version of TuesPechkin and the base directory from which your application is running (if they do not exist there already.)
+The wkhtmltox.dll file and any dependencies it might have (for older versions, 0.11.0-) are not included in the TuesPechkin NuGet package; however, you can bring your own copy of the library or download one of the following NuGet packages that contain the library:
 
+- TuesPechkin.Win32
+- TuesPechkin.Win64
 
+### Reporting issues
+If something doesn't seem right with your converted document, try converting with [wkhtmltopdf](http://www.wkhtmltopdf.org) directly. If you still have the problem, then you will need to take your issue to [wkhtmltopdf's issues](https://github.com/wkhtmltopdf/wkhtmltopdf). Any issues related to visual problems like this will be closed unless the reporter can show that the problem is unique to this library.
 
-### Release notes
+Please follow similar guidelines as StackOverflow -- that is, provide any contextual information that you can about your application to help solve the issue.
 
-#### 1.0.3
-- Global setting margins now uses culture-invariant formatting of double values
-- Global setting color mode now works properly ('color' or 'grayscale')
-- Several boolean values now work properly ('LoadImages', 'EnableJavascript', etc.)
+### Submitting pull requests
+For 2.0.0 I am wanting to use the 'git flow' style of branching/merging/releasing. If you have a hotfix, please branch off of hotfix. If you are adding something, please branch off of develop. I won't fully re-explain the methodology here.
 
-##### See the tagged releases for earlier release information.
+## Usage
+*The API drastically changed once more for 2.0.0 for the sake of modularity and extensibility. Please read the following sections thoroughly.*
 
-##Usage
+### 1. Choose a deployment
 
-### Quickly create a document from some html:
+TuesPechkin exposes an 'IDeployment' interface to represent the folder where wkhtmltox.dll resides. There exists a `StaticDeployment` implementation that accepts a string path, and there exists an abstract `EmbeddedDeployment` class that can be implemented to automatically deploy the wkhtmltopdf dll(s) wherever you need them. 
 
+### 2. Choose a toolset
+
+TuesPechkin exposes an `IToolset` interface to represent the wkhtmltopdf library. There are two officially supported implementations:
+
+- `PdfToolset`: Exposes operations from the library to convert HTML into PDF
+- `RemotingToolset<TToolset>`: Manages a toolset of type `TToolset` across an AppDomain boundary. This is necessary for use in IIS-hosted applications.
+
+There is also an abstract class from which you may inherit: `NestingToolset`. It provides wrapping functionality that is used by `RemotingToolset<TToolset>`.
+
+Feel free to submit a pull request to the develop branch for a `ImageToolset` implementation! ;)
+
+### 3. Choose a converter
+
+TuesPechkin exposes an `IConverter` interface. An implementation of `IConverter` properly makes all of the calls to wkhtmltopdf to convert an `IDocument` instance (which we will cover shortly.) TuesPechkin supplies two implementations:
+
+- `StandardConverter`: A converter that may be used in single-threaded applications
+- `ThreadSafeConverter`: A converter that manages a single background thread and queues document conversions against it. This is necessary for use in multi-threaded applications, including IIS-hosted applications.
+
+### 4. Define your document
+
+TuesPechkin exposes three interfaces and one attribute that define an HTML document. These are:
+
+- `WkhtmltoxSettingAttribute`: an attribute for properties that instructs an `IConverter` to apply the property's value to the wkhtmltopdf global or object setting with the name passed to the attribute's constructor.
+- `ISettings`: a token interface whose implementors are implied to have properties decorated with `WkhtmltoxSettingAttribute` and/or other `ISettings` properties.
+- `IObject`: an interface that represents a wkhtmltopdf 'ObjectSettings'. It requires one method to be implemented: `byte[] GetData()`. All `IObject` instances are also `ISettings` instances by inheritance.
+- `IDocument`: an interface that represents an HTML document. It requires one method to be implemented: `IEnumerable<IObject> GetObjects()`. All `IDocument` instances are also `ISettings` instances by inheritance.
+
+Because TuesPechkin exposes these interfaces/attributes, you are free to write your own implementations that support whichever wkhtmltopdf settings you so desire. If TuesPechkin's included `HtmlDocument` class and its related classes do not provide support for a setting you want to use, you may then extend them or create your own classes altogether -- this also goes for use cases where you are only setting a handful of properties and you find the included implementations to be too verbose.
+
+*The included `HtmlDocument` class and its related classes do not supply any default values to wkhtmltopdf.*
+
+Here is how an `IDocument` is to be processed by an `IConverter`:
+ 
+1. A wkhtmltopdf 'GlobalSettings' is created for the document. 
+2. The `IDocument` is recursively crawled for all `ISettings` and `WkhtmltoxSettingAttribute`-decorated properties; these properties are applied to the 'GlobalSettings'.
+3. 'GetObjects()' is called on 'IDocument', and for each 'IObject' that is not null, a wkhtmltopdf 'ObjectSettings' is created and that 'IObject' is recursively crawled for all `ISettings` and `WkhtmltoxSettingAttribute`-decorated properties; these properties are applied to the 'ObjectSettings'. The 'ObjectSettings' is then added to the converter.
+
+### 5. Putting it all together
+
+#### Create a document with options of your choosing.
 ```csharp
-IPechkin converter = Factory.Create();
-byte[] result = converter.Convert("<p>Lorem ipsum wampum</p>");
-```
-
-### Specify a number of options:
-
-```csharp
-// create a new document with your desired configuration
-var document = new HtmlToPdfDocument
+var document = new HtmlDocument
 {
-	GlobalSettings = {
+    GlobalSettings =
+    {
         ProduceOutline = true,
         DocumentTitle = "Pretty Websites",
-		PaperSize = PaperKind.A4, // Implicit conversion to PechkinPaperSize
+        PaperSize = PaperKind.A4, // Implicit conversion to PechkinPaperSize
         Margins =
         {
             All = 1.375,
@@ -69,85 +92,52 @@ var document = new HtmlToPdfDocument
 		new ObjectSettings { PageUrl = "www.github.com" }
     }
 };
-
-// create converter
-IPechkin converter = Factory.Create();
-
-// subscribe to events
-converter.Begin += OnBegin;
-converter.Error += OnError;
-converter.Warning += OnWarning;
-converter.PhaseChanged += OnPhase;
-converter.ProgressChanged += OnProgress;
-converter.Finished += OnFinished;
-
-// convert document
-byte[] result = converter.Convert(document);
 ```
 
-## Options
+#### Convert it in a quick and dirty console application...
+```csharp    
+IConverter converter =
+    new StandardConverter(
+        new PdfToolset(
+        	new StaticDeployment(DLL_FOLDER_PATH)));
 
-### How to read this section
+byte[] result = converter.convert(document);
+```
 
-As of 1.1.0, TuesPechkin will not prescribe any default settings, so as to more closely imitate the command-line interface of wkhtmltopdf; however, this section will provide a convenient mapping of command-line arguments to TuesPechkin object-oriented settings for quick reference. For documentation of the settings themselves, it would be wise to refer to wkhtmltopdf's own documentation.
+### ...or in a multi-threaded application...
+```csharp
+IConverter converter =
+    new ThreadSafeConverter(
+        new PdfToolset(
+        	new StaticDeployment(DLL_FOLDER_PATH)));
 
-#### Global Options
-Command line arg | Description | TuesPechkin equivalent
-----|----|----
-    --collate                         |Collate when printing multiple copies (default)|GlobalSettings.Collate
-    --no-collate                      |Do not collate when printing multiple copies|GlobalSettings.Collate
-    --cookie-jar <path>               |Read and write cookies from and to the supplied cookie jar file|GlobalSettings.CookieJar
-    --copies <number>                 |Number of copies to print into the pdf file (default 1)|GlobalSettings.Copies
--d, --dpi <dpi>                       |Change the dpi explicitly (this has no effect on X11 based systems)|GlobalSettings.DPI
--H, --extended-help                   |Display more extensive help, detailing less common command switches|(no equivalent)
--g, --grayscale                       |PDF will be generated in grayscale|GlobalSettings.ColorMode
--h, --help                            |Display help|(no equivalent)
-    --htmldoc                         |Output program html help|(no equivalent)
-    --image-dpi * <integer>           |When embedding images scale them down to this dpi (default 600)|GlobalSettings.ImageDPI
-    --image-quality * <integer>       |When jpeg compressing images use this quality (default 94)|GlobalSettings.ImageQuality
--l, --lowquality                      |Generates lower quality pdf/ps. Useful to shrink the result document space|(no equivalent)
-    --manpage                         |Output program man page|(no equivalent)
--B, --margin-bottom <unitreal>        |Set the page bottom margin|GlobalSettings.MarginSettings.Bottom
--L, --margin-left <unitreal>          |Set the page left margin (default 10mm)|GlobalSettings.MarginSettings.Left
--R, --margin-right <unitreal>         |Set the page right margin (default 10mm)|GlobalSettings.MarginSettings.Right
--T, --margin-top <unitreal>           |Set the page top margin|GlobalSettings.MarginSettings.Top
--O, --orientation <orientation>       |Set orientation to Landscape or Portrait (default Portrait)|GlobalSettings.Orientation
-    --output-format <format>          |Specify an output format to use pdf or ps, instead of looking at the extention of the output filename|GlobalSettings.OutputFormat
-    --page-height <unitreal>          |Page height|GlobalSettings.PaperSize.Height
--s, --page-size <Size>                |Set paper size to: A4, Letter, etc. (default A4)|GlobalSettings.PaperSize (implicit conversion from PaperKind)
-    --page-width <unitreal>           |Page width|GlobalSettings.PaperSize.Width
-    --no-pdf-compression *            |Do not use lossless compression on pdf objects|GlobalSettings.UseCompression
--q, --quiet                           |Be less verbose|(no equivalent)
-    --read-args-from-stdin            |Read command line arguments from stdin|(no equivalent)
-    --readme                          |Output program readme|(no equivalent)
-    --title <text>                    |The title of the generated pdf file (The title of the first document is used if not specified)|GlobalSettings.DocumentTitle
--V, --version                         |Output version information an exit|(no equivalent)
+// Keep the converter somewhere static, or as a singleton instance!
 
-#### Header And Footer Options
+byte[] result = converter.convert(document);
+```
 
-Header and footer options are accessed via `ObjectSettings.HeaderSettings` and `ObjectSettings.FooterSettings`.
+### ...or in an IIS-hosted application.
+```csharp
+IConverter converter =
+    new ThreadSafeConverter(
+        new RemotingToolset<PdfToolset>(
+        	new StaticDeployment(DLL_FOLDER_PATH)));
 
-Command line arg | Description | TuesPechkin equivalent
-----|----|----
-    --footer-center * <text>          |Centered footer text|FooterSettings.CenterText
-    --footer-font-name * <name>       |Set footer font name (default Arial)|FooterSettings.FontName
-    --footer-font-size * <size>       |Set footer font size (default 12)|FooterSettings.FontSize
-    --footer-html * <url>             |Adds a html footer|FooterSettings.HtmlUrl
-    --footer-left * <text>            |Left aligned footer text|FooterSettings.LeftText
-    --footer-line *                   |Display line above the footer|FooterSettings.UseLineSeparator
-    --no-footer-line *                |Do not display line above the footer (default)|FooterSettings.UseLineSeparator
-    --footer-right * <text>           |Right aligned footer text|FooterSettings.RightText
-    --footer-spacing * <real>         |Spacing between footer and content in mm (default 0)|FooterSettings.ContentSpacing
-    --header-center * <text>          |Centered header text|HeaderSettings.CenterText
-    --header-font-name * <name>       |Set header font name (default Arial)|HeaderSettings.FontName
-    --header-font-size * <size>       |Set header font size (default 12)|HeaderSettings.FontSize
-    --header-html * <url>             |Adds a html header|HeaderSettings.HtmlUrl
-    --header-left * <text>            |Left aligned header text|HeaderSettings.LeftText
-    --header-line *                   |Display line below the header|HeaderSettings.UseLineSeparator
-    --no-header-line *                |Do not display line below the header (default)|HeaderSettings.UseLineSeparator
-    --header-right * <text>           |Right aligned header text|HeaderSettings.RightText
-    --header-spacing * <real>         |Spacing between header and content in mm (default 0)|HeaderSettings.ContentSpacing
-    --replace * <name> <value>        |Replace [name] with value in header and footer (repeatable)|(no equivalent)
+// Keep the converter somewhere static, or as a singleton instance!
+
+byte[] result = converter.convert(document);
+```
+
+### Use the embedded library from the TuesPechkin.Wkhtmltox.Win32 NuGet package.
+```csharp
+IConverter converter =
+	new StandardConverter(
+		new PdfToolset(
+			new Win32EmbeddedDeployment(
+				new StaticDeployment(DLL_FOLDER_PATH))));
+
+byte[] result = converter.convert(document);
+```
 
 License
 -------
