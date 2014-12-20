@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
-using TuesPechkin.Wkhtmltox;
 
 namespace TuesPechkin.TestWebApp.Controllers
 {
@@ -11,7 +10,7 @@ namespace TuesPechkin.TestWebApp.Controllers
         private static IConverter converter =
             new ThreadSafeConverter(
                 new PdfToolset(
-                    new WinEmbeddedDeployment(
+                    new Win64EmbeddedDeployment(
                         new StaticDeployment(
                             Path.Combine(Path.GetTempPath(), "wkhtmltox.dll")))));
 

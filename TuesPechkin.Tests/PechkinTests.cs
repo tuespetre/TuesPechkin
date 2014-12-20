@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TuesPechkin.Wkhtmltox;
 
 namespace TuesPechkin.Tests
 {
@@ -241,7 +240,7 @@ namespace TuesPechkin.Tests
                 var converter =
                     new ThreadSafeConverter(
                         new RemotingToolset<PdfToolset>(
-                            new WinEmbeddedDeployment(
+                            new Win32EmbeddedDeployment(
                                 new StaticDeployment(Path.GetTempPath()))));
 
                 var document = new HtmlDocument("<p>some html</p>");

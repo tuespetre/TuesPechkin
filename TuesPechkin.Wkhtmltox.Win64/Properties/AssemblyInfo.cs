@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TuesPechkin")]
-[assembly: AssemblyDescription(".NET wrapper for wkhtmltopdf")]
+[assembly: AssemblyTitle("TuesPechkin.Wkhtmltox.Win64")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TuesPechkin")]
-[assembly: AssemblyCopyright("Copyright 2014 Derek Gray")]
+[assembly: AssemblyProduct("TuesPechkin.Wkhtmltox.Win64")]
+[assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("11f63696-7105-436d-9ec6-2fee54c40b11")]
+[assembly: Guid("53a5919e-2c15-48e1-af01-f1bcce4eddea")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,4 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.0")]
-[assembly: AssemblyFileVersion("2.0.0")]
+[assembly: AssemblyVersion("0.12.1")]

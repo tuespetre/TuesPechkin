@@ -236,13 +236,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TuesPechkin.Wkhtmltox.Win64\TuesPechkin.Wkhtmltox.Win64.csproj">
+      <Project>{f77cffca-1cf0-49c8-98b6-5c6009c6be63}</Project>
+      <Name>TuesPechkin.Wkhtmltox.Win64</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TuesPechkin\TuesPechkin.csproj">
       <Project>{023df833-b252-48b3-b6af-dbbb13e39b13}</Project>
       <Name>TuesPechkin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TuesPechkin.Wkhtmltox\TuesPechkin.Wkhtmltox.csproj">
-      <Project>{1bcd70ef-32ef-4339-9ccf-ea07415a39a9}</Project>
-      <Name>TuesPechkin.Wkhtmltox</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

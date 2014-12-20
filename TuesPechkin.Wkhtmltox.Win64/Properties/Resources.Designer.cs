@@ -63,9 +63,9 @@ namespace TuesPechkin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] wkhtmltox_32_dll {
+        internal static byte[] wkhtmltox_64_dll {
             get {
-                object obj = ResourceManager.GetObject("wkhtmltox_32_dll", resourceCulture);
+                object obj = ResourceManager.GetObject("wkhtmltox_64_dll", resourceCulture);
                 return ((byte[])(obj));
             }
         }

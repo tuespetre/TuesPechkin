@@ -10,13 +10,13 @@ using SysPath = System.IO.Path;
 namespace TuesPechkin
 {
     [Serializable]
-    public class Win32EmbeddedDeployment : EmbeddedDeployment
+    public class Win64EmbeddedDeployment : EmbeddedDeployment
     {
-        public Win32EmbeddedDeployment(IDeployment physical) : base(physical) { }
+        public Win64EmbeddedDeployment(IDeployment physical) : base(physical) { }
 
         protected override IEnumerable<KeyValuePair<string, Stream>> GetContents()
         {
-            var raw = Resources.wkhtmltox_32_dll;
+            var raw = Resources.wkhtmltox_64_dll;
 
             return new []
             { 

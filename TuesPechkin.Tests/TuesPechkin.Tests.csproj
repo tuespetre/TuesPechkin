@@ -93,13 +93,13 @@
     <EmbeddedResource Include="Resources\page.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TuesPechkin\TuesPechkin.csproj">
-      <Project>{023DF833-B252-48B3-B6AF-DBBB13E39B13}</Project>
-      <Name>TuesPechkin</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TuesPechkin.Wkhtmltox\TuesPechkin.Wkhtmltox.csproj">
+    <ProjectReference Include="..\TuesPechkin.Wkhtmltox\TuesPechkin.Wkhtmltox.Win32.csproj">
       <Project>{1bcd70ef-32ef-4339-9ccf-ea07415a39a9}</Project>
-      <Name>TuesPechkin.Wkhtmltox</Name>
+      <Name>TuesPechkin.Wkhtmltox.Win32</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TuesPechkin\TuesPechkin.csproj">
+      <Project>{023df833-b252-48b3-b6af-dbbb13e39b13}</Project>
+      <Name>TuesPechkin</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
