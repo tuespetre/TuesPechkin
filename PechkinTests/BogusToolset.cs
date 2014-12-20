@@ -108,12 +108,12 @@ namespace TuesPechkin.Tests
             throw new NotImplementedException();
         }
 
-        public void SetErrorCallback(IntPtr converter, Util.StringCallback callback)
+        public void SetErrorCallback(IntPtr converter, StringCallback callback)
         {
             throw new NotImplementedException();
         }
 
-        public void SetFinishedCallback(IntPtr converter, Util.IntCallback callback)
+        public void SetFinishedCallback(IntPtr converter, IntCallback callback)
         {
             throw new NotImplementedException();
         }
@@ -128,17 +128,17 @@ namespace TuesPechkin.Tests
             throw new NotImplementedException();
         }
 
-        public void SetPhaseChangedCallback(IntPtr converter, Util.VoidCallback callback)
+        public void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback)
         {
             throw new NotImplementedException();
         }
 
-        public void SetProgressChangedCallback(IntPtr converter, Util.IntCallback callback)
+        public void SetProgressChangedCallback(IntPtr converter, IntCallback callback)
         {
             throw new NotImplementedException();
         }
 
-        public void SetWarningCallback(IntPtr converter, Util.StringCallback callback)
+        public void SetWarningCallback(IntPtr converter, StringCallback callback)
         {
             throw new NotImplementedException();
         }

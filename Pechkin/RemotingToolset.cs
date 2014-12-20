@@ -3,10 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting;
-using TuesPechkin.EventHandlers;
-using ErrorEventHandler = TuesPechkin.EventHandlers.ErrorEventHandler;
-using SysAssembly = System.Reflection.Assembly;
-using SysPath = System.IO.Path;
 
 namespace TuesPechkin
 {

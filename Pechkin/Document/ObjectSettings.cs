@@ -33,7 +33,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value);
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.footer = value;
             }
         }
@@ -46,7 +50,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value);
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.header = value;
             }
         }
@@ -59,7 +67,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value);
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.data = System.Text.Encoding.UTF8.GetBytes(value);
             }
         }
@@ -72,7 +84,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value);
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.load = value;
             }
         }
@@ -86,7 +102,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value);
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.data = value;
             }
         }
@@ -99,7 +119,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value);
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.web = value;
             }
         }

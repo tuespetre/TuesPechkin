@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace TuesPechkin.Util
+namespace TuesPechkin
 {
     /// <summary>
     /// Marshaller for UTF8 strings.

@@ -99,12 +99,12 @@ namespace TuesPechkin
             return NestedToolset.PerformConversion(converter);
         }
 
-        public void SetErrorCallback(IntPtr converter, Util.StringCallback callback)
+        public void SetErrorCallback(IntPtr converter, StringCallback callback)
         {
             NestedToolset.SetErrorCallback(converter, callback);
         }
 
-        public void SetFinishedCallback(IntPtr converter, Util.IntCallback callback)
+        public void SetFinishedCallback(IntPtr converter, IntCallback callback)
         {
             NestedToolset.SetFinishedCallback(converter, callback);
         }
@@ -119,17 +119,17 @@ namespace TuesPechkin
             return NestedToolset.SetObjectSetting(setting, name, value);
         }
 
-        public void SetPhaseChangedCallback(IntPtr converter, Util.VoidCallback callback)
+        public void SetPhaseChangedCallback(IntPtr converter, VoidCallback callback)
         {
             NestedToolset.SetPhaseChangedCallback(converter, callback);
         }
 
-        public void SetProgressChangedCallback(IntPtr converter, Util.IntCallback callback)
+        public void SetProgressChangedCallback(IntPtr converter, IntCallback callback)
         {
             NestedToolset.SetProgressChangedCallback(converter, callback);
         }
 
-        public void SetWarningCallback(IntPtr converter, Util.StringCallback callback)
+        public void SetWarningCallback(IntPtr converter, StringCallback callback)
         {
             NestedToolset.SetWarningCallback(converter, callback);
         }

@@ -32,7 +32,11 @@ namespace TuesPechkin
             }
             set
             {
-                DEPRECAAAAATED.BestAintBeNull(value); 
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
                 this.global = value;
             }
         }

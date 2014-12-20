@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using TuesPechkin.EventHandlers;
-using TuesPechkin.Util;
 
 namespace TuesPechkin
 {

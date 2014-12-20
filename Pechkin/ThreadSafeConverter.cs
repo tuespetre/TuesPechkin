@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
-using TuesPechkin.EventHandlers;
-using TuesPechkin.Util;
 
 namespace TuesPechkin
 {

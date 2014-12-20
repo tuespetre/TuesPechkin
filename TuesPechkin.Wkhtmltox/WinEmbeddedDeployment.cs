@@ -7,7 +7,7 @@ using System.Text;
 using TuesPechkin.Wkhtmltox.Properties;
 using SysPath = System.IO.Path;
 
-namespace TuesPechkin.Wkhtmltox
+namespace TuesPechkin
 {
     [Serializable]
     public class WinEmbeddedDeployment : EmbeddedDeployment
