@@ -236,7 +236,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pechkin\TuesPechkin.csproj">
+    <ProjectReference Include="..\TuesPechkin\TuesPechkin.csproj">
       <Project>{023df833-b252-48b3-b6af-dbbb13e39b13}</Project>
       <Name>TuesPechkin</Name>
     </ProjectReference>

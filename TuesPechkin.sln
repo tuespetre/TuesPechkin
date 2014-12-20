@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin", "Pechkin\TuesPechkin.csproj", "{023DF833-B252-48B3-B6AF-DBBB13E39B13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin", "TuesPechkin\TuesPechkin.csproj", "{023DF833-B252-48B3-B6AF-DBBB13E39B13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.TestFormsApp", "PechkinTestApp\TuesPechkin.TestFormsApp.csproj", "{35E72E2C-DE58-4ED7-9B47-5EF13860AF42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.TestFormsApp", "TuesPechkin.TestFormsApp\TuesPechkin.TestFormsApp.csproj", "{35E72E2C-DE58-4ED7-9B47-5EF13860AF42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.Tests", "PechkinTests\TuesPechkin.Tests.csproj", "{D58769FA-E008-4016-A81C-A85C606B3691}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.Tests", "TuesPechkin.Tests\TuesPechkin.Tests.csproj", "{D58769FA-E008-4016-A81C-A85C606B3691}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{14133E64-8631-46C8-8477-D41C821968F4}"
 	ProjectSection(SolutionItems) = preProject
