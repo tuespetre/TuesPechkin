@@ -12,6 +12,8 @@ namespace TuesPechkin
 {
     public sealed class PdfToolset : MarshalByRefObject, IToolset
     {
+        public event EventHandler Unloaded;
+
         public IDeployment Deployment { get; private set; }
 
         public bool Loaded { get; private set; }

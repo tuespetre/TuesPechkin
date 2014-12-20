@@ -7,6 +7,8 @@ namespace TuesPechkin
 {
     public abstract class NestingToolset : MarshalByRefObject, IToolset
     {
+        public abstract event EventHandler Unloaded;
+
         public IDeployment Deployment { get; protected set; }
 
         public bool Loaded { get; protected set; }

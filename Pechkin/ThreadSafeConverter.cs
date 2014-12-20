@@ -10,26 +10,64 @@ namespace TuesPechkin
 {
     public sealed class ThreadSafeConverter : StandardConverter, IConverter
     {
-        public ThreadSafeConverter(IToolset toolset) : base(toolset)
+        public ThreadSafeConverter(IToolset toolset)
+            : base(toolset)
         {
-            InnerThread = new Thread(Run)
+            toolset.Unloaded += (sender, args) =>
             {
-                IsBackground = true
+                StopThread();
             };
-
-            InnerThread.Start();
         }
 
         public override byte[] Convert(IDocument document)
         {
+            StartThread();
+
             return Invoke(() => base.Convert(document));
         }
 
-        private Thread InnerThread { get; set; }
+        private Thread innerThread;
 
         private readonly object queueLock = new object();
 
+        private readonly object startLock = new object();
+
+        private bool stopRequested = false;
+
         private readonly List<Task> taskQueue = new List<Task>();
+
+        private void StartThread()
+        {
+            lock (startLock)
+            {
+                if (innerThread == null)
+                {
+                    innerThread = new Thread(Run)
+                    {
+                        IsBackground = true
+                    };
+
+                    stopRequested = false;
+
+                    innerThread.Start();
+                }
+            }
+        }
+
+        private void StopThread()
+        {
+            lock (startLock)
+            {
+                if (innerThread != null)
+                {
+                    stopRequested = true;
+
+                    while (innerThread.ThreadState != ThreadState.Stopped) { }
+
+                    innerThread = null;
+                }
+            }
+        }
 
         private TResult Invoke<TResult>(Func<TResult> @delegate)
         {
@@ -86,51 +124,45 @@ namespace TuesPechkin
 
         private void Run()
         {
-            try
+            using (WindowsIdentity.Impersonate(IntPtr.Zero))
             {
-                using (WindowsIdentity.Impersonate(IntPtr.Zero))
-                {
-                    Thread.CurrentPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-                }
-
-                while (true)
-                {
-                    Task task;
-
-                    lock (queueLock)
-                    {
-                        if (taskQueue.Count > 0)
-                        {
-                            task = taskQueue[0];
-                            taskQueue.RemoveAt(0);
-                        }
-                        else
-                        {
-                            Monitor.Wait(queueLock);
-                            continue;
-                        }
-                    }
-
-                    // if there's a task, process it asynchronously
-                    lock (task)
-                    {
-                        try
-                        {
-                            task.Action.DynamicInvoke();
-                        }
-                        catch (TargetInvocationException e)
-                        {
-                            Tracer.Critical(string.Format("Exception in SynchronizedDispatcherThread \"{0}\"", Thread.CurrentThread.Name), e);
-                            task.Exception = e.InnerException;
-                        }
-
-                        // notify waiting thread about completeion
-                        Monitor.Pulse(task);
-                    }
-                }
+                Thread.CurrentPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
             }
-            catch (ThreadAbortException)
+
+            while (!stopRequested)
             {
+                Task task;
+
+                lock (queueLock)
+                {
+                    if (taskQueue.Count > 0)
+                    {
+                        task = taskQueue[0];
+                        taskQueue.RemoveAt(0);
+                    }
+                    else
+                    {
+                        Monitor.Wait(queueLock, 100);
+                        continue;
+                    }
+                }
+
+                // if there's a task, process it asynchronously
+                lock (task)
+                {
+                    try
+                    {
+                        task.Action.DynamicInvoke();
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        Tracer.Critical(string.Format("Exception in SynchronizedDispatcherThread \"{0}\"", Thread.CurrentThread.Name), e);
+                        task.Exception = e.InnerException;
+                    }
+
+                    // notify waiting thread about completeion
+                    Monitor.Pulse(task);
+                }
             }
         }
 

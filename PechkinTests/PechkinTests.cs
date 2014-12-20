@@ -41,12 +41,19 @@ namespace TuesPechkin.Tests
         public void TestCleanup()
         {
             (toolset as RemotingToolset<PdfToolset>).Unload();
+
+            Assert.IsFalse(Process
+                .GetCurrentProcess()
+                .Modules
+                .Cast<ProcessModule>()
+                .Any(m => m.ModuleName == "wkhtmltox.dll"));
         }
 
         [TestMethod]
         public void BubblesExceptionsFromSyncedThread()
         {
-            var converter = new ThreadSafeConverter(new BogusToolset());
+            var toolset = new BogusToolset();
+            var converter = new ThreadSafeConverter(toolset);
 
             try
             {
@@ -54,6 +61,8 @@ namespace TuesPechkin.Tests
                 Assert.Fail();
             }
             catch (NotImplementedException) { }
+
+            toolset.FireUnload(); // Needed for testing framework to succeed
         }
 
         [TestMethod]
@@ -70,7 +79,7 @@ namespace TuesPechkin.Tests
 
                 var converter =
                     new ThreadSafeConverter(
-                        new PdfToolset(
+                        new RemotingToolset<PdfToolset>(
                             new StaticDeployment(dllPath)));
 
                 var document = new HtmlDocument("<p>some html</p>");
@@ -112,7 +121,8 @@ namespace TuesPechkin.Tests
 
             while (completed < numberOfTasks)
             {
-                Thread.Sleep(1000);
+                // tried using Task.WaitAll but it blocked the test engine
+                Thread.Sleep(100);
             }
         }
 
@@ -130,9 +140,11 @@ namespace TuesPechkin.Tests
             Assert.IsNotNull(result);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void MultipleObjectConversionFromString()
-        {
+        {            
+            // See: https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1790
+
             var result = converter.Convert(Document("Hey girl", "What's up"));
 
             Assert.IsNotNull(result);
@@ -227,7 +239,7 @@ namespace TuesPechkin.Tests
             domain.DoCallBack(() =>
             {
                 var converter =
-                    new StandardConverter(
+                    new ThreadSafeConverter(
                         new RemotingToolset<PdfToolset>(
                             new WinEmbeddedDeployment(
                                 new StaticDeployment(Path.GetTempPath()))));

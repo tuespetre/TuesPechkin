@@ -8,6 +8,16 @@ namespace TuesPechkin.Tests
 {
     public class BogusToolset : IToolset
     {
+        public event EventHandler Unloaded;
+
+        public void FireUnload()
+        {
+            if (Unloaded != null)
+            {
+                Unloaded(this, EventArgs.Empty);
+            }
+        }
+
         public void Load(IDeployment deployment = null)
         {
             throw new NotImplementedException();

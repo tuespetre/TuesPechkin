@@ -21,6 +21,11 @@ namespace TuesPechkin
         bool Loaded { get; }
 
         /// <summary>
+        /// Fires when the toolset is unloaded.
+        /// </summary>
+        event EventHandler Unloaded;
+
+        /// <summary>
         /// The deployment loaded by (or to be loaded by) the toolset.
         /// </summary>
         IDeployment Deployment { get; }

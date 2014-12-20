@@ -60,10 +60,11 @@ namespace TuesPechkin
             Loaded = true;
         }
 
+        public override event EventHandler Unloaded;
+
         public void Unload()
         {
             TearDownAppDomain(null, EventArgs.Empty);
-            Loaded = false;
         }
 
         private AppDomain remoteDomain;
@@ -109,6 +110,12 @@ namespace TuesPechkin
             }
 
             remoteDomain = null;
+            Loaded = false;
+
+            if (Unloaded != null)
+            {
+                Unloaded(this, EventArgs.Empty);
+            }
         }
     }
 }
