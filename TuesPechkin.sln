@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.TestWebApp", "TuesPechkin.TestWebApp\TuesPechkin.TestWebApp.csproj", "{B12D40DF-C865-4116-9C42-0EEDCF9FB19A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.Wkhtmltox.Win32", "TuesPechkin.Wkhtmltox\TuesPechkin.Wkhtmltox.Win32.csproj", "{1BCD70EF-32EF-4339-9CCF-EA07415A39A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.Wkhtmltox.Win32", "TuesPechkin.Wkhtmltox.Win32\TuesPechkin.Wkhtmltox.Win32.csproj", "{1BCD70EF-32EF-4339-9CCF-EA07415A39A9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{FEC187D8-E106-4273-A173-3E0128FCBC65}"
 EndProject

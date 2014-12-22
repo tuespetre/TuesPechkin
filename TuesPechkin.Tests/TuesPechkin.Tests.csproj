@@ -93,7 +93,7 @@
     <EmbeddedResource Include="Resources\page.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TuesPechkin.Wkhtmltox\TuesPechkin.Wkhtmltox.Win32.csproj">
+    <ProjectReference Include="..\TuesPechkin.Wkhtmltox.Win32\TuesPechkin.Wkhtmltox.Win32.csproj">
       <Project>{1bcd70ef-32ef-4339-9ccf-ea07415a39a9}</Project>
       <Name>TuesPechkin.Wkhtmltox.Win32</Name>
     </ProjectReference>
