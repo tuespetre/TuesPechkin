@@ -15,11 +15,11 @@
     <AssemblyName>TuesPechkin.TestWebApp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort>443</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
@@ -227,16 +227,20 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\PostAnything.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Pechkin\TuesPechkin.csproj">
+    <ProjectReference Include="..\TuesPechkin.Wkhtmltox.Win64\TuesPechkin.Wkhtmltox.Win64.csproj">
+      <Project>{f77cffca-1cf0-49c8-98b6-5c6009c6be63}</Project>
+      <Name>TuesPechkin.Wkhtmltox.Win64</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TuesPechkin\TuesPechkin.csproj">
       <Project>{023df833-b252-48b3-b6af-dbbb13e39b13}</Project>
       <Name>TuesPechkin</Name>
     </ProjectReference>
@@ -259,7 +263,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50249</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50249/</IISUrl>
+          <IISUrl>http://localhost/TuesPechkin.TestWebApp</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

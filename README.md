@@ -1,91 +1,84 @@
 #TuesPechkin
-.NET Wrapper for [WkHtmlToPdf](http://github.com/antialize/wkhtmltopdf) DLL, a library that uses the Webkit engine to convert HTML pages to PDF. This fork supports .NET 2.0 and up and *now runs in both 64 and 32-bit environments*!
-
-TuesPechkin is available as a *NuGet package* (see: https://www.nuget.org/packages/TuesPechkin/) for your convenience.
-
-
+TuesPechkin is a .NET Wrapper for the [wkhtmltopdf](https://github.com/wkhtmltopdf/wkhtmltopdf) library. 
 
 ## Things to know
 
-
-
-### Reporting issues
-If something looks visually off when you print your document, try converting with [wkhtmltopdf](http://www.wkhtmltopdf.org) directly. If you still have the problem, then you will need to take your issue to [wkhtmltopdf's issues](https://github.com/wkhtmltopdf/wkhtmltopdf). Any issues related to visual problems like this will be closed unless the reporter can show that the problem is unique to this library.
-
-Since this library is maintained on limited resources, please bring the witch here to burn (so to speak), rather than declaring that a witch is out there and that someone needs to find it and burn it. It would be most helpful if you could provide steps to reproduce the issue, sample material (raw html, code, etc.), and environment information.
-
-
-
-### Windows Azure usage
-At the time of writing this, Azure does not play nice with wkhtmltox.dll because it uses the GDI libraries. Chances are it will not work for you. Any opened issues in regards to this will be closed.
-
-See: http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview
-
-
+### Supported usage
+- It supports .NET 2.0+, 32 and 64-bit processes, and IIS-hosted applications. 
+- [Azure Websites does not currently support the use of wkhtmltopdf.](http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview)
+- It is not tested with any operating systems besides Windows.
+- [It is available as a *NuGet package* for your convenience.](https://www.nuget.org/packages/TuesPechkin/)
+- It is built and tested around wkhtmltopdf 0.11.0, 0.12.0, and 0.12.1.
 
 ### wkhtmltox.dll 
-The unmanaged DLLs that TuesPechkin depends upon have been packaged as *embedded resources* so you don't have to worry about messing around with pre- or post-build events to copy the files wherever they go in your solution. When the library is first accessed in the application lifetime, it will copy the embedded resources to a temporary directory named after the version of TuesPechkin and the base directory from which your application is running (if they do not exist there already.)
+The wkhtmltox.dll file and any dependencies it might have (for older versions, 0.11.0-) are not included in the TuesPechkin NuGet package; however, you can bring your own copy of the library or download one of the following NuGet packages that contain the library:
 
+- TuesPechkin.Wkhtmltox.Win32
+- TuesPechkin.Wkhtmltox.Win64
 
+### Reporting issues
+If something doesn't seem right with your converted document, try converting with [wkhtmltopdf](http://www.wkhtmltopdf.org) directly. If you still have the problem, then you will need to take your issue to [wkhtmltopdf's issues](https://github.com/wkhtmltopdf/wkhtmltopdf). Any issues related to visual problems like this will be closed unless the reporter can show that the problem is unique to this library.
 
-### Release notes
+Please follow similar guidelines as StackOverflow -- that is, provide any contextual information that you can about your application to help solve the issue.
 
-#### 1.0.3
-- Global setting margins now uses culture-invariant formatting of double values
-- Global setting color mode now works properly ('color' or 'grayscale')
-- Several boolean values now work properly ('LoadImages', 'EnableJavascript', etc.)
+### Submitting pull requests
+For 2.0.0 I am wanting to use the 'git flow' style of branching/merging/releasing. If you have a hotfix, please branch off of hotfix. If you are adding something, please branch off of develop. I won't fully re-explain the methodology here.
 
-#### 1.0.2
-- Revert to process identity within the synchronized thread, see issue #14
+## Usage
+*The API drastically changed once more for 2.0.0 for the sake of modularity and extensibility. Please read the following sections thoroughly.*
 
-#### 1.0.1
-- Corrected an issue with the AppDomain hanging on unload; introduced unit test to cover this scenario
+### 1. Choose a deployment
 
-#### 1.0.0 - HUGE changes
-- Began to use semantic versioning.
-- Removed ```ExtendedQtAvailable``` and ```Version``` properties from ```Factory```.
-- Setting ```UseX11Graphics``` on ```Factory``` will no longer throw an ```InvalidOperationException```.
-- The initialization of the library is now thread-safe.
-- Removed ```UseSynchronization``` property from ```Factory```. Synchronization is now mandatory.
-- IPechkin no longer implements ```IDisposable``` or has property ```IsDisposed``` or event ```Disposed```. 
-- Consequently, ```UseDynamicLoading``` is no longer an option for ```Factory```.
-- ```SynchronizedDispatcherThread``` is no longer a public class available for reuse.
-- Removed ```LibInitEventHandler```, ```LibDeInitEventHandler```, and ```DisposedEventHandler``` delegates.
-- Improved exception handling within synchronized thread. Exceptions now bubble out
-- Set 'PrintBackground' to 'true' by default
-- GlobalConfig/ObjectConfig have been radically redesigned. See API and usage for details.
-- Multiple objects in one conversion now supported! (Multiple web pages, HTML documents, etc in one PDF)
-- Everything is in the 'TuesPechkin' namespace now (instead of 'Pechkin.')
-- Margins for the document are in 'double + unit' form, rather than 'hundredths of an inch as int' form.
+TuesPechkin exposes an 'IDeployment' interface to represent the folder where wkhtmltox.dll resides. There exists a `StaticDeployment` implementation that accepts a string path, and there exists an abstract `EmbeddedDeployment` class that can be implemented to automatically deploy the wkhtmltopdf dll(s) wherever you need them. 
 
-###### You better just read the 'Usage' section for a glance at how the API has changed.
+### 2. Choose a toolset
 
-#### 0.9.3.3
-- Fixed a problem with concurrency related to when the Pechkin object tells wkhtmltopdf to destroy its converter object. Now happens immediately after conversion, before anything else hits the queue.
+TuesPechkin exposes an `IToolset` interface to represent the wkhtmltopdf library. There are two officially supported implementations:
 
-#### 0.9.3.2
-- Made the library unpack wkhtmltopdf in a folder named specifically for the running application since only one process can use the dll.
-- Compressed the wkhtmltopdf dependencies with gzip to reduce the size of the solution and the NuGet packages
+- `PdfToolset`: Exposes operations from the library to convert HTML into PDF
+- `RemotingToolset<TToolset>`: Manages a toolset of type `TToolset` across an AppDomain boundary. This is necessary for use in IIS-hosted applications.
 
-##Usage
+There is also an abstract class from which you may inherit: `NestingToolset`. It provides wrapping functionality that is used by `RemotingToolset<TToolset>`.
 
-### Quickly create a document from some html:
+Feel free to submit a pull request to the develop branch for a `ImageToolset` implementation! ;)
 
+### 3. Choose a converter
+
+TuesPechkin exposes an `IConverter` interface. An implementation of `IConverter` properly makes all of the calls to wkhtmltopdf to convert an `IDocument` instance (which we will cover shortly.) TuesPechkin supplies two implementations:
+
+- `StandardConverter`: A converter that may be used in single-threaded applications
+- `ThreadSafeConverter`: A converter that manages a single background thread and queues document conversions against it. This is necessary for use in multi-threaded applications, including IIS-hosted applications.
+
+### 4. Define your document
+
+TuesPechkin exposes three interfaces and one attribute that define an HTML document. These are:
+
+- `WkhtmltoxSettingAttribute`: an attribute for properties that instructs an `IConverter` to apply the property's value to the wkhtmltopdf global or object setting with the name passed to the attribute's constructor.
+- `ISettings`: a token interface whose implementors are implied to have properties decorated with `WkhtmltoxSettingAttribute` and/or other `ISettings` properties.
+- `IObject`: an interface that represents a wkhtmltopdf 'ObjectSettings'. It requires one method to be implemented: `byte[] GetData()`. All `IObject` instances are also `ISettings` instances by inheritance.
+- `IDocument`: an interface that represents an HTML document. It requires one method to be implemented: `IEnumerable<IObject> GetObjects()`. All `IDocument` instances are also `ISettings` instances by inheritance.
+
+Because TuesPechkin exposes these interfaces/attributes, you are free to write your own implementations that support whichever wkhtmltopdf settings you so desire. If TuesPechkin's included `HtmlDocument` class and its related classes do not provide support for a setting you want to use, you may then extend them or create your own classes altogether -- this also goes for use cases where you are only setting a handful of properties and you find the included implementations to be too verbose.
+
+*The included `HtmlToPdfDocument` class and its related classes do not supply any default values to wkhtmltopdf.*
+
+Here is how an `IDocument` is to be processed by an `IConverter`:
+ 
+1. A wkhtmltopdf 'GlobalSettings' is created for the document. 
+2. The `IDocument` is recursively crawled for all `ISettings` and `WkhtmltoxSettingAttribute`-decorated properties; these properties are applied to the 'GlobalSettings'.
+3. 'GetObjects()' is called on 'IDocument', and for each 'IObject' that is not null, a wkhtmltopdf 'ObjectSettings' is created and that 'IObject' is recursively crawled for all `ISettings` and `WkhtmltoxSettingAttribute`-decorated properties; these properties are applied to the 'ObjectSettings'. The 'ObjectSettings' is then added to the converter.
+
+### 5. Putting it all together
+
+#### Create a document with options of your choosing.
 ```csharp
-IPechkin converter = Factory.Create();
-byte[] result = converter.Convert("<p>Lorem ipsum wampum</p>");
-```
-
-### Specify a number of options:
-
-```csharp
-// create a new document with your desired configuration
 var document = new HtmlToPdfDocument
 {
-	GlobalSettings = {
+    GlobalSettings =
+    {
         ProduceOutline = true,
         DocumentTitle = "Pretty Websites",
-		PaperSize = PaperKind.A4, // Implicit conversion to PechkinPaperSize
+        PaperSize = PaperKind.A4, // Implicit conversion to PechkinPaperSize
         Margins =
         {
             All = 1.375,
@@ -99,41 +92,52 @@ var document = new HtmlToPdfDocument
 		new ObjectSettings { PageUrl = "www.github.com" }
     }
 };
-
-// create converter
-IPechkin converter = Factory.Create();
-
-// subscribe to events
-converter.Begin += OnBegin;
-converter.Error += OnError;
-converter.Warning += OnWarning;
-converter.PhaseChanged += OnPhase;
-converter.ProgressChanged += OnProgress;
-converter.Finished += OnFinished;
-
-// convert document
-byte[] result = converter.Convert(document);
 ```
 
-## Options
+#### Convert it in a quick and dirty console application...
+```csharp    
+IConverter converter =
+    new StandardConverter(
+        new PdfToolset(
+        	new StaticDeployment(DLL_FOLDER_PATH)));
 
-### How to read this section
+byte[] result = converter.convert(document);
+```
 
-This section spells out each settings class, a description for each possible setting, and the default values TuesPechkin and wkhtmltopdf uses. There are differences in the defaults which may affect rendering. The defaults may be normalized to match that of wkhtmltopdf in a future version.
+### ...or in a multi-threaded application...
+```csharp
+IConverter converter =
+    new ThreadSafeConverter(
+        new PdfToolset(
+        	new StaticDeployment(DLL_FOLDER_PATH)));
 
-#### WebSettings
+// Keep the converter somewhere static, or as a singleton instance!
 
-Setting | Description | TuesPechkin default | wkhtmltopdf default
---------|-------------|---------------------|--------------------
-DefaultEncoding|(string) Default encoding used to render the HTML|`"utf-8"`|`""`
-EnableIntelligentShrinking|(bool) Whether or not to enable intelligent compression of content to fit in the page|`true`|`true`
-EnableJavascript|Whether or not to enable JavaScript|`true`|`true`
-EnablePlugins|Whether to enable plugins (maybe like Flash? unsure)|`false`|`false`
-LoadImages|Whether or not to load images|`true`|`true`
-MinimumFontSize|The minimum font size to use|`-1`|`-1`
-PrintBackground|Whether or not to print the background on elements|`true`|`true`
-PrintMediaType|Whether to print the content using the print media type instead of the screen media type|`true`|`false`
-UserStyleSheet|Path to a user specified style sheet|`""`|`""`
+byte[] result = converter.convert(document);
+```
+
+### ...or in an IIS-hosted application.
+```csharp
+IConverter converter =
+    new ThreadSafeConverter(
+        new RemotingToolset<PdfToolset>(
+        	new StaticDeployment(DLL_FOLDER_PATH)));
+
+// Keep the converter somewhere static, or as a singleton instance!
+
+byte[] result = converter.convert(document);
+```
+
+### Use the embedded library from the TuesPechkin.Wkhtmltox.Win32 NuGet package.
+```csharp
+IConverter converter =
+	new StandardConverter(
+		new PdfToolset(
+			new Win32EmbeddedDeployment(
+				new StaticDeployment(DLL_FOLDER_PATH))));
+
+byte[] result = converter.convert(document);
+```
 
 License
 -------
