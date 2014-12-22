@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("TuesPechkin")]
-[assembly: AssemblyDescription(".NET wrapper for wkhtmltopdf")]
+[assembly: AssemblyDescription(".NET wrapper for wkhtmltopdf; supports 32-bit, 64-bit, multi-threaded and IIS environments.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TuesPechkin")]

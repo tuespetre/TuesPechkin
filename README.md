@@ -13,8 +13,8 @@ TuesPechkin is a .NET Wrapper for the [wkhtmltopdf](https://github.com/wkhtmltop
 ### wkhtmltox.dll 
 The wkhtmltox.dll file and any dependencies it might have (for older versions, 0.11.0-) are not included in the TuesPechkin NuGet package; however, you can bring your own copy of the library or download one of the following NuGet packages that contain the library:
 
-- TuesPechkin.Win32
-- TuesPechkin.Win64
+- TuesPechkin.Wkhtmltox.Win32
+- TuesPechkin.Wkhtmltox.Win64
 
 ### Reporting issues
 If something doesn't seem right with your converted document, try converting with [wkhtmltopdf](http://www.wkhtmltopdf.org) directly. If you still have the problem, then you will need to take your issue to [wkhtmltopdf's issues](https://github.com/wkhtmltopdf/wkhtmltopdf). Any issues related to visual problems like this will be closed unless the reporter can show that the problem is unique to this library.
