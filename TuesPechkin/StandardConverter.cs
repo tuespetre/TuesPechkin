@@ -113,8 +113,7 @@ namespace TuesPechkin
                     var args = new ErrorEventArgs
                     {
                         Document = ProcessingDocument,
-                        ErrorMessage = errorText,
-                        HttpErrorCode = Toolset.GetHttpErrorCode(converter)
+                        ErrorMessage = errorText
                     };
 
                     Error(this, args);

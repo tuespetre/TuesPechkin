@@ -7,7 +7,5 @@ namespace TuesPechkin
         public IDocument Document { get; set; }
 
         public string ErrorMessage { get; set; }
-
-        public int HttpErrorCode { get; set; }
     }
 }
