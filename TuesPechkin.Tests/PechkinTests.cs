@@ -81,7 +81,7 @@ namespace TuesPechkin.Tests
                         new RemotingToolset<PdfToolset>(
                             new StaticDeployment(dllPath)));
 
-                var document = new HtmlDocument("<p>some html</p>");
+                var document = new HtmlToPdfDocument("<p>some html</p>");
 
                 AppDomain.CurrentDomain.SetData("result", converter.Convert(document));
             };
@@ -206,7 +206,7 @@ namespace TuesPechkin.Tests
 
             sw.Close();
 
-            byte[] ret = converter.Convert(new HtmlDocument
+            byte[] ret = converter.Convert(new HtmlToPdfDocument
             {
                 Objects = { 
                     new ObjectSettings { PageUrl = fn } 
@@ -221,7 +221,7 @@ namespace TuesPechkin.Tests
         [TestMethod]
         public void ReturnsResultFromString()
         {
-            var document = new HtmlDocument("<p>some html</p>");
+            var document = new HtmlToPdfDocument("<p>some html</p>");
 
             var result = converter.Convert(document);
 
@@ -243,7 +243,7 @@ namespace TuesPechkin.Tests
                             new Win32EmbeddedDeployment(
                                 new StaticDeployment(Path.GetTempPath()))));
 
-                var document = new HtmlDocument("<p>some html</p>");
+                var document = new HtmlToPdfDocument("<p>some html</p>");
 
                 converter.Convert(document);
             });
@@ -285,9 +285,9 @@ namespace TuesPechkin.Tests
             return new StaticDeployment(GetDeploymentPath());
         }
 
-        private HtmlDocument Document(params ObjectSettings[] objects)
+        private HtmlToPdfDocument Document(params ObjectSettings[] objects)
         {
-            var doc = new HtmlDocument();
+            var doc = new HtmlToPdfDocument();
             doc.Objects.AddRange(objects);
 
             return doc;

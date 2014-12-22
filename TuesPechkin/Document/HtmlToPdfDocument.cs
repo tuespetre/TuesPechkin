@@ -3,14 +3,14 @@ using System.Collections.Generic;
 namespace TuesPechkin
 {
     [Serializable]
-    public class HtmlDocument : IDocument
+    public class HtmlToPdfDocument : IDocument
     {
-        public HtmlDocument()
+        public HtmlToPdfDocument()
         {
             this.Objects = new List<ObjectSettings>();
         }
 
-        public HtmlDocument(string html) : this()
+        public HtmlToPdfDocument(string html) : this()
         {
             this.Objects.Add(new ObjectSettings { HtmlText = html });
         }
@@ -41,9 +41,9 @@ namespace TuesPechkin
             }
         }
 
-        public static implicit operator HtmlDocument(string html)
+        public static implicit operator HtmlToPdfDocument(string html)
         {
-            return new HtmlDocument(html);
+            return new HtmlToPdfDocument(html);
         }
     }
 }

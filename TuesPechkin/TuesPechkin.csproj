@@ -101,7 +101,7 @@
     <Compile Include="NestingToolset.cs" />
     <Compile Include="StaticDeployment.cs" />
     <Compile Include="Util\DelegateRegistry.cs" />
-    <Compile Include="Document\HtmlDocument.cs" />
+    <Compile Include="Document\HtmlToPdfDocument.cs" />
     <Compile Include="EventArgs\BeginEventArgs.cs" />
     <Compile Include="EventArgs\ErrorEventArgs.cs" />
     <Compile Include="EventArgs\FinishEventArgs.cs" />

@@ -19,7 +19,7 @@ namespace TuesPechkin.TestWebApp.Controllers
         public ActionResult Index()
         {
             var html = "<p>Just some test HTML</p>";
-            var doc = new HtmlDocument(html);
+            var doc = new HtmlToPdfDocument(html);
             
             for (var i = 0; i < 5; i++)
             {
