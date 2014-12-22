@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,43 +10,8 @@ using System.Threading.Tasks;
 namespace TuesPechkin.Tests
 {
     [TestClass]
-    public class PechkinTests
+    public class GeneralTests : TuesPechkinTests
     {
-        private const string TEST_WK_VER = "0.12.1";
-        private const string TEST_URL = "www.google.com";
-
-        // Simulates 1.x.x
-        private static readonly ThreadSafeConverter converter;
-
-        private static readonly IToolset toolset;
-
-        static PechkinTests()
-        {
-            Debug.Listeners.Add(new DefaultTraceListener());
-
-            toolset =
-                new RemotingToolset<PdfToolset>(
-                    new StaticDeployment(
-                        Path.Combine(
-                            AppDomain.CurrentDomain.BaseDirectory,
-                            "wk-ver",
-                            TEST_WK_VER)));
-
-            converter = new ThreadSafeConverter(toolset);
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            converter.Invoke(() => toolset.Unload());
-
-            Assert.IsFalse(Process
-                .GetCurrentProcess()
-                .Modules
-                .Cast<ProcessModule>()
-                .Any(m => m.ModuleName == "wkhtmltox.dll"));
-        }
-
         [TestMethod]
         public void BubblesExceptionsFromSyncedThread()
         {
@@ -255,71 +219,6 @@ namespace TuesPechkin.Tests
                 .Modules
                 .Cast<ProcessModule>()
                 .Any(m => m.ModuleName == "wkhtmltox.dll"));
-        }
-
-        private AppDomain GetAppDomain(string name)
-        {
-            return AppDomain.CreateDomain(name, null, AppDomain.CurrentDomain.SetupInformation);
-        }
-
-        private static string GetDeploymentPath()
-        {
-            return Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "wk-ver",
-                TEST_WK_VER);
-        }
-
-        private IConverter GetNewConverter()
-        {
-            return new StandardConverter(GetNewToolset());
-        }
-
-        private IToolset GetNewToolset()
-        {
-            return new PdfToolset(GetNewDeployment());
-        }
-
-        private static IDeployment GetNewDeployment()
-        {
-            return new StaticDeployment(GetDeploymentPath());
-        }
-
-        private HtmlToPdfDocument Document(params ObjectSettings[] objects)
-        {
-            var doc = new HtmlToPdfDocument();
-            doc.Objects.AddRange(objects);
-
-            return doc;
-        }
-
-        private ObjectSettings StringObject()
-        {
-            var html = GetResourceString("PechkinTests.Resources.page.html");
-            
-            return new ObjectSettings { HtmlText = html };
-        }
-
-        private ObjectSettings UrlObject()
-        {
-            return new ObjectSettings { PageUrl = TEST_URL };
-        }
-
-        private static string GetResourceString(string name)
-        {
-            if (name == null)
-            {
-                return null;
-            }
-
-            Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
-
-            if (s == null)
-            {
-                return null;
-            }
-
-            return new StreamReader(s).ReadToEnd();
         }
     }
 }

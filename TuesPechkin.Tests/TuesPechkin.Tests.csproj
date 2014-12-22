@@ -8,8 +8,8 @@
     <ProjectGuid>{D58769FA-E008-4016-A81C-A85C606B3691}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PechkinTests</RootNamespace>
-    <AssemblyName>PechkinTests</AssemblyName>
+    <RootNamespace>TuesPechkin.Tests</RootNamespace>
+    <AssemblyName>TuesPechkin.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -87,7 +87,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BogusToolset.cs" />
-    <Compile Include="PechkinTests.cs" />
+    <Compile Include="EventSubscriptionTests.cs" />
+    <Compile Include="GeneralTests.cs" />
+    <Compile Include="TuesPechkinTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\page.html" />
