@@ -60,7 +60,7 @@ TuesPechkin exposes three interfaces and one attribute that define an HTML docum
 
 Because TuesPechkin exposes these interfaces/attributes, you are free to write your own implementations that support whichever wkhtmltopdf settings you so desire. If TuesPechkin's included `HtmlDocument` class and its related classes do not provide support for a setting you want to use, you may then extend them or create your own classes altogether -- this also goes for use cases where you are only setting a handful of properties and you find the included implementations to be too verbose.
 
-*The included `HtmlDocument` class and its related classes do not supply any default values to wkhtmltopdf.*
+*The included `HtmlToPdfDocument` class and its related classes do not supply any default values to wkhtmltopdf.*
 
 Here is how an `IDocument` is to be processed by an `IConverter`:
  
@@ -72,7 +72,7 @@ Here is how an `IDocument` is to be processed by an `IConverter`:
 
 #### Create a document with options of your choosing.
 ```csharp
-var document = new HtmlDocument
+var document = new HtmlToPdfDocument
 {
     GlobalSettings =
     {
