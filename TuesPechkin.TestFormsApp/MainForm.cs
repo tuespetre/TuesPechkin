@@ -5,16 +5,22 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TuesPechkin;
-using TuesPechkin.Wkhtmltox;
-using HtmlDocument = TuesPechkin.HtmlDocument;
 
 namespace Html2PdfTestApp
 {
     public partial class MainForm : Form
     {
-        private IAssembly assembly = new EmbeddedAssembly();
+        private IConverter converter =
+            new StandardConverter(
+                new PdfToolset(
+                    new Win64EmbeddedDeployment(
+                        new StaticDeployment(
+                            Path.Combine(
+                                Path.GetTempPath(), 
+                                Guid.NewGuid().ToString(),
+                                "wkhtmltox.dll")))));
 
-        private HtmlDocument Document = new HtmlDocument
+        private HtmlToPdfDocument Document = new HtmlToPdfDocument
         {
             Objects =
             {
@@ -35,8 +41,7 @@ namespace Html2PdfTestApp
 
             try
             {
-                IConverter sc2 = new StandardConverter(assembly);
-                buf = sc2.Convert(this.Document);
+                buf = converter.Convert(this.Document);
                 MessageBox.Show("All conversions done");
 
                 if (buf == null)
