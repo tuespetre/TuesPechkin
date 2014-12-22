@@ -5,7 +5,7 @@ namespace TuesPechkin
 {
     [Serializable]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class MarginSettings : ISettings
+    public class MarginSettings
     {
         public MarginSettings()
         {

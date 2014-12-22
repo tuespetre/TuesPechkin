@@ -265,11 +265,11 @@ namespace TuesPechkin
                 var attributes = property.GetCustomAttributes(true);
                 var rawValue = property.GetValue(settings, null);
 
-                if (rawValue == null || attributes.Length == 0)
+                if (rawValue == null)
                 {
                     continue;
                 }
-                else if (attributes[0] is WkhtmltoxSettingAttribute)
+                else if (attributes.Length > 0 && attributes[0] is WkhtmltoxSettingAttribute)
                 {
                     var attribute = attributes[0] as WkhtmltoxSettingAttribute;
 
