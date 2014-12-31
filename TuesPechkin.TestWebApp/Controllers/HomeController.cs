@@ -10,9 +10,12 @@ namespace TuesPechkin.TestWebApp.Controllers
         private static IConverter converter =
             new ThreadSafeConverter(
                 new PdfToolset(
-                    new Win64EmbeddedDeployment(
+                    new Win32EmbeddedDeployment(
                         new StaticDeployment(
-                            Path.Combine(Path.GetTempPath(), "wkhtmltox.dll")))));
+                            Path.Combine(
+                                Path.GetTempPath(), 
+                                Guid.NewGuid().ToString(),
+                                "wkhtmltox.dll")))));
 
         //
         // GET: /Home/
