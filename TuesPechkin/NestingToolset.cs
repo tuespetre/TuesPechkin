@@ -9,6 +9,8 @@ namespace TuesPechkin
     {
         public abstract event EventHandler Unloaded;
 
+        internal event EventHandler BeforeUnload;
+
         public IDeployment Deployment { get; protected set; }
 
         public bool Loaded { get; protected set; }
@@ -22,6 +24,14 @@ namespace TuesPechkin
         public override object InitializeLifetimeService()
         {
             return null;
+        }
+
+        internal void OnBeforeUnload(object sender)
+        {
+            if (BeforeUnload != null)
+            {
+                BeforeUnload(sender, EventArgs.Empty);
+            }
         }
 
         public void AddObject(IntPtr converter, IntPtr objectConfig, byte[] html)
