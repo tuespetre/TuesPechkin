@@ -9,7 +9,7 @@ namespace TuesPechkin.TestWebApp.Controllers
     {
         private static IConverter converter =
             new ThreadSafeConverter(
-                new PdfToolset(
+                new RemotingToolset<PdfToolset>(
                     new Win32EmbeddedDeployment(
                         new StaticDeployment(
                             Path.Combine(
@@ -17,13 +17,12 @@ namespace TuesPechkin.TestWebApp.Controllers
                                 Guid.NewGuid().ToString(),
                                 "wkhtmltox.dll")))));
 
-        //
         // GET: /Home/
         public ActionResult Index()
         {
-            var html = "<p>Just some test HTML</p>";
-            var doc = new HtmlToPdfDocument(html);
-            
+            var doc = new HtmlToPdfDocument();
+            doc.Objects.Add(new ObjectSettings { PageUrl = "www.google.com " });
+       
             for (var i = 0; i < 5; i++)
             {
                 var result = converter.Convert(doc);
