@@ -45,7 +45,7 @@ namespace TuesPechkin.Tests
                         new RemotingToolset<PdfToolset>(
                             new StaticDeployment(dllPath)));
 
-                var document = new HtmlDocument 
+                var document = new HtmlToPdfDocument 
                 { 
                     Objects = 
                     { 
