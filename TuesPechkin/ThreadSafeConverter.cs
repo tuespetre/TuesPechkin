@@ -15,6 +15,14 @@ namespace TuesPechkin
             {
                 new Thread(() => StopThread()).Start();
             };
+
+            if (toolset is NestingToolset)
+            {
+                (toolset as NestingToolset).BeforeUnload += (sender, args) =>
+                {
+                    Invoke(sender as ActionShim);
+                };
+            }
         }
 
         public override byte[] Convert(IDocument document)

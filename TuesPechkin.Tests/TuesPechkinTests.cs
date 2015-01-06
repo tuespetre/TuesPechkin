@@ -35,7 +35,7 @@ namespace TuesPechkin.Tests
         [TestCleanup]
         public void TestCleanup()
         {
-            converter.Invoke(() => toolset.Unload());
+            toolset.Unload();
         }
 
         protected AppDomain GetAppDomain(string name)

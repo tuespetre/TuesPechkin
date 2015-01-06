@@ -62,14 +62,7 @@ namespace TuesPechkin
         {
             if (Loaded)
             {
-                NestedToolset.Unload();
-
                 TearDownAppDomain(null, EventArgs.Empty);
-
-                if (Unloaded != null)
-                {
-                    Unloaded(this, EventArgs.Empty);
-                }
             }
         }
 
@@ -98,6 +91,8 @@ namespace TuesPechkin
             {
                 return;
             }
+
+            OnBeforeUnload((ActionShim)(() => NestedToolset.Unload()));
 
             AppDomain.Unload(remoteDomain);
 

@@ -45,7 +45,13 @@ namespace TuesPechkin.Tests
                         new RemotingToolset<PdfToolset>(
                             new StaticDeployment(dllPath)));
 
-                var document = new HtmlToPdfDocument("<p>some html</p>");
+                var document = new HtmlToPdfDocument 
+                { 
+                    Objects = 
+                    { 
+                        new ObjectSettings { PageUrl = "www.google.com" } 
+                    } 
+                };
 
                 AppDomain.CurrentDomain.SetData("result", converter.Convert(document));
             };
