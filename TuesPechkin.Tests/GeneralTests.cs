@@ -109,7 +109,7 @@ namespace TuesPechkin.Tests
             Assert.IsNotNull(result);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void MultipleObjectConversionFromString()
         {            
             // See: https://github.com/wkhtmltopdf/wkhtmltopdf/issues/1790

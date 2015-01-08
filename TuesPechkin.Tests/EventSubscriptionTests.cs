@@ -26,8 +26,7 @@ namespace TuesPechkin.Tests
             Assert.IsTrue(count > 0);
         }
 
-        // Not fully implemented yet; haven't figured out how to force Error
-        [TestMethod, Ignore]
+        [TestMethod]
         public void ErrorDoesNotBlockConversion()
         {
             var count = 0;
@@ -76,8 +75,7 @@ namespace TuesPechkin.Tests
             Assert.IsTrue(count > 0);
         }
 
-        // Not fully implemented yet; haven't figured out how to force Error
-        [TestMethod, Ignore]
+        [TestMethod]
         public void WarningDoesNotBlockConversion()
         {
             var count = 0;
