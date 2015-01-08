@@ -10,7 +10,7 @@
         <th>Name</th>
         <th>Value</th>
     </tr>
-@foreach (HttpCookie cookie in Request.Cookies)
+@foreach (HttpCookie cookie in Request.Cookies.AllKeys.Select(k => Request.Cookies[k]))
 {
     <tr>
         <td>@cookie.Name</td>

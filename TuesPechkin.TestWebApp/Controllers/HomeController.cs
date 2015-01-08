@@ -7,15 +7,21 @@ namespace TuesPechkin.TestWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private static string specificPath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "../TuesPechkin.Tests/wk-ver/0.12.2");
+
+        private static string randomPath = Path.Combine(
+            Path.GetTempPath(),
+            Guid.NewGuid().ToString(),
+            "wkhtmltox.dll");
+
         private static IConverter converter =
             new ThreadSafeConverter(
                 new RemotingToolset<PdfToolset>(
                     new Win32EmbeddedDeployment(
                         new StaticDeployment(
-                            Path.Combine(
-                                Path.GetTempPath(), 
-                                Guid.NewGuid().ToString(),
-                                "wkhtmltox.dll")))));
+                            specificPath))));
 
         // GET: /Home/
         public ActionResult Index()
@@ -34,21 +40,22 @@ namespace TuesPechkin.TestWebApp.Controllers
             return this.View();
         }
 
-        /*[HttpGet]
+        [HttpGet]
         public FileResult ScratchPad()
         {
-            var doc = new HtmlDocument();
+            var doc = new HtmlToPdfDocument();
             var obj = new ObjectSettings();
 
             obj.PageUrl = Url.Action("PostAnything", "Home", routeValues: null, protocol: Request.Url.Scheme);
             obj.LoadSettings.CustomHeaders.Add("X-MY-HEADER", "my value");
             obj.LoadSettings.Cookies.Add("my_awesome_cookie", "cookie value");
 
-            var converter = Factory.Create();
-            var result = converter.Convert(obj);
+            doc.Objects.Add(obj);
+
+            var result = converter.Convert(doc);
 
             return File(result, "application/pdf");
-        }*/
+        }
 
         public ActionResult PostAnything()
         {

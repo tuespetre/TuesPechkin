@@ -299,6 +299,7 @@ namespace TuesPechkin
             else if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
             {
                 var dictionary = (IEnumerable<KeyValuePair<string, string>>)value;
+                var counter = 0;
 
                 foreach (var entry in dictionary)
                 {
@@ -308,7 +309,8 @@ namespace TuesPechkin
                     }
 
                     apply(name + ".append", null);
-                    apply(string.Format("{0}[0]", name), entry.Key + "," + entry.Value);
+                    apply(string.Format("{0}[{1}]", name, counter), entry.Key + "\n" + entry.Value);
+                    counter++;
                 }
             }
             else

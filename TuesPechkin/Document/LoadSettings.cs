@@ -10,8 +10,8 @@ namespace TuesPechkin
     {
         public LoadSettings()
         {
-            //this.Cookies = new Dictionary<string, string>();
-            //this.CustomHeaders = new Dictionary<string, string>();
+            this.Cookies = new Dictionary<string, string>();
+            this.CustomHeaders = new Dictionary<string, string>();
         }
 
         public enum ContentErrorHandling
@@ -24,11 +24,11 @@ namespace TuesPechkin
         [WkhtmltoxSetting("load.blockLocalFileAccess")]
         public bool? BlockLocalFileAccess { get; set; }
 
-        /*[WkhtmltoxSetting("load.cookies")]
-        public Dictionary<string, string> Cookies { get; private set; }*/
+        [WkhtmltoxSetting("load.cookies")]
+        public Dictionary<string, string> Cookies { get; private set; }
 
-        /*[WkhtmltoxSetting("load.customHeaders")]
-        public Dictionary<string, string> CustomHeaders { get; private set; }*/
+        [WkhtmltoxSetting("load.customHeaders")]
+        public Dictionary<string, string> CustomHeaders { get; private set; }
 
         [WkhtmltoxSetting("load.debugJavascript")]
         public bool? DebugJavascript { get; set; }
