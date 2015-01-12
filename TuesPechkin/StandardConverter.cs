@@ -288,13 +288,13 @@ namespace TuesPechkin
                 ? (FuncShim<string, string, int>)((k, v) => Toolset.SetGlobalSetting(config, k, v))
                 : (FuncShim<string, string, int>)((k, v) => Toolset.SetObjectSetting(config, k, v));
 
-            if (type == typeof(double?))
+            if (type == typeof(double))
             {
-                apply(name, ((double?)value).Value.ToString("0.##", CultureInfo.InvariantCulture));
+                apply(name, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
             }
-            else if (type == typeof(bool?))
+            else if (type == typeof(bool))
             {
-                apply(name, ((bool?)value).Value ? "true" : "false");
+                apply(name, ((bool)value) ? "true" : "false");
             }
             else if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
             {
