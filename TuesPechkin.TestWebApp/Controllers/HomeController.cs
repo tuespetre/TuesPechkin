@@ -20,8 +20,7 @@ namespace TuesPechkin.TestWebApp.Controllers
             new ThreadSafeConverter(
                 new RemotingToolset<PdfToolset>(
                     new Win32EmbeddedDeployment(
-                        new StaticDeployment(
-                            randomPath))));
+                        new TempFolderDeployment())));
 
         // GET: /Home/
         public ActionResult Index()

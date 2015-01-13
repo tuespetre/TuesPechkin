@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Document\PostItem.cs" />
+    <Compile Include="TempFolderDeployment.cs" />
     <Compile Include="WkhtmltoxSettingAttribute.cs" />
     <Compile Include="EmbeddedDeployment.cs" />
     <Compile Include="Interfaces\IDocument.cs" />
