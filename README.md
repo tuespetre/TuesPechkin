@@ -99,7 +99,8 @@ var document = new HtmlToPdfDocument
 IConverter converter =
     new StandardConverter(
         new PdfToolset(
-        	new TempFolderDeployment()));
+            new Win32EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 byte[] result = converter.convert(document);
 ```
@@ -109,7 +110,8 @@ byte[] result = converter.convert(document);
 IConverter converter =
     new ThreadSafeConverter(
         new PdfToolset(
-        	new TempFolderDeployment()));
+            new Win32EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 // Keep the converter somewhere static, or as a singleton instance!
 
@@ -121,7 +123,8 @@ byte[] result = converter.convert(document);
 IConverter converter =
     new ThreadSafeConverter(
         new RemotingToolset<PdfToolset>(
-        	new TempFolderDeployment()));
+            new Win32EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 // Keep the converter somewhere static, or as a singleton instance!
 
@@ -131,10 +134,10 @@ byte[] result = converter.convert(document);
 ### Use the embedded library from the TuesPechkin.Wkhtmltox.Win32 NuGet package.
 ```csharp
 IConverter converter =
-	new StandardConverter(
-		new PdfToolset(
-			new Win32EmbeddedDeployment(
-				new TempFolderDeployment())));
+    new StandardConverter(
+        new PdfToolset(
+            new Win32EmbeddedDeployment(
+	        new TempFolderDeployment())));
 
 byte[] result = converter.convert(document);
 ```
