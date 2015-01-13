@@ -12,6 +12,7 @@ namespace TuesPechkin
         {
             this.Cookies = new Dictionary<string, string>();
             this.CustomHeaders = new Dictionary<string, string>();
+            this.PostItems = new List<PostItem>();
         }
 
         public enum ContentErrorHandling
@@ -38,6 +39,9 @@ namespace TuesPechkin
 
         [WkhtmltoxSetting("load.password")]
         public string Password { get; set; }
+
+        [WkhtmltoxSetting("load.post")]
+        public IList<PostItem> PostItems { get; private set; }
 
         [WkhtmltoxSetting("load.proxy")]
         public string Proxy { get; set; }

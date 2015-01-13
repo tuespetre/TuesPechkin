@@ -21,7 +21,7 @@ namespace TuesPechkin.TestWebApp.Controllers
                 new RemotingToolset<PdfToolset>(
                     new Win32EmbeddedDeployment(
                         new StaticDeployment(
-                            specificPath))));
+                            randomPath))));
 
         // GET: /Home/
         public ActionResult Index()
@@ -49,6 +49,11 @@ namespace TuesPechkin.TestWebApp.Controllers
             obj.PageUrl = Url.Action("PostAnything", "Home", routeValues: null, protocol: Request.Url.Scheme);
             obj.LoadSettings.CustomHeaders.Add("X-MY-HEADER", "my value");
             obj.LoadSettings.Cookies.Add("my_awesome_cookie", "cookie value");
+            obj.LoadSettings.PostItems.Add(new PostItem 
+            { 
+                Name = "my_special_value", 
+                Value = "is an amazing value" 
+            });
 
             doc.Objects.Add(obj);
 

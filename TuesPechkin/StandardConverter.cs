@@ -310,6 +310,27 @@ namespace TuesPechkin
 
                     apply(name + ".append", null);
                     apply(string.Format("{0}[{1}]", name, counter), entry.Key + "\n" + entry.Value);
+
+                    counter++;
+                }
+            }
+            else if (typeof(IEnumerable<PostItem>).IsAssignableFrom(type))
+            {
+                var list = (IEnumerable<PostItem>)value;
+                var counter = 0;
+
+                foreach (var item in list)
+                {
+                    if (string.IsNullOrEmpty(item.Name) || string.IsNullOrEmpty(item.Value))
+                    {
+                        continue;
+                    }
+
+                    apply(name + ".append", null);
+                    apply(string.Format("{0}[{1}].name", name, counter), item.Name);
+                    apply(string.Format("{0}[{1}].value", name, counter), item.Value);
+                    apply(string.Format("{0}[{1}].file", name, counter), item.IsFile ? "true" : "false");
+
                     counter++;
                 }
             }
