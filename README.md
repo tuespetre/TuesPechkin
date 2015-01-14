@@ -131,13 +131,13 @@ IConverter converter =
 byte[] result = converter.convert(document);
 ```
 
-### Use the embedded library from the TuesPechkin.Wkhtmltox.Win32 NuGet package.
+### Use the embedded library from the TuesPechkin.Wkhtmltox.Win64 NuGet package instead.
 ```csharp
 IConverter converter =
     new StandardConverter(
         new PdfToolset(
-            new Win32EmbeddedDeployment(
-	        new TempFolderDeployment())));
+            new Win64EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 byte[] result = converter.convert(document);
 ```
