@@ -9,6 +9,7 @@ TuesPechkin is a .NET Wrapper for the [wkhtmltopdf](https://github.com/wkhtmltop
 - It is not tested with any operating systems besides Windows.
 - [It is available as a *NuGet package* for your convenience.](https://www.nuget.org/packages/TuesPechkin/)
 - It is built and tested around wkhtmltopdf 0.12.2.
+- Even if you use the IIS-compatible method documented below, you may only use one converter/toolset instance per application pool/process. A workaround is being researched for a future version.
 
 ### wkhtmltox.dll 
 The wkhtmltox.dll file and any dependencies it might have (for older versions, 0.11.0-) are not included in the TuesPechkin NuGet package; however, you can bring your own copy of the library or download one of the following NuGet packages that contain the library:
