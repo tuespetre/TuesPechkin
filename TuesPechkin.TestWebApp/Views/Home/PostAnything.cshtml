@@ -10,7 +10,7 @@
         <th>Name</th>
         <th>Value</th>
     </tr>
-@foreach (HttpCookie cookie in Request.Cookies)
+@foreach (HttpCookie cookie in Request.Cookies.AllKeys.Select(k => Request.Cookies[k]))
 {
     <tr>
         <td>@cookie.Name</td>
@@ -25,11 +25,26 @@
         <th>Name</th>
         <th>Value</th>
     </tr>
-@foreach (string key in Request.Headers)
-{
+    @foreach (string key in Request.Headers)
+    {
+        <tr>
+            <td>@key</td>
+            <td>@Request.Headers[key]</td>
+        </tr>
+    }
+</table>
+
+<h3>Post values</h3>
+<table>
     <tr>
-        <td>@key</td>
-        <td>@Request.Headers[key]</td>
+        <th>Name</th>
+        <th>Value</th>
     </tr>
-}
+    @foreach (string key in Request.Form)
+    {
+        <tr>
+            <td>@key</td>
+            <td>@Request.Form[key]</td>
+        </tr>
+    }
 </table>

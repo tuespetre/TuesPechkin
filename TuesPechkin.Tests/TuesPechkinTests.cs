@@ -9,7 +9,7 @@ namespace TuesPechkin.Tests
     [TestClass]
     public abstract class TuesPechkinTests
     {
-        protected const string TEST_WK_VER = "0.12.1";
+        protected const string TEST_WK_VER = "0.12.2";
         protected const string TEST_URL = "www.google.com";
 
         // Simulates 1.x.x

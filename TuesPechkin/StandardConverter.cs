@@ -186,7 +186,7 @@ namespace TuesPechkin
                 {
                     Document = ProcessingDocument,
                     Progress = progress,
-                    ProgressDescription = Toolset.GetProgressDescription(converter)
+                    ProgressDescription = progressDescription
                 };
 
                 if (ProgressChange != null)
@@ -288,17 +288,18 @@ namespace TuesPechkin
                 ? (FuncShim<string, string, int>)((k, v) => Toolset.SetGlobalSetting(config, k, v))
                 : (FuncShim<string, string, int>)((k, v) => Toolset.SetObjectSetting(config, k, v));
 
-            if (type == typeof(double?))
+            if (type == typeof(double))
             {
-                apply(name, ((double?)value).Value.ToString("0.##", CultureInfo.InvariantCulture));
+                apply(name, ((double)value).ToString("0.##", CultureInfo.InvariantCulture));
             }
-            else if (type == typeof(bool?))
+            else if (type == typeof(bool))
             {
-                apply(name, ((bool?)value).Value ? "true" : "false");
+                apply(name, ((bool)value) ? "true" : "false");
             }
             else if (typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(type))
             {
                 var dictionary = (IEnumerable<KeyValuePair<string, string>>)value;
+                var counter = 0;
 
                 foreach (var entry in dictionary)
                 {
@@ -308,7 +309,29 @@ namespace TuesPechkin
                     }
 
                     apply(name + ".append", null);
-                    apply(string.Format("{0}[0]", name), entry.Key + "," + entry.Value);
+                    apply(string.Format("{0}[{1}]", name, counter), entry.Key + "\n" + entry.Value);
+
+                    counter++;
+                }
+            }
+            else if (typeof(IEnumerable<PostItem>).IsAssignableFrom(type))
+            {
+                var list = (IEnumerable<PostItem>)value;
+                var counter = 0;
+
+                foreach (var item in list)
+                {
+                    if (string.IsNullOrEmpty(item.Name) || string.IsNullOrEmpty(item.Value))
+                    {
+                        continue;
+                    }
+
+                    apply(name + ".append", null);
+                    apply(string.Format("{0}[{1}].name", name, counter), item.Name);
+                    apply(string.Format("{0}[{1}].value", name, counter), item.Value);
+                    apply(string.Format("{0}[{1}].file", name, counter), item.IsFile ? "true" : "false");
+
+                    counter++;
                 }
             }
             else

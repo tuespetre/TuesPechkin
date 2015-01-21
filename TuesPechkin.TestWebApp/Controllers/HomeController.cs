@@ -7,18 +7,41 @@ namespace TuesPechkin.TestWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private static IDeployment specificPath = 
+            new StaticDeployment(
+                Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "../TuesPechkin.Tests/wk-ver/0.12.2"));
+
+        private static string randomPath = Path.Combine(
+            Path.GetTempPath(),
+            Guid.NewGuid().ToString(),
+            "wkhtmltox.dll");
+
         private static IConverter converter =
             new ThreadSafeConverter(
                 new RemotingToolset<PdfToolset>(
                     new Win32EmbeddedDeployment(
-                        new StaticDeployment(
-                            Path.Combine(
-                                Path.GetTempPath(), 
-                                Guid.NewGuid().ToString(),
-                                "wkhtmltox.dll")))));
+                        new TempFolderDeployment())));
+
+        private static IConverter anotherConverter =
+            new ThreadSafeConverter(
+                new RemotingToolset<PdfToolset>(
+                    specificPath));
+
+        private static IConverter imageConverter =
+            new ThreadSafeConverter(
+                new RemotingToolset<ImageToolset>(
+                    new Win32EmbeddedDeployment(
+                        new TempFolderDeployment())));
 
         // GET: /Home/
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult PdfTest()
         {
             var doc = new HtmlToPdfDocument();
             doc.Objects.Add(new ObjectSettings { PageUrl = "www.google.com " });
@@ -34,25 +57,47 @@ namespace TuesPechkin.TestWebApp.Controllers
             return this.View();
         }
 
-        /*[HttpGet]
+        [HttpGet]
         public FileResult ScratchPad()
         {
-            var doc = new HtmlDocument();
+            var doc = new HtmlToPdfDocument();
             var obj = new ObjectSettings();
 
             obj.PageUrl = Url.Action("PostAnything", "Home", routeValues: null, protocol: Request.Url.Scheme);
             obj.LoadSettings.CustomHeaders.Add("X-MY-HEADER", "my value");
             obj.LoadSettings.Cookies.Add("my_awesome_cookie", "cookie value");
+            obj.LoadSettings.PostItems.Add(new PostItem 
+            { 
+                Name = "my_special_value", 
+                Value = "is an amazing value" 
+            });
 
-            var converter = Factory.Create();
-            var result = converter.Convert(obj);
+            doc.Objects.Add(obj);
+
+            var result = anotherConverter.Convert(doc);
 
             return File(result, "application/pdf");
-        }*/
+        }
 
         public ActionResult PostAnything()
         {
             return View();
+        }
+
+        [HttpGet]
+        public FileResult ImageTest()
+        {
+            var doc = new HtmlToImageDocument() 
+            { 
+                In = "www.google.com", 
+                Format = "jpg", 
+                ScreenWidth = 500, 
+                ScreenHeight = 500
+            };
+
+            var result = imageConverter.Convert(doc);
+
+            return File(result, "image/jpeg");
         }
     }
 }

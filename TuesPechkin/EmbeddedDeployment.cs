@@ -14,16 +14,18 @@ namespace TuesPechkin
             {
                 if (!deployed) 
                 { 
-                    if (!Directory.Exists(physical.Path))
-                    {
-                        Directory.CreateDirectory(physical.Path);
-                    }
-
                     foreach (var nameAndContents in GetContents())
                     {
                         var filename = System.IO.Path.Combine(
                             physical.Path,
                             nameAndContents.Key);
+
+                        var path = System.IO.Path.GetDirectoryName(filename);
+
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
 
                         if (!File.Exists(filename))
                         {

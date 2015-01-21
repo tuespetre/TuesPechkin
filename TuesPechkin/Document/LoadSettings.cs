@@ -10,8 +10,9 @@ namespace TuesPechkin
     {
         public LoadSettings()
         {
-            //this.Cookies = new Dictionary<string, string>();
-            //this.CustomHeaders = new Dictionary<string, string>();
+            this.Cookies = new Dictionary<string, string>();
+            this.CustomHeaders = new Dictionary<string, string>();
+            this.PostItems = new List<PostItem>();
         }
 
         public enum ContentErrorHandling
@@ -24,11 +25,11 @@ namespace TuesPechkin
         [WkhtmltoxSetting("load.blockLocalFileAccess")]
         public bool? BlockLocalFileAccess { get; set; }
 
-        /*[WkhtmltoxSetting("load.cookies")]
-        public Dictionary<string, string> Cookies { get; private set; }*/
+        [WkhtmltoxSetting("load.cookies")]
+        public Dictionary<string, string> Cookies { get; private set; }
 
-        /*[WkhtmltoxSetting("load.customHeaders")]
-        public Dictionary<string, string> CustomHeaders { get; private set; }*/
+        [WkhtmltoxSetting("load.customHeaders")]
+        public Dictionary<string, string> CustomHeaders { get; private set; }
 
         [WkhtmltoxSetting("load.debugJavascript")]
         public bool? DebugJavascript { get; set; }
@@ -38,6 +39,9 @@ namespace TuesPechkin
 
         [WkhtmltoxSetting("load.password")]
         public string Password { get; set; }
+
+        [WkhtmltoxSetting("load.post")]
+        public IList<PostItem> PostItems { get; private set; }
 
         [WkhtmltoxSetting("load.proxy")]
         public string Proxy { get; set; }

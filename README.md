@@ -8,7 +8,8 @@ TuesPechkin is a .NET Wrapper for the [wkhtmltopdf](https://github.com/wkhtmltop
 - [Azure Websites does not currently support the use of wkhtmltopdf.](http://social.msdn.microsoft.com/Forums/windowsazure/en-US/eb48e701-8c0b-4be3-b694-2e11cc6ff2e1/wkhtmltopdf-in-windows-azure?forum=windowsazurewebsitespreview)
 - It is not tested with any operating systems besides Windows.
 - [It is available as a *NuGet package* for your convenience.](https://www.nuget.org/packages/TuesPechkin/)
-- It is built and tested around wkhtmltopdf 0.11.0, 0.12.0, and 0.12.1.
+- It is built and tested around wkhtmltopdf 0.12.2.
+- Even if you use the IIS-compatible method documented below, you may only use one converter/toolset instance per application pool/process. A workaround is being researched for a future version.
 
 ### wkhtmltox.dll 
 The wkhtmltox.dll file and any dependencies it might have (for older versions, 0.11.0-) are not included in the TuesPechkin NuGet package; however, you can bring your own copy of the library or download one of the following NuGet packages that contain the library:
@@ -29,7 +30,7 @@ For 2.0.0 I am wanting to use the 'git flow' style of branching/merging/releasin
 
 ### 1. Choose a deployment
 
-TuesPechkin exposes an 'IDeployment' interface to represent the folder where wkhtmltox.dll resides. There exists a `StaticDeployment` implementation that accepts a string path, and there exists an abstract `EmbeddedDeployment` class that can be implemented to automatically deploy the wkhtmltopdf dll(s) wherever you need them. 
+TuesPechkin exposes an 'IDeployment' interface to represent the folder where wkhtmltox.dll resides. There exists a `StaticDeployment` implementation that accepts a string path, a `TempFolderDeployment` implementation that generates an application-scoped folder path under the `%Temp%` folder, and an abstract `EmbeddedDeployment` class that can be implemented to automatically deploy the wkhtmltopdf dll(s) wherever you need them. 
 
 ### 2. Choose a toolset
 
@@ -99,7 +100,8 @@ var document = new HtmlToPdfDocument
 IConverter converter =
     new StandardConverter(
         new PdfToolset(
-        	new StaticDeployment(DLL_FOLDER_PATH)));
+            new Win32EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 byte[] result = converter.convert(document);
 ```
@@ -109,7 +111,8 @@ byte[] result = converter.convert(document);
 IConverter converter =
     new ThreadSafeConverter(
         new PdfToolset(
-        	new StaticDeployment(DLL_FOLDER_PATH)));
+            new Win32EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 // Keep the converter somewhere static, or as a singleton instance!
 
@@ -121,20 +124,21 @@ byte[] result = converter.convert(document);
 IConverter converter =
     new ThreadSafeConverter(
         new RemotingToolset<PdfToolset>(
-        	new StaticDeployment(DLL_FOLDER_PATH)));
+            new Win32EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 // Keep the converter somewhere static, or as a singleton instance!
 
 byte[] result = converter.convert(document);
 ```
 
-### Use the embedded library from the TuesPechkin.Wkhtmltox.Win32 NuGet package.
+### Use the embedded library from the TuesPechkin.Wkhtmltox.Win64 NuGet package instead.
 ```csharp
 IConverter converter =
-	new StandardConverter(
-		new PdfToolset(
-			new Win32EmbeddedDeployment(
-				new StaticDeployment(DLL_FOLDER_PATH))));
+    new StandardConverter(
+        new PdfToolset(
+            new Win64EmbeddedDeployment(
+                new TempFolderDeployment())));
 
 byte[] result = converter.convert(document);
 ```
