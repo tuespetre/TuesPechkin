@@ -10,22 +10,20 @@ namespace TuesPechkin
     {
         public virtual string Path
         {
-            get 
+            get
             {
-                if (!deployed) 
-                { 
+                var path = System.IO.Path.Combine(physical.Path, PathModifier ?? string.Empty);
+
+                if (!deployed)
+                {
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
                     foreach (var nameAndContents in GetContents())
                     {
-                        var filename = System.IO.Path.Combine(
-                            physical.Path,
-                            nameAndContents.Key);
-
-                        var path = System.IO.Path.GetDirectoryName(filename);
-
-                        if (!Directory.Exists(path))
-                        {
-                            Directory.CreateDirectory(path);
-                        }
+                        var filename = System.IO.Path.Combine(path, nameAndContents.Key);
 
                         if (!File.Exists(filename))
                         {
@@ -36,7 +34,17 @@ namespace TuesPechkin
                     deployed = true;
                 }
 
+                // In 2.2.0 needs to return path
                 return physical.Path;
+            }
+        }
+
+        // Embedded deployments need to override this instead in 2.2.0
+        protected virtual string PathModifier
+        {
+            get
+            {
+                return this.GetType().Assembly.GetName().Version.ToString();
             }
         }
 
