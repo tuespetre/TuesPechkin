@@ -14,11 +14,7 @@ namespace Html2PdfTestApp
             new StandardConverter(
                 new PdfToolset(
                     new Win64EmbeddedDeployment(
-                        new StaticDeployment(
-                            Path.Combine(
-                                Path.GetTempPath(), 
-                                Guid.NewGuid().ToString(),
-                                "wkhtmltox.dll")))));
+                        new TempFolderDeployment())));
 
         private HtmlToPdfDocument Document = new HtmlToPdfDocument
         {
