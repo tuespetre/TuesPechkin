@@ -22,6 +22,12 @@ namespace TuesPechkin.TestWebApp.Controllers
                     new Win32EmbeddedDeployment(
                         new TempFolderDeployment())));
 
+        private static IConverter imageConverter =
+            new ThreadSafeConverter(
+                new RemotingToolset<ImageToolset>(
+                    new Win32EmbeddedDeployment(
+                        new TempFolderDeployment())));
+
         // GET: /Home/
         public ActionResult Index()
         {
@@ -64,6 +70,28 @@ namespace TuesPechkin.TestWebApp.Controllers
         public ActionResult PostAnything()
         {
             return View();
+        }
+
+        [HttpGet]
+        public FileResult ImageTest()
+        {
+            var doc = new ImageDocument() { Url = "www.google.com" };
+
+            return File(imageConverter.Convert(doc), "image/png");
+        }
+
+        private class ImageDocument : IDocument
+        {
+            [WkhtmltoxSetting("in")]
+            public string Url { get; set; }
+
+            [WkhtmltoxSetting("png")]
+            public string Format { get; set; }
+
+            public System.Collections.Generic.IEnumerable<IObject> GetObjects()
+            {
+                return new IObject[0];
+            }
         }
     }
 }
