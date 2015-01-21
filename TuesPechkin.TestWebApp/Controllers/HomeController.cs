@@ -87,37 +87,17 @@ namespace TuesPechkin.TestWebApp.Controllers
         [HttpGet]
         public FileResult ImageTest()
         {
-            var doc = new ImageDocument() 
+            var doc = new HtmlToImageDocument() 
             { 
-                Url = "www.google.com", 
+                In = "www.google.com", 
                 Format = "jpg", 
-                Width = 500, 
-                Height = 500
+                ScreenWidth = 500, 
+                ScreenHeight = 500
             };
 
             var result = imageConverter.Convert(doc);
 
             return File(result, "image/jpeg");
-        }
-
-        private class ImageDocument : IDocument
-        {
-            [WkhtmltoxSetting("in")]
-            public string Url { get; set; }
-
-            [WkhtmltoxSetting("fmt")]
-            public string Format { get; set; }
-
-            [WkhtmltoxSetting("screenWidth")]
-            public double? Width { get; set; }
-
-            [WkhtmltoxSetting("screenHeight")]
-            public double? Height { get; set; }
-
-            public System.Collections.Generic.IEnumerable<IObject> GetObjects()
-            {
-                return new IObject[0];
-            }
         }
     }
 }

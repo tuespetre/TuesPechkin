@@ -41,6 +41,8 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Document\CropSettings.cs" />
+    <Compile Include="Document\HtmlToImageDocument.cs" />
     <Compile Include="Document\PostItem.cs" />
     <Compile Include="TempFolderDeployment.cs" />
     <Compile Include="ImageToolset.cs" />
