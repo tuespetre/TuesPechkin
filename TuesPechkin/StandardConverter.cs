@@ -186,7 +186,7 @@ namespace TuesPechkin
                 {
                     Document = ProcessingDocument,
                     Progress = progress,
-                    ProgressDescription = Toolset.GetProgressDescription(converter)
+                    ProgressDescription = progressDescription
                 };
 
                 if (ProgressChange != null)

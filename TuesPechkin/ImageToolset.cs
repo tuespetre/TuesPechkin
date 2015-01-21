@@ -132,7 +132,7 @@ namespace TuesPechkin
         {
             Tracer.Trace("T:" + Thread.CurrentThread.Name + " Creating converter (wkhtmltoimage_create_converter)");
 
-            return WkhtmltoxBindings.wkhtmltoimage_create_converter(globalSettings);
+            return WkhtmltoxBindings.wkhtmltoimage_create_converter(globalSettings, null);
         }
 
         public void DestroyConverter(IntPtr converter)

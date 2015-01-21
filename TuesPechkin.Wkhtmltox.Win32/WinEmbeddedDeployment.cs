@@ -14,18 +14,25 @@ namespace TuesPechkin
     {
         public Win32EmbeddedDeployment(IDeployment physical) : base(physical) { }
 
+        public override string Path
+        {
+            get
+            {
+                return System.IO.Path.Combine(
+                    base.Path,
+                    GetType().Assembly.GetName().Version.ToString());
+            }
+        }
+
         protected override IEnumerable<KeyValuePair<string, Stream>> GetContents()
         {
-            var raw = Resources.wkhtmltox_32_dll;
-            var fileName = System.IO.Path.Combine(
-                this.GetType().Assembly.GetName().Version.ToString(),
-                WkhtmltoxBindings.DLLNAME);
-
             return new []
             { 
                 new KeyValuePair<string, Stream>(
-                    key: fileName,
-                    value: new GZipStream(new MemoryStream(raw), CompressionMode.Decompress))
+                    key: WkhtmltoxBindings.DLLNAME,
+                    value: new GZipStream(
+                        new MemoryStream(Resources.wkhtmltox_32_dll), 
+                        CompressionMode.Decompress))
             };
         }
     }

@@ -7,9 +7,11 @@ namespace TuesPechkin.TestWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private static string specificPath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "../TuesPechkin.Tests/wk-ver/0.12.2");
+        private static IDeployment specificPath = 
+            new StaticDeployment(
+                Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "../TuesPechkin.Tests/wk-ver/0.12.2"));
 
         private static string randomPath = Path.Combine(
             Path.GetTempPath(),
@@ -22,6 +24,11 @@ namespace TuesPechkin.TestWebApp.Controllers
                     new Win32EmbeddedDeployment(
                         new TempFolderDeployment())));
 
+        private static IConverter anotherConverter =
+            new ThreadSafeConverter(
+                new RemotingToolset<PdfToolset>(
+                    specificPath));
+
         private static IConverter imageConverter =
             new ThreadSafeConverter(
                 new RemotingToolset<ImageToolset>(
@@ -30,6 +37,11 @@ namespace TuesPechkin.TestWebApp.Controllers
 
         // GET: /Home/
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult PdfTest()
         {
             var doc = new HtmlToPdfDocument();
             doc.Objects.Add(new ObjectSettings { PageUrl = "www.google.com " });
@@ -62,7 +74,7 @@ namespace TuesPechkin.TestWebApp.Controllers
 
             doc.Objects.Add(obj);
 
-            var result = converter.Convert(doc);
+            var result = anotherConverter.Convert(doc);
 
             return File(result, "application/pdf");
         }
@@ -75,9 +87,17 @@ namespace TuesPechkin.TestWebApp.Controllers
         [HttpGet]
         public FileResult ImageTest()
         {
-            var doc = new ImageDocument() { Url = "www.google.com" };
+            var doc = new ImageDocument() 
+            { 
+                Url = "www.google.com", 
+                Format = "jpg", 
+                Width = 500, 
+                Height = 500
+            };
 
-            return File(imageConverter.Convert(doc), "image/png");
+            var result = imageConverter.Convert(doc);
+
+            return File(result, "image/jpeg");
         }
 
         private class ImageDocument : IDocument
@@ -85,8 +105,14 @@ namespace TuesPechkin.TestWebApp.Controllers
             [WkhtmltoxSetting("in")]
             public string Url { get; set; }
 
-            [WkhtmltoxSetting("png")]
+            [WkhtmltoxSetting("fmt")]
             public string Format { get; set; }
+
+            [WkhtmltoxSetting("screenWidth")]
+            public double? Width { get; set; }
+
+            [WkhtmltoxSetting("screenHeight")]
+            public double? Height { get; set; }
 
             public System.Collections.Generic.IEnumerable<IObject> GetObjects()
             {

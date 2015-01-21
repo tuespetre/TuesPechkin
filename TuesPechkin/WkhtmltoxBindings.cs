@@ -115,7 +115,7 @@ namespace TuesPechkin
         public static extern int wkhtmltoimage_convert(IntPtr converter);
 
         [DllImport(DLLNAME, CharSet = CHARSET)]
-        public static extern IntPtr wkhtmltoimage_create_converter(IntPtr globalSettings);
+        public static extern IntPtr wkhtmltoimage_create_converter(IntPtr globalSettings, byte[] data);
 
         [DllImport(DLLNAME, CharSet = CHARSET)]
         public static extern IntPtr wkhtmltoimage_create_global_settings();
