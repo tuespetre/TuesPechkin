@@ -32,25 +32,28 @@ For 2.0.0 I am wanting to use the 'git flow' style of branching/merging/releasin
 
 ### 1. Choose a deployment
 
-TuesPechkin exposes an 'IDeployment' interface to represent the folder where wkhtmltox.dll resides. There exists a `StaticDeployment` implementation that accepts a string path, a `TempFolderDeployment` implementation that generates an application-scoped folder path under the `%Temp%` folder, and an abstract `EmbeddedDeployment` class that can be implemented to automatically deploy the wkhtmltopdf dll(s) wherever you need them. 
+TuesPechkin exposes an 'IDeployment' interface to represent the _folder_ where wkhtmltox.dll resides. These are the officially supported implementations:
+
+- `EmbeddedDeployment` - this is an abstract class with two official implementations: the `Win32EmbeddedDeployment` and `Win64EmbeddedDeployment` classes, available from NuGet in their own packages. It contains the wkhtmltopdf file(s) and requires another `IDeployment` instance to tell it where to create the file(s). This is the recommended and easiest deployment to get started with.  
+- `TempFolderDeployment` - this one generates a temp folder based on the base directory of your application, as well as whether you are running in 32 or 64 bit. Recommended for use with any of the `EmbeddedDeployment` implementations.
+- `StaticDeployment` - use this one if you really know what you are doing with TuesPechkin and wkhtmltox.dll. It accepts a string path that you define.
 
 ### 2. Choose a toolset
 
-TuesPechkin exposes an `IToolset` interface to represent the wkhtmltopdf library. There are two officially supported implementations:
+TuesPechkin exposes an `IToolset` interface to represent a set of functions from the wkhtmltopdf library. There are three officially supported implementations:
 
-- `PdfToolset`: Exposes operations from the library to convert HTML into PDF
-- `RemotingToolset<TToolset>`: Manages a toolset of type `TToolset` across an AppDomain boundary. This is necessary for use in IIS-hosted applications.
+- `PdfToolset` - Exposes operations from wkhtmltox.dll to convert HTML into PDF
+- `ImageToolset` - Exposes operations from wkhtmltox.dll to convert HTML into images
+- `RemotingToolset<TToolset>` - Manages a toolset of type `TToolset` across an AppDomain boundary. This is necessary for use in IIS-hosted applications.
 
 There is also an abstract class from which you may inherit: `NestingToolset`. It provides wrapping functionality that is used by `RemotingToolset<TToolset>`.
-
-Feel free to submit a pull request to the develop branch for a `ImageToolset` implementation! ;)
 
 ### 3. Choose a converter
 
 TuesPechkin exposes an `IConverter` interface. An implementation of `IConverter` properly makes all of the calls to wkhtmltopdf to convert an `IDocument` instance (which we will cover shortly.) TuesPechkin supplies two implementations:
 
-- `StandardConverter`: A converter that may be used in single-threaded applications
-- `ThreadSafeConverter`: A converter that manages a single background thread and queues document conversions against it. This is necessary for use in multi-threaded applications, including IIS-hosted applications.
+- `StandardConverter` - A converter that may be used in single-threaded applications
+- `ThreadSafeConverter` - A converter that manages a single background thread and queues document conversions against it. This is necessary for use in multi-threaded applications, including IIS-hosted applications.
 
 ### 4. Define your document
 
@@ -117,6 +120,7 @@ IConverter converter =
                 new TempFolderDeployment())));
 
 // Keep the converter somewhere static, or as a singleton instance!
+// Do NOT run the above code more than once in the application lifecycle!
 
 byte[] result = converter.convert(document);
 ```
@@ -130,6 +134,7 @@ IConverter converter =
                 new TempFolderDeployment())));
 
 // Keep the converter somewhere static, or as a singleton instance!
+// Do NOT run the above code more than once in the application lifecycle!
 
 byte[] result = converter.convert(document);
 ```
