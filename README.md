@@ -108,7 +108,7 @@ IConverter converter =
             new Win32EmbeddedDeployment(
                 new TempFolderDeployment())));
 
-byte[] result = converter.convert(document);
+byte[] result = converter.Convert(document);
 ```
 
 ### ...or in a multi-threaded application...
@@ -122,7 +122,7 @@ IConverter converter =
 // Keep the converter somewhere static, or as a singleton instance!
 // Do NOT run the above code more than once in the application lifecycle!
 
-byte[] result = converter.convert(document);
+byte[] result = converter.Convert(document);
 ```
 
 ### ...or in an IIS-hosted application.
@@ -136,7 +136,7 @@ IConverter converter =
 // Keep the converter somewhere static, or as a singleton instance!
 // Do NOT run the above code more than once in the application lifecycle!
 
-byte[] result = converter.convert(document);
+byte[] result = converter.Convert(document);
 ```
 
 ### Use the embedded library from the TuesPechkin.Wkhtmltox.Win64 NuGet package instead.
@@ -147,7 +147,7 @@ IConverter converter =
             new Win64EmbeddedDeployment(
                 new TempFolderDeployment())));
 
-byte[] result = converter.convert(document);
+byte[] result = converter.Convert(document);
 ```
 
 License
