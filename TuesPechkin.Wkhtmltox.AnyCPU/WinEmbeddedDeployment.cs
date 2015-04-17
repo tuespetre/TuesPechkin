@@ -17,7 +17,7 @@ namespace TuesPechkin
         public WinAnyCPUEmbeddedDeployment(IDeployment physical)
             : base(physical)
         {
-            if (Environment.Is64BitProcess)
+            if (IntPtr.Size == 8)
                 wkhtmltoxDll = Resources.wkhtmltox_64_dll;
             else
                 wkhtmltoxDll = Resources.wkhtmltox_32_dll;
