@@ -21,7 +21,7 @@ namespace TuesPechkin.TestWebApp.Controllers
         private static IConverter converter =
             new ThreadSafeConverter(
                 new RemotingToolset<PdfToolset>(
-                    new Win32EmbeddedDeployment(
+					new WinAnyCPUEmbeddedDeployment(
                         new TempFolderDeployment())));
 
         private static IConverter anotherConverter =
@@ -32,7 +32,7 @@ namespace TuesPechkin.TestWebApp.Controllers
         private static IConverter imageConverter =
             new ThreadSafeConverter(
                 new RemotingToolset<ImageToolset>(
-                    new Win32EmbeddedDeployment(
+					new WinAnyCPUEmbeddedDeployment(
                         new TempFolderDeployment())));
 
         // GET: /Home/

@@ -13,7 +13,7 @@ namespace Html2PdfTestApp
         private IConverter converter =
             new StandardConverter(
                 new PdfToolset(
-                    new Win64EmbeddedDeployment(
+					new WinAnyCPUEmbeddedDeployment(
                         new TempFolderDeployment())));
 
         private HtmlToPdfDocument Document = new HtmlToPdfDocument

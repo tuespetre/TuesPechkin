@@ -210,7 +210,7 @@ namespace TuesPechkin.Tests
                 var converter =
                     new ThreadSafeConverter(
                         new RemotingToolset<PdfToolset>(
-                            new Win32EmbeddedDeployment(
+							new WinAnyCPUEmbeddedDeployment(
                                 new StaticDeployment(Path.GetTempPath()))));
 
                 var document = new HtmlToPdfDocument("<p>some html</p>");
