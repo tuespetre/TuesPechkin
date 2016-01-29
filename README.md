@@ -1,5 +1,3 @@
-> The project I was working on that motivated my work on this repository has been re-written and it no longer needs the functionality offered by wkhtmltopdf. I am very busy with other projects and family life and do not have enough time to do any more significant maintenance on this project. I am outright ignoring notifications on this repository. Please contact me on Twitter if you would like to become a collaborator on this repository.
-
 #TuesPechkin
 TuesPechkin is a .NET Wrapper for the [wkhtmltopdf](https://github.com/wkhtmltopdf/wkhtmltopdf) library. 
 
