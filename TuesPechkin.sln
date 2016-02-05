@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin", "TuesPechkin\TuesPechkin.csproj", "{023DF833-B252-48B3-B6AF-DBBB13E39B13}"
 EndProject
@@ -23,6 +23,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E447312B-1B44-4BE7-A904-EF24922DF48B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.Wkhtmltox.Win64", "TuesPechkin.Wkhtmltox.Win64\TuesPechkin.Wkhtmltox.Win64.csproj", "{F77CFFCA-1CF0-49C8-98B6-5C6009C6BE63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TuesPechkin.Wkhtmltox.AnyCPU", "TuesPechkin.Wkhtmltox.AnyCPU\TuesPechkin.Wkhtmltox.AnyCPU.csproj", "{785C8E22-FE66-4AB6-81B0-1A2AE29ADA72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{F77CFFCA-1CF0-49C8-98B6-5C6009C6BE63}.Debug|Any CPU.Build.0 = Debug|x64
 		{F77CFFCA-1CF0-49C8-98B6-5C6009C6BE63}.Release|Any CPU.ActiveCfg = Release|x64
 		{F77CFFCA-1CF0-49C8-98B6-5C6009C6BE63}.Release|Any CPU.Build.0 = Release|x64
+		{785C8E22-FE66-4AB6-81B0-1A2AE29ADA72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{785C8E22-FE66-4AB6-81B0-1A2AE29ADA72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{785C8E22-FE66-4AB6-81B0-1A2AE29ADA72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{785C8E22-FE66-4AB6-81B0-1A2AE29ADA72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
