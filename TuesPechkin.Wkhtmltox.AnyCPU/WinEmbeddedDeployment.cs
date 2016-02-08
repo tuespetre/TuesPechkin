@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using TuesPechkin.Wkhtmltox.AnyCPU.Properties;
 
 namespace TuesPechkin.Wkhtmltox.AnyCPU
 {
@@ -27,22 +28,21 @@ namespace TuesPechkin.Wkhtmltox.AnyCPU
 
         protected override IEnumerable<KeyValuePair<string, Stream>> GetContents()
         {
-            if (IntPtr.Size == 4)
-                return Loadx86();
-            return Loadx64();
+            if (Environment.Is64BitProcess)
+                return Loadx64();
+            return Loadx86();
+            
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private IEnumerable<KeyValuePair<string, Stream>> Loadx86()
         {
-            var assembly = Assembly.GetAssembly(typeof(Win32EmbeddedDeployment));
-            var stream = assembly.GetManifestResourceStream("TuesPechkin.wkhtmltox_32.dll.gz");
             return new[]
             {
                     new KeyValuePair<string, Stream>(
                         key: WkhtmltoxBindings.DLLNAME,
                         value: new GZipStream(
-                            stream,
+                            new MemoryStream(Resources.wkhtmltox_32_dll),
                             CompressionMode.Decompress))
             };
         }
@@ -50,14 +50,12 @@ namespace TuesPechkin.Wkhtmltox.AnyCPU
         [MethodImpl(MethodImplOptions.NoInlining)]
         private IEnumerable<KeyValuePair<string, Stream>> Loadx64()
         {
-            var assembly = Assembly.GetAssembly(typeof(Win64EmbeddedDeployment));
-            var stream = assembly.GetManifestResourceStream("TuesPechkin.wkhtmltox_64.dll.gz");
             return new[]
             {
                     new KeyValuePair<string, Stream>(
                         key: WkhtmltoxBindings.DLLNAME,
                         value: new GZipStream(
-                            stream,
+                            new MemoryStream(Resources.wkhtmltox_64_dll),
                             CompressionMode.Decompress))
             };
         }

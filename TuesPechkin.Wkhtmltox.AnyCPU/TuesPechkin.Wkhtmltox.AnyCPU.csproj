@@ -40,22 +40,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="WinEmbeddedDeployment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TuesPechkin.Wkhtmltox.Win32\TuesPechkin.Wkhtmltox.Win32.csproj">
-      <Project>{1bcd70ef-32ef-4339-9ccf-ea07415a39a9}</Project>
-      <Name>TuesPechkin.Wkhtmltox.Win32</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TuesPechkin.Wkhtmltox.Win64\TuesPechkin.Wkhtmltox.Win64.csproj">
-      <Project>{f77cffca-1cf0-49c8-98b6-5c6009c6be63}</Project>
-      <Name>TuesPechkin.Wkhtmltox.Win64</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TuesPechkin\TuesPechkin.csproj">
       <Project>{023df833-b252-48b3-b6af-dbbb13e39b13}</Project>
       <Name>TuesPechkin</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wkhtmltox_32.dll.gz" />
+    <EmbeddedResource Include="wkhtmltox_64.dll.gz" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
