@@ -34,7 +34,6 @@ namespace TuesPechkin.Wkhtmltox.AnyCPU
             
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         private IEnumerable<KeyValuePair<string, Stream>> Loadx86()
         {
             return new[]
@@ -47,7 +46,6 @@ namespace TuesPechkin.Wkhtmltox.AnyCPU
             };
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         private IEnumerable<KeyValuePair<string, Stream>> Loadx64()
         {
             return new[]
